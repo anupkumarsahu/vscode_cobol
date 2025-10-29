@@ -6,10 +6,12 @@ This is a comprehensive VS Code extension for COBOL development (`bitlang.cobol`
 ## Architecture & Core Components
 
 ### Multi-Target Build System
-- **Main Extension**: `src/extension.ts` → `dist/extension.js` (Node.js target for desktop VS Code)
+- **Main Extension**: `src/extension.ts` → `dist/extension.js` (Node.js target for desktop VS Code)  
 - **Web Extension**: `src/web/extension.ts` → `dist/web/extension-web.js` (WebWorker target for vscode.dev)
 - **Scanner Worker**: `src/cobscanner.ts` → `dist/cobscanner.js` (standalone COBOL source scanner)
-- Build via webpack with different targets for each component
+- Build via webpack with 3 separate configurations in `webpack.config.js` (main, web, scanner)
+- **Development Commands**: `npm run compile` (TypeScript), `npm run webpack` (production), `npm run watch-web` (development)
+- **Critical**: Always run appropriate pre-launch tasks (`npm: webpack` for main, `npm: watch-web` for web) before debugging
 
 ### Source Format Detection & Handling
 - **Fixed Format**: Traditional COBOL with margins (columns 7-11 for code)
@@ -17,6 +19,7 @@ This is a comprehensive VS Code extension for COBOL development (`bitlang.cobol`
 - **Variable Format**: No right margin restrictions
 - **Terminal Format**: ACU COBOL/RM style
 - Detection logic in `src/sourceformat.ts` with configurable patterns in `coboleditor.fileformat`
+- **Inline Directives**: Support for `>>source format` and `sourceformat` compiler directives within source files
 
 ### Multi-Dialect Language Support
 Each dialect has separate language IDs and configurations:
@@ -56,6 +59,7 @@ Language features implemented as VS Code providers in `src/vs*provider.ts`:
 - `coboleditor.fileformat`: File pattern → source format mapping
 - `coboleditor.valid_cobol_language_ids`: Supported dialect list
 - `coboleditor.enable_source_scanner`: Master toggle for parsing features
+- `coboleditor.logging_level`: Array of logging levels to display (`trace`, `debug`, `info`, `warning`, `error`, `fatal`) with precedence TRACE < DEBUG < INFO < WARNING < ERROR < FATAL
 
 ## Extension Conflict Management
 
@@ -82,9 +86,18 @@ npm run test          # Run test suite
 ```
 
 ### Debug Configuration (`.vscode/launch.json`)
-- **Launch Extension**: Full extension in new VS Code window
+- **Launch Extension**: Full extension in new VS Code window (requires `npm: webpack` pre-launch)
 - **Extension Tests**: Automated test execution
-- **Web Extension**: Browser-based debugging for vscode.dev
+- **Web Extension**: Browser-based debugging for vscode.dev (requires `npm: watch-web` pre-launch)
+- **Key Pattern**: Each debug config specifies its required `preLaunchTask` to ensure proper compilation
+
+### VS Code Tasks (`.vscode/tasks.json`)
+Five essential tasks for development workflow:
+- `npm: compile` - TypeScript compilation (`tsc -b`)
+- `npm: compile-web` - Webpack build for web extension
+- `npm: watch-web` - Development watch mode with hot reload
+- `npm: webpack` - Production webpack build for main extension
+- `npm: lint` - ESLint validation
 
 ### Problem Matchers
 Extensive compiler integration via `package.json` `problemMatchers`:
@@ -92,6 +105,7 @@ Extensive compiler integration via `package.json` `problemMatchers`:
 - `$acucobol-ccbl`: ACU COBOL  
 - `$cobolit-cobc`: COBOL-IT
 - Stack multiple matchers for comprehensive error capture
+- **Pattern**: Always place specialized matchers (like `-copybook`, `-info`) before general ones
 
 ## Key Patterns & Conventions
 
@@ -101,6 +115,13 @@ Extensive compiler integration via `package.json` `problemMatchers`:
 - `src/keywords/`: Language-specific keyword definitions
 - `syntaxes/`: TextMate grammars for syntax highlighting
 - `schemas/`: JSON schemas for configuration validation
+- **Naming Pattern**: VS Code providers follow `vs*provider.ts` convention
+- **Web Extension**: Separate entry point at `src/web/extension.ts` with subset of desktop features
+
+### Extension Entry Points
+- **Desktop**: `src/extension.ts` - Full feature set, Node.js APIs available
+- **Web**: `src/web/extension.ts` - Browser-compatible subset, no file system access
+- **Constants**: `src/extensionDefaults.ts` - Central configuration constants
 
 ### Configuration Loading
 Always use `VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures)` for document-specific settings rather than global workspace config.
@@ -138,3 +159,29 @@ Multi-step search process:
 4. Extension matching via `copybookexts` setting
 
 When adding new COBOL dialect support, ensure all provider files handle the new language ID and update `valid_cobol_language_ids` setting.
+
+## Development Best Practices
+
+### Building & Testing Workflow
+```bash
+npm run compile        # TypeScript compilation (tsc -b)
+npm run webpack       # Production webpack build for desktop
+npm run compile-web   # Webpack build for web extension  
+npm run watch-web     # Development with hot reload for web
+npm run test          # Run test suite
+npm run lint          # ESLint validation
+```
+
+### Critical Development Patterns
+- **Always** use `VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures)` for document-specific settings
+- **Provider Registration**: All language features implemented as separate VS Code providers in `src/vs*provider.ts` files
+- **Source Abstraction**: Use `ISourceHandler` interface (`VSCodeSourceHandler` vs `FileSourceHandler`) for file access
+- **Extension Conflict**: Auto-detection of Rocket COBOL extension with dynamic language ID switching via `src/vscommon_commands.ts`
+### Enhanced Logging System with Precedence
+- **Logging Levels**: `trace(5)`, `debug(10)`, `info(20)`, `warning(30)`, `error(40)`, `fatal(50)`
+- **Precedence Model**: TRACE < DEBUG < INFO < WARNING < ERROR < FATAL - each level includes all higher priority levels
+- **Configuration**: `coboleditor.logging_level` array setting with precedence-based filtering
+- **Caller Information**: Automatic `[filename:line]` tracking via stack trace analysis
+- **Default Levels**: `["info", "warning", "error", "fatal"]` for production readiness
+- **Methods**: `VSLogger.logTrace/logDebug/logInfo/logWarning/logError/logFatal(settings, message, ...params)`
+- **Filtering Logic**: Configure one level (e.g., `["warning"]`) to see that level plus all higher priority levels

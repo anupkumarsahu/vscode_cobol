@@ -97,6 +97,7 @@
       "supported": "limited",
       "restrictedConfigurations": [
         "coboleditor.cache_metadata_verbose_messages",
+        "coboleditor.logging_level",
         "coboleditor.cache_metadata_inactivity_timeout",
         "coboleditor.outline",
         "coboleditor.pre_scan_line_limit",
@@ -387,6 +388,29 @@
           "type": "boolean",
           "description": "Show log message during meta data processing",
           "default": false
+        },
+        "coboleditor.logging_level": {
+          "type": "array",
+          "description": "Configure logging levels to display in the output channel (precedence: TRACE < DEBUG < INFO < WARNING < ERROR < FATAL)",
+          "items": {
+            "type": "string",
+            "enum": [
+              "trace",
+              "debug", 
+              "info",
+              "warning",
+              "error",
+              "fatal"
+            ]
+          },
+          "default": [
+            "info",
+            "warning",
+            "error",
+            "fatal"
+          ],
+          "uniqueItems": true,
+          "markdownDescription": "Select which logging levels to display. **Precedence**: TRACE(5) < DEBUG(10) < INFO(20) < WARNING(30) < ERROR(40) < FATAL(50). Each level includes all higher priority levels. Available levels: **trace**, **debug**, **info**, **warning**, **error**, **fatal**"
         },
         "jcleditor.margin": {
           "type": "boolean",

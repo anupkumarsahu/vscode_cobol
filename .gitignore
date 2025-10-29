@@ -13,3 +13,5 @@ src/textprovider.ts.bak
 *nls.*.json
 package-lock.json
 *.d.ts
+/resources
+/resources

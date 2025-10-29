@@ -85,6 +85,7 @@ export class VSCOBOLConfiguration {
         // vsconfig.cache_metadata = getcache_metadata();
         settings.cache_metadata_inactivity_timeout = editorHelper.getNumber("cache_metadata_inactivity_timeout", 5000);
         settings.cache_metadata_verbose_messages = editorHelper.getBoolean("cache_metadata_verbose_messages", false);
+        settings.logging_level = editorConfig.get<string[]>("logging_level", ["info", "warning", "error", "fatal"]);
         settings.parse_copybooks_for_references = editorHelper.getBoolean("parse_copybooks_for_references", false);
         settings.workspacefolders_order = editorHelper.getWorkspacefolders_order();
         settings.linter_unused_sections = editorHelper.getBoolean("linter_unused_sections", true);
@@ -234,6 +235,7 @@ export class VSCOBOLConfiguration {
         settings.parse_copybooks_for_references = false;
         // vsconfig.cache_metadata = CacheDirectoryStrategy.Off;
         settings.cache_metadata_verbose_messages = false;
+        settings.logging_level = ["info", "warning", "error", "fatal"];
         settings.editor_maxTokenizationLineLength = 0;
         settings.sourceview = false;
         settings.format_on_return = false;
