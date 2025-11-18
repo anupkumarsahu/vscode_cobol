@@ -1,0 +1,15 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. TEST-TANDEM.
+       
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       OBJECT-COMPUTER.            TANDEM T16.
+       
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 WS-VAR PIC X(10).
+       
+       PROCEDURE DIVISION.
+       MAIN-START.
+           DISPLAY "Test".
+           STOP RUN.

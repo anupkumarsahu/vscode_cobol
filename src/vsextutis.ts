@@ -15,7 +15,6 @@ export class VSExtensionUtils {
             case "cobolit":
             case "bitlang-cobol":
             case "cobol":
-            case "acucobol":
             case "rmcobol":
             case "ilecobol":
                 return TextLanguage.COBOL;
@@ -121,20 +120,6 @@ export class VSExtensionUtils {
             return;
         }
 
-        // flip to ACUCOBOL if the source file looks like it a Acubench generated file
-        if (doc.languageId === "COBOL" || doc.languageId === "cobol") {
-            const lineCount = doc.lineCount;
-            if (lineCount >= 3) {
-                const firstLine = doc.lineAt((0)).text;
-                const secondLine = doc.lineAt(1).text;
-
-                if ((firstLine.indexOf("*{Bench}") !== -1) || ((secondLine.indexOf("*{Bench}") !== -1))) {
-                    vscode.languages.setTextDocumentLanguage(doc, "ACUCOBOL");
-                    return;
-                }
-            }
-        }
-
         if (doc.languageId === "plaintext" || doc.languageId === "tsql") {  // one tsql ext grabs .lst!
             const lineCount = doc.lineCount;
             if (lineCount >= 3) {
@@ -149,11 +134,6 @@ export class VSExtensionUtils {
                 //NOTE: If we have more.. refactor..
                 if (firstLine.startsWith("Pro*COBOL: Release")) {
                     vscode.languages.setTextDocumentLanguage(doc, "COBOL_PCOB_LISTFILE");
-                    return;
-                }
-
-                if ((firstLine.indexOf("ACUCOBOL-GT ") !== -1) && (firstLine.indexOf("Page:") !== -1)) {
-                    vscode.languages.setTextDocumentLanguage(doc, "COBOL_ACU_LISTFILE");
                     return;
                 }
             }

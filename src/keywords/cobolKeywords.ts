@@ -473,11 +473,11 @@ const cobolKeywords: string[] = [
 	"zeros",
 ];
 
-const acuKeywords: string[] = [
+const Keywords: string[] = [
 	"3-d",
 	"active-x-control",
 	"activex-res",
-	"acuactivexcontrol",
+	"activexcontrol",
 	"alignment",
 	"assembly-name",
 	"auto-minimize",
@@ -1358,7 +1358,7 @@ const ilecobolKeywords: string[] = [
 ]
 
 const cobolKeywordDictionaryMap = new Map<string, string>();
-const acucobolKeywordDictionaryMap = new Map<string, string>();
+const KeywordDictionaryMap = new Map<string, string>();
 const cobolitKeywordDictionaryMap = new Map<string, string>();
 const rmcobolKeywordDictionaryMap = new Map<string, string>();
 const ilecobolKeywordDictionaryMap = new Map<string,string>();
@@ -1368,27 +1368,27 @@ export const cobolStorageKeywordDictionary = new Map<string, string>();
 export const cobolRegistersDictionary = new Map<string, string>();
 
 const cobolList: string[] = [];
-const acucobolList: string[] = [];
+const List: string[] = [];
 const rmcobolList: string[] = [];
 const ilecobolList: string[] = [];
 
 /* inline decl */
 for (const key of cobolKeywords) {
 	cobolKeywordDictionaryMap.set(key, key);
-	acucobolKeywordDictionaryMap.set(key, key);
+	KeywordDictionaryMap.set(key, key);
 	rmcobolKeywordDictionaryMap.set(key, key);
 	ilecobolKeywordDictionaryMap.set(key,key);
 	
 	cobolList.push(key);
-	acucobolList.push(key);
+	List.push(key);
 	rmcobolList.push(key);
 	ilecobolList.push(key);
 }
 
-for (const key of acuKeywords) {
-	if (!acucobolKeywordDictionaryMap.has(key)) {
-		acucobolKeywordDictionaryMap.set(key, key);
-		acucobolList.push(key);
+for (const key of Keywords) {
+	if (!KeywordDictionaryMap.has(key)) {
+		KeywordDictionaryMap.set(key, key);
+		List.push(key);
 	}
 }
 
@@ -1412,8 +1412,8 @@ for (const key of cobolProcedureKeywords) {
 		if (!cobolKeywordDictionaryMap.has(key)) {
 			cobolList.push(key);
 		}
-		if (!acucobolKeywordDictionaryMap.has(key)) {
-			acucobolList.push(key);
+		if (!KeywordDictionaryMap.has(key)) {
+			List.push(key);
 		}
 		if (!ilecobolKeywordDictionaryMap.has(key)) {
 			ilecobolList.push(key);
@@ -1427,8 +1427,8 @@ for (const key of cobolStorageKeywords) {
 		if (!cobolKeywordDictionaryMap.has(key)) {
 			cobolList.push(key);
 		}
-		if (!acucobolKeywordDictionaryMap.has(key)) {
-			acucobolList.push(key);
+		if (!KeywordDictionaryMap.has(key)) {
+			List.push(key);
 		}
 		if (!ilecobolKeywordDictionaryMap.has(key)) {
 			ilecobolList.push(key);
@@ -1442,8 +1442,8 @@ for (const key of cobolRegisters) {
 		if (!cobolKeywordDictionaryMap.has(key)) {
 			cobolList.push(key);
 		}
-		if (!acucobolKeywordDictionaryMap.has(key)) {
-			acucobolList.push(key);
+		if (!KeywordDictionaryMap.has(key)) {
+			List.push(key);
 		}
 		if (!ilecobolKeywordDictionaryMap.has(key)) {
 			ilecobolList.push(key);
@@ -1459,7 +1459,7 @@ for (const key of COBOLITKeywords) {
 
 export function getCOBOLKeywordDictionary(dialect: string): Map<string, string> {
 	switch(dialect) {
-		case "ACUCOBOL" : return acucobolKeywordDictionaryMap;
+		case "" : return KeywordDictionaryMap;
 		case "COBOLIT"  : return cobolitKeywordDictionaryMap;
 		case "RMCOBOL" : return rmcobolKeywordDictionaryMap;
 		case "ILECOBOL" : return ilecobolKeywordDictionaryMap;
@@ -1469,7 +1469,7 @@ export function getCOBOLKeywordDictionary(dialect: string): Map<string, string> 
 
 export function getCOBOLKeywordList(dialect: string): string[] {
 	switch(dialect) {
-		case "ACUCOBOL" : return acucobolList;
+		case "" : return List;
 		case "RMCOBOL" : return rmcobolList;
 		case "COBOLIT" : return COBOLITKeywords;
 		case "ILECOBOL" : return ilecobolList;

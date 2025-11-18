@@ -5,7 +5,7 @@
 			"exit program returning ${1:0}"
 		],
 		"description": "exit program returning [0]",
-		"scope": "cobol,acucobol"
+		"scope": "cobol"
 	},
     "sr0": {
 		"prefix": "sr0",
@@ -13,7 +13,7 @@
 			"stop run returning ${1:0}"
 		],
 		"description": "stop run returing [0]",
-		"scope": "cobol,acucobol"
+		"scope": "cobol"
 	},
     "gr0": {
 		"prefix": "gr0",
@@ -21,6 +21,6 @@
 			"goback returning ${1:0}"
 		],
 		"description": "goback returning [0]",
-		"scope": "cobol,acucobol"
+		"scope": "cobol"
 	}
 }

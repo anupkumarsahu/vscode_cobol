@@ -5,8 +5,6 @@
   "version": "25.10.11",
   "publisher": "bitlang",
   "keywords": [
-    "acucobol-gt",
-    "acucobol",
     "bms",
     "cics",
     "cobol-it",
@@ -910,14 +908,13 @@
           "items": {
             "type": "string",
             "title": "Valid Visual Studio COBOL Language Id",
-            "pattern": "(^COBOL$|^COBOLIT$|^ACUCOBOL$|^RMCOBOL$|^COBOL_MF_LISTFILE$|^BITLANG-COBOL$|^ILECOBOL$)",
-            "patternErrorMessage": "Invalid language id, can be COBOL, COBOLIT, ACUCOBOL, RMCOBOL or COBOL_MF_LISTFILE or ILECOBOL"
+            "pattern": "(^COBOL$|^COBOLIT$|^RMCOBOL$|^COBOL_MF_LISTFILE$|^BITLANG-COBOL$|^ILECOBOL$)",
+            "patternErrorMessage": "Invalid language id, can be COBOL, COBOLIT, RMCOBOL or COBOL_MF_LISTFILE or ILECOBOL"
           },
           "default": [
             "COBOL",
             "BITLANG-COBOL",
             "COBOLIT",
-            "ACUCOBOL",
             "RMCOBOL",
             "ILECOBOL"
           ],
@@ -1258,23 +1255,7 @@
           ],
           "scope": "resource"
         },
-        "coboleditor.template_acucobol": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "       Identification Division.",
-            "       Program-Id. ${1:${TM_FILENAME/(.*)\\..+$/$1/}}.",
-            "       Data Division.",
-            "       Working-Storage Section.",
-            "       Procedure Division.",
-            "           $0",
-            "           GoBack.",
-            "       End Program $1."
-          ],
-          "scope": "resource"
-        },
+
         "coboleditor.enable_codelens_variable_references": {
           "type": "boolean",
           "description": "When enabled, turn on codelens for variable references",
@@ -1367,7 +1348,6 @@
       "github.copilot.enable": {
         "COBOL": true,
         "COBOLIT": true,
-        "ACUCOBOL": true,
         "BITLANG-COBOL": true,
         "RMCOBOL": true,
         "ILECOBOL": true,
@@ -1417,24 +1397,7 @@
         "editor.useTabStops": false,
         "editor.wordSeparators": "`~!@$%^&*()=+[{]}\\|;:'\",.<>/?"
       },
-      "[ACUCOBOL]": {
-        "workbench.editor.languageDetection": false,
-        "coboleditor.linter": true,
-        "editor.semanticHighlighting.enabled": true,
-        "editor.bracketPairColorization.enabled": false,
-        "editor.insertSpaces": true,
-        "editor.guides.indentation": false,
-        "files.autoGuessEncoding": false,
-        "editor.autoIndent": "full",
-        "editor.formatOnType": false,
-        "editor.rulers": [
-          6,
-          7,
-          72
-        ],
-        "editor.detectIndentation": false,
-        "editor.wordSeparators": "`~!#$%^&*()=+[{]}\\|;:'\",.<>/?"
-      },
+
       "[RMCOBOL]": {
         "workbench.editor.languageDetection": false,
         "coboleditor.linter": true,
@@ -1514,31 +1477,6 @@
     },
     "languages": [
       {
-        "id": "ACUCOBOL",
-        "aliases": [
-          "ACUCOBOL",
-          "acucobol"
-        ],
-        "firstLine": "^      \\*(.*\\.[sS][cC][rR]|.[Bb]ench.).*$",
-        "extensions": [
-          ".evt",
-          ".lks",
-          ".prd",
-          ".wrk",
-          ".mnu",
-          ".def",
-          ".sl",
-          ".EVT",
-          ".LKS",
-          ".PRD",
-          ".WRK",
-          ".MNU",
-          ".DEF",
-          ".SL"
-        ],
-        "configuration": "./acucobol.configuration.json"
-      },
-      {
         "id": "RMCOBOL",
         "aliases": [
           "RMCOBOL",
@@ -1555,9 +1493,6 @@
         ],
         "extensions": [],
         "configuration": "./ilecobol.configuration.json"
-      },
-      {
-        "id": "markdown-acucobol-injection"
       },
       {
         "id": "COBOL",
@@ -1864,14 +1799,6 @@
         }
       },
       {
-        "language": "ACUCOBOL",
-        "scopeName": "source.acucobol",
-        "path": "./syntaxes/ACUCOBOL.tmLanguage.json",
-        "embeddedLanguages": {
-          "meta.embedded.block.openesql": "openesql"
-        }
-      },
-      {
         "language": "RMCOBOL",
         "scopeName": "source.rmcobol",
         "path": "./syntaxes/RMCOBOL.tmLanguage.json"
@@ -1880,17 +1807,6 @@
         "language": "ILECOBOL",
         "scopeName": "source.ilecobol",
         "path": "./syntaxes/ILECOBOL.tmLanguage.json"
-      },
-      {
-        "language": "markdown-acucobol-injection",
-        "scopeName": "markdown.acucobol.codeblock",
-        "path": "./syntaxes/markdown/acucobol.json",
-        "injectTo": [
-          "text.html.markdown"
-        ],
-        "embeddedLanguages": {
-          "meta.embedded.block.acucobol": "acucobol"
-        }
       },
       {
         "language": "COBOLIT",
@@ -2056,11 +1972,6 @@
         "category": "COBOL",
         "title": "Comment line",
         "enablement": "editorFocus && config.coboleditor.line_comment"
-      },
-      {
-        "command": "cobolplugin.change_lang_to_acu",
-        "category": "COBOL",
-        "title": "Select ACUCOBOL-GT language"
       },
       {
         "command": "cobolplugin.change_lang_to_cobol",
@@ -2281,11 +2192,6 @@
         "title": "New COBOL Unit Test Program (Micro Focus)"
       },
       {
-        "command": "cobolplugin.newFile_ACUCOBOL",
-        "category": "ACUCOBOL",
-        "title": "New ACUCOBOL Program"
-      },
-      {
         "command": "cobolplugin.newFile_BlankFile",
         "category": "COBOL",
         "title": "New Empty COBOL Program"
@@ -2329,10 +2235,6 @@
         {
           "command": "cobolplugin.newFile_MicroFocus_mfunit",
           "group": "COBOL@3"
-        },
-        {
-          "command": "cobolplugin.newFile_ACUCOBOL",
-          "group": "ACUCOBOL@1"
         }
       ],
       "editor/context": [
@@ -2553,7 +2455,7 @@
       {
         "key": "alt+shift+c",
         "command": "cobolplugin.change_lang_to_cobol",
-        "when": "editorLangId =~ /^cobol$|^ACUCOBOL$|^RMCOBOL$|^ILECOBOL$|^COBOLIT$/ && !inSnippetMode"
+        "when": "editorLangId =~ /^cobol$|^RMCOBOL$|^ILECOBOL$|^COBOLIT$/ && !inSnippetMode"
       },
       {
         "key": "alt+shift+c",
@@ -2663,10 +2565,6 @@
       {
         "language": "markdown",
         "path": "./snippets/markdown.json"
-      },
-      {
-        "language": "ACUCOBOL",
-        "path": "./snippets/acucobol.json"
       },
       {
         "language": "BITLANG-COBOL",
@@ -2823,23 +2721,6 @@
         "message": 4
       },
       {
-        "name": "acucobol-ccbl",
-        "regexp": "^(.*),\\sline\\s(\\d+):\\s(.*)$",
-        "file": 1,
-        "location": 2,
-        "message": 3,
-        "loop": true
-      },
-      {
-        "name": "acucobol-warning-ccbl",
-        "regexp": "^(.*),\\sline\\s(\\d+):\\s([Ww]arning):\\s(.*)$",
-        "file": 1,
-        "location": 2,
-        "severity": 3,
-        "message": 4,
-        "loop": true
-      },
-      {
         "name": "procobol-preprocessor",
         "patterns": [
           {
@@ -2972,20 +2853,6 @@
         "pattern": "$cobolit-note-cobc",
         "severity": "info",
         "source": "COBOL-IT"
-      },
-      {
-        "name": "acucobol-ccbl",
-        "owner": "cobol",
-        "fileLocation": "autoDetect",
-        "pattern": "$acucobol-ccbl",
-        "source": "ACUCOBOL-GT"
-      },
-      {
-        "name": "acucobol-warning-ccbl",
-        "owner": "cobol",
-        "fileLocation": "autoDetect",
-        "pattern": "$acucobol-warning-ccbl",
-        "source": "ACUCOBOL-GT"
       },
       {
         "name": "procobol-preprocessor",

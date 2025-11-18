@@ -132,14 +132,13 @@ export class VSmargindecorations extends ColourTagHandler {
 
         // use the known file format from the scan itself
         switch (sf) {
-            case ESourceFormat.free:
             case ESourceFormat.unknown:
             case ESourceFormat.terminal:
                 activeTextEditor.setDecorations(defaultTrailingSpacesDecoration, defaultDecorationOptions);
                 return;
         }
 
-        if (sf == ESourceFormat.variable) {
+        if (sf == ESourceFormat.variable || sf == ESourceFormat.free) {
             decArea73_80 = false;
         }
 

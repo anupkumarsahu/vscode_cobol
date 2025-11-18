@@ -31,6 +31,10 @@
   "name": "COBOL",
   "patterns": [
     {
+      "match": "^\\*.*$",
+      "name": "comment.line.cobol.fixed"
+    },
+    {
       "match": "(^[ \\*][ \\*][ \\*][ \\*][ \\*][ \\*])([dD]\\s.*$)",
       "name": "token.info-token.cobol"
     },
@@ -128,10 +132,6 @@
           "name": "comment.line.cobol.newpage"
         }
       }
-    },
-    {
-      "match": "^\\*.*$",
-      "name": "comment.line.cobol.fixed"
     },
     {
       "match": "((?:^|\\s+)(?i:\\$set)\\s+)((?i:constant)\\s+)([0-9a-zA-Z][a-zA-Z\\-0-9]+\\s*)([a-zA-Z\\-0-9]*)",
@@ -256,6 +256,28 @@
       }
     },
     {
+      "match": "(\\?(?i:heading|page|nopage|list|nolist|source|nosource|symbols|nosymbols|saveabend|nosaveabend|inspect|noinspect|suppmap|nosuppmap|check|nocheck|optimize|nooptimize|crossref|nocrossref|sql|nosql|search|nosearch|runnable|norunnable|shared|noshared|resident|noresident|showfile|noshowfile|settog|resettog|section|columns|tandem|ansi|code|nocode|ncrossref|diagnose-74|nodiagnose-74|diagnose-85|nodiagnose-85|diagnoseall|nodiagnoseall|fips|nofips|fmap|icode|noicode|innerlist|noinnerlist|lines|lmap|nolmap|map|nomap|migration-check|showcopy|noshowcopy|subset|suppress|nosuppress|warn|nowarn|blank|noblank|call-shared|cancel|nocancel|codecov|compact|nocompact|compile|float|nofloat|globalized|largedata|less-code|non-shared|objextent|port|noport|syntax|trap2|notrap2|trap2-74|notrap2-74|ul|consult|noconsult|eld|ld|library|nld|xld))(\\s+.*$|$)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.directive.nonstop.cobol"
+        },
+        "2": {
+          "name": "entity.other.attribute-name.preprocessor.nonstop.cobol"
+        }
+      }
+    },
+    {
+      "match": "(\\?(?i:if|ifnot|ifdef|ifndef|else|endif))(\\s+.*$|$)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.directive.conditional.nonstop.cobol"
+        },
+        "2": {
+          "name": "entity.other.attribute-name.preprocessor.nonstop.cobol"
+        }
+      }
+    },
+    {
       "begin": "\\$(?i:doc)(.*$)",
       "end": "\\$(?i:end-doc)(.*$)",
       "name": "invalid.illegal.iscobol"
@@ -355,7 +377,7 @@
       "name": "meta.symbol.forced.cobol"
     },
     {
-      "begin": "((?<![-_a-zA-Z0-9()-])(?i:installation|author|source-computer|object-computer|date-written|security|date-compiled)(\\.|$))",
+      "begin": "((?<![-_a-zA-Z0-9()-])(?i:installation|author|date-written|security|date-compiled)(\\.|$))",
       "beginCaptures": {
         "0": {
           "name": "keyword.identifiers.cobol"
@@ -368,6 +390,25 @@
         }
       ],
       "name": "comment.block.cobol.remark",
+      "end": "(?=((?<![-_])(?i:remarks|author|date-written|source-computer|object-computer|installation|date-compiled|special-names|security|environment\\s+division|data\\s+division|working-storage\\s+section|input-output\\s+section|linkage\\s+section|procedure\\s+division|local-storage\\s+section)|^[ \\*][ \\*][ \\*][ \\*][ \\*][ \\*]\\*.*$|^\\+$))"
+    },
+    {
+      "begin": "((?<![-_a-zA-Z0-9()-])(?i:source-computer|object-computer)(\\.|$))",
+      "beginCaptures": {
+        "0": {
+          "name": "keyword.identifiers.cobol"
+        }
+      },
+      "patterns": [
+        {
+          "match": "(^[0-9 ][0-9 ][0-9 ][0-9 ][0-9 ][0-9 ])",
+          "name": "constant.numeric.cobol"
+        },
+        {
+          "match": "([A-Za-z][A-Za-z0-9\\-_]*(?:\\s+[A-Za-z0-9\\-_]+)*)",
+          "name": "entity.name.type.computer.cobol"
+        }
+      ],
       "end": "(?=((?<![-_])(?i:remarks|author|date-written|source-computer|object-computer|installation|date-compiled|special-names|security|environment\\s+division|data\\s+division|working-storage\\s+section|input-output\\s+section|linkage\\s+section|procedure\\s+division|local-storage\\s+section)|^[ \\*][ \\*][ \\*][ \\*][ \\*][ \\*]\\*.*$|^\\+$))"
     },
     {
@@ -995,7 +1036,7 @@
       "name": "storage.type.length.cobol"
     },
     {
-      "match": "(?<![-_])(?i:accept|add|address|allocate|cancel|close|commit|compute|continue|delete|disable|display|bell|divide|eject|enable|enter|evaluate|exhibit|named|exit|free|generate|go\\s+to|initialize\\sonly|initialize|initiate|inspect|merge|end-set|set|end-invoke|invoke\\s+run|invoke|move|corresponding|corr|multiply|otherwise|open|sharing|sort-merge|purge|ready|read|kept|receive|release|return|rewrite|rounded|rollback|search|send|sort|collating\\s+sequence|collating|start|service|subtract|suppress|terminate|then|unlock|string|unstring|validate|write|next|statement|sentence)(?![0-9A-Za-z_-])",
+      "match": "(?<![-_])(?i:accept|add|address|allocate|cancel|close|commit|compute|continue|delete|disable|display|bell|divide|eject|enable|enter|evaluate|exhibit|named|exit|free|generate|go\\s+to|initialize\\sonly|initialize|initiate|inspect|merge|end-set|set|end-invoke|invoke\\s+run|invoke|move|corresponding|corr|multiply|otherwise|open|sharing|sort-merge|purge|ready|read|kept|receive|message|release|return|rewrite|rounded|rollback|search|send|sort|collating\\s+sequence|collating|start|service|subtract|suppress|terminate|then|unlock|string|unstring|validate|write|next|statement|sentence)(?![0-9A-Za-z_-])",
       "name": "keyword.verb.cobol"
     },
     {

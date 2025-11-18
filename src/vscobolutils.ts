@@ -1388,20 +1388,6 @@ export class VSCOBOLUtils {
         let prefRunnerDebug = "";
         const fsDir = path.dirname(fsPath);
 
-        if (fsPath.endsWith("acu")) {
-            if (COBOLFileUtils.isWin32) {
-                prefRunner = "wrun32";
-                prefRunnerDebug = debug ? "-d " : "";
-            } else {
-                prefRunner = "runcbl";
-                prefRunnerDebug = debug ? "-d " : "";
-            }
-
-            commandTerminal.show(true);
-            commandTerminal.sendText(`${prefRunner} ${prefRunnerDebug}${fsPath}`);
-            return;
-        }
-
         // TODO: need to add .NET dll support!
         if (fsPath.endsWith("int") || fsPath.endsWith("gnt") || fsPath.endsWith("so") || fsPath.endsWith("dll")) {
             const mfExtension = vscode.extensions.getExtension(ExtensionDefaults.rocketCOBOLExtension);

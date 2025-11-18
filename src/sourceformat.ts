@@ -54,8 +54,6 @@ export class SourceFormat {
     }
 
     public static get(doc: ISourceHandlerLite, config: ICOBOLSettings): ESourceFormat {
-        const langid = doc.getLanguageId();
-
         // check overrides..
         switch (config.fileformat_strategy) {
             case fileformatStrategy.AlwaysFixed: return ESourceFormat.fixed;
@@ -80,7 +78,7 @@ export class SourceFormat {
         const maxLines = doc.getLineCount() > config.pre_scan_line_limit ? config.pre_scan_line_limit : doc.getLineCount();
         let defFormat = ESourceFormat.unknown;
 
-        const checkForTerminalFormat: boolean = langid.toLocaleLowerCase() === "acucobol" ? true : false;
+        const checkForTerminalFormat = false;
         let prevRightMargin = "";
         let validFixedLines = 0;
         let invalidFixedLines = 0;

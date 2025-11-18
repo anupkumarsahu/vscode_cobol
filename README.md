@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/bitlang.cobol)](https://marketplace.visualstudio.com/items?itemName=bitlang.cobol)[![Downloads](https://img.shields.io/visual-studio-marketplace/i/bitlang.cobol)](https://marketplace.visualstudio.com/items?itemName=bitlang.cobol) [![Rating](https://img.shields.io/visual-studio-marketplace/r/bitlang.cobol)](https://marketplace.visualstudio.com/items?itemName=bitlang.cobol)
 
-This unofficial extension provides syntax highlighting for `Rocket ® COBOL` based COBOL languages (previously `Micro Focus COBOL`), with some support for other COBOL dialects such as ACUCOBOL, RMCOBOL, COBOL-IT and ILECOBOL.
+This unofficial extension provides syntax highlighting for `Rocket ® COBOL` based COBOL languages (previously `Micro Focus COBOL`), with some support for other COBOL dialects such as ACUCOBOL, RMCOBOL, COBOL-IT, ILECOBOL and NonStop COBOL.
 
 Plus related syntax highlighting for other related languages/file formats such JCL, PL/I and directive files and [Unit Test Reports](https://www.microfocus.com/documentation/visual-cobol/vc70/VS2017/index.html?t=GUID-F0EE10E3-2C57-4322-BC82-4AD5A5EDA0CB.html).
 
@@ -16,6 +16,14 @@ Some of the features this extension provides are:
 - Colourisation for:
     - [RMCOBOL](https://www.rocketsoftware.com/en-us/products/cobol/rm-cobol)
     - ILECOBOL support to help fellow IBMi COBOL developers
+    - NonStop COBOL with comprehensive support for question mark directives including:
+      - Listing Control: `?HEADING`, `?PAGE`, `?LIST`, `?FMAP`, `?WARN`, `?DIAGNOSE-85`, etc.
+      - Source Text Manipulation: `?SECTION`, `?SOURCE`, `?SETTOG`, `?RESETTOG`, `?IF`, `?ENDIF`
+      - Input Format Control: `?TANDEM`, `?ANSI`, `?COLUMNS`
+      - Code-Generation Control: `?COMPILE`, `?RUNNABLE`, `?OPTIMIZE`, `?SYMBOLS`, `?INSPECT`, etc.
+      - Resolution and Binding Control: `?CONSULT`, `?SEARCH`, `?ELD`, `?XLD`, etc.
+      - Conditional Compilation: `?IF`, `?IFNOT`, `?IFDEF`, `?IFNDEF`, `?ELSE`, `?ENDIF`
+- Enhanced syntax highlighting for user-defined sections and paragraph labels (e.g., `MAIN SECTION`, `MAIN-EXIT`)
 - COBOL tab key support (configurable)
 - COBOL source navigation support
   - Shortcuts/Commands for navigation to divisions
@@ -77,6 +85,70 @@ While also being able to use it with the official `Rocket COBOL extension` (for 
 ### COBOL specific coloured comments
 
 ![coloured_comments](https://raw.githubusercontent.com/spgennard/vscode_cobol/main/images/coloured_comments.png)
+
+## NonStop COBOL Support
+
+This extension includes comprehensive support for HPE NonStop COBOL (formerly Tandem) directives and syntax highlighting. NonStop COBOL uses question mark (`?`) prefixed directives for compiler control and conditional compilation.
+
+### Supported NonStop COBOL Directives
+
+**Compiler Control Directives:**
+- `?HEADING` - Set page heading for listings
+- `?PAGE` / `?NOPAGE` - Control page breaks  
+- `?LIST` / `?NOLIST` - Control source listing
+- `?SOURCE` / `?NOSOURCE` - Control source in listing
+- `?SYMBOLS` / `?NOSYMBOLS` - Control symbol table listing
+- `?CROSSREF` / `?NOCROSSREF` - Control cross-reference listing
+
+**Debugging and Optimization:**
+- `?INSPECT` / `?NOINSPECT` - Control debugging information
+- `?OPTIMIZE` / `?NOOPTIMIZE` - Control code optimization
+- `?CHECK` / `?NOCHECK` - Control runtime checking
+- `?SAVEABEND` / `?NOSAVEABEND` - Control abend save files
+
+**Conditional Compilation:**
+- `?IF` - Conditional compilation start
+- `?IFDEF` / `?IFNDEF` - Check if symbol defined/undefined
+- `?ELSE` - Alternative compilation path
+- `?ENDIF` - End conditional compilation block
+
+**Program Characteristics:**
+- `?RUNNABLE` / `?NORUNNABLE` - Set program as runnable
+- `?SHARED` / `?NOSHARED` - Control shared library creation
+- `?RESIDENT` / `?NORESIDENT` - Control memory residency
+- `?SQL` / `?NOSQL` - Enable/disable SQL preprocessing
+
+### Example NonStop COBOL Usage
+
+```cobol
+?HEADING Sample NonStop COBOL Program
+?PAGE
+?LIST
+?SYMBOLS
+
+IDENTIFICATION DIVISION.
+PROGRAM-ID. NONSTOP-EXAMPLE.
+
+?IF DEBUGGING
+?INSPECT
+?ENDIF
+
+DATA DIVISION.
+WORKING-STORAGE SECTION.
+01 WS-COUNTER PIC 9(3) VALUE ZERO.
+
+PROCEDURE DIVISION.
+?OPTIMIZE
+MAIN-PARA.
+    PERFORM VARYING WS-COUNTER FROM 1 BY 1
+        UNTIL WS-COUNTER > 100
+        DISPLAY "Count: " WS-COUNTER
+    END-PERFORM
+    STOP RUN.
+?NOOPTIMIZE
+```
+
+All NonStop COBOL directives are highlighted with appropriate syntax coloring and scoped as `keyword.control.directive.nonstop.cobol` for easy theme customization.
 
 ## Keybindings
 

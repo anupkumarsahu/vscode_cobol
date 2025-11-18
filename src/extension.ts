@@ -52,7 +52,7 @@ import { InMemoryGlobalSymbolCache } from "./globalcachehelper";
 // File and utility management
 import { VSCOBOLFileUtils } from "./vsfileutils";
 import { COBOLOutputChannel, VSLogger } from "./vslogger";
-import { VSExtensionUtils } from "./vsextutis";
+import { VSExtensionUtils, TextLanguage } from "./vsextutis";
 
 // Editor decorations and UI enhancements
 import { vsMarginHandler } from "./vsmargindecorations";
@@ -446,6 +446,8 @@ async function handleScopedChange(event:ConfigurationChangeEvent, scope?: vscode
     const intellisense_style_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.intellisense_style`, scope);
     const enable_columns_tags_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.enable_columns_tags`, scope);
     const columns_tags_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.columns_tags`, scope);
+    const margin_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.margin`, scope);
+    const margin_identification_area_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.margin_identification_area`, scope);
     const intellisense_add_space_keywords_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.intellisense_add_space_keywords`, scope);
     const custom_intellisense_rules_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.custom_intellisense_rules`, scope);
     const tabstops_anchors_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.tabstops_anchors`, scope);
@@ -524,8 +526,14 @@ async function handleScopedChange(event:ConfigurationChangeEvent, scope?: vscode
             colourCommentHandler.setupTags();
         }
 
-        if (enable_columns_tags_changed || columns_tags_changed) {
+        if (enable_columns_tags_changed || columns_tags_changed || margin_changed || margin_identification_area_changed) {
             vsMarginHandler.setupTags();
+            // Refresh decorations for all visible editors
+            for (const editor of vscode.window.visibleTextEditors) {
+                if (VSExtensionUtils.isSupportedLanguage(editor.document) !== TextLanguage.Unknown) {
+                    await vsMarginHandler.updateDecorations(editor);
+                }
+            }
         }
 
         // Update IntelliSense completion providers
