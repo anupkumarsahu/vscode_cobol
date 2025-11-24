@@ -37,6 +37,7 @@ export enum fileformatStrategy {
     AlwaysVariable = "always_variable",
     AlwaysFree = "always_free",
     AlwaysTerminal = "always_terminal",
+    AlwaysTandem = "always_tandem",
     Normal = "normal"
 }
 
@@ -387,21 +388,15 @@ export class COBOLSettings implements ICOBOLSettings {
         this.editor_margin_files = [];
         this.enable_source_scanner = true;
         this.valid_cobol_language_ids = [
-            "BITLANG-COBOL",
             "COBOL",
-            "COBOLIT",
-            "RMCOBOL",
-            "ILECOBOL",
-            "COBOL_MF_LISTFILE"
+            "COBOL_MF_LISTFILE",
+            "COBOL_TANDEM"
         ];
 
         this.valid_cobol_language_ids_for_intellisense = [
-            "BITLANG-COBOL",
             "COBOL",
-            "COBOLIT",
-            "RMCOBOL",
-            "ILECOBOL",
-            "COBOL_MF_LISTFILE"
+            "COBOL_MF_LISTFILE",
+            "COBOL_TANDEM"
         ];
 
         this.files_exclude = [];

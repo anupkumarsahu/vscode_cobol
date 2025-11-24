@@ -60,6 +60,7 @@ export class SourceFormat {
             case fileformatStrategy.AlwaysVariable: return ESourceFormat.variable;
             case fileformatStrategy.AlwaysFree: return ESourceFormat.free;
             case fileformatStrategy.AlwaysTerminal: return ESourceFormat.terminal;
+            case fileformatStrategy.AlwaysTandem: return ESourceFormat.tandem;
         }
 
         // check file based overrides..

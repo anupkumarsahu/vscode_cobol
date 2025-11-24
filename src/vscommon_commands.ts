@@ -521,28 +521,6 @@ export function checkForExtensionConflicts(settings: ICOBOLSettings, context: Ex
 
 
 export function activateCommonCommands(context: vscode.ExtensionContext) {
-    context.subscriptions.push(commands.registerCommand("cobolplugin.change_lang_to_rmcobol", function () {
-        const act = vscode.window.activeTextEditor;
-        if (act === null || act === undefined) {
-            return;
-        }
-
-        const settings = VSCOBOLConfiguration.get_resource_settings(act.document, VSExternalFeatures);
-        vscode.languages.setTextDocumentLanguage(act.document, "RMCOBOL");
-        VSCOBOLUtils.enforceFileExtensions(settings, act, VSExternalFeatures, true, "RMCOBOL");
-    }));
-
-    context.subscriptions.push(commands.registerCommand("cobolplugin.change_lang_to_ilecobol", function () {
-        const act = vscode.window.activeTextEditor;
-        if (act === null || act === undefined) {
-            return;
-        }
-
-        const settings = VSCOBOLConfiguration.get_resource_settings(act.document, VSExternalFeatures);
-        vscode.languages.setTextDocumentLanguage(act.document, "ILECOBOL");
-        VSCOBOLUtils.enforceFileExtensions(settings, act, VSExternalFeatures, true, "ILECOBOL");
-    }));
-
     context.subscriptions.push(commands.registerCommand("cobolplugin.change_lang_to_cobol", async function () {
         const act = vscode.window.activeTextEditor;
         if (act === null || act === undefined) {
@@ -819,7 +797,7 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.enforceFileExtensions", () => {
         if (vscode.window.activeTextEditor) {
-            const dialects = ["COBOL", "RMCOBOL", "ILECOBOL", "COBOLIT"];
+            const dialects = ["COBOL"];
             const mfExt = vscode.extensions.getExtension(ExtensionDefaults.rocketCOBOLExtension);
             const settings = VSCOBOLConfiguration.get_resource_settings(vscode.window.activeTextEditor.document, VSExternalFeatures);
 
@@ -906,21 +884,12 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
         }
 
         switch (langid) {
-            case "BITLANG-COBOL":
             case "COBOL":
                 {
-                    context.subscriptions.push(getLangStatusItem("Switch to ILECOBOL", "cobolplugin.change_lang_to_ilecobol", "Change", _settings, langid + "_4", langid));
-
                     if (mfExt !== undefined) {
                         context.subscriptions.push(getLangStatusItem("Switch to 'Rocket COBOL'", "cobolplugin.change_lang_to_mfcobol", "Change", _settings, langid + "_6", langid));
                     }
                 }
-                break;
-            case "RMCOBOL":
-                context.subscriptions.push(getLangStatusItem("Switch to COBOL", "cobolplugin.change_lang_to_cobol", "Change", _settings, langid + "_5", langid));
-                break;
-            case "ILECOBOL":
-                context.subscriptions.push(getLangStatusItem("Switch to COBOL", "cobolplugin.change_lang_to_cobol", "Change", _settings, langid + "_5", langid));
                 break;
             case ExtensionDefaults.microFocusCOBOLLanguageId:
                 context.subscriptions.push(getLangStatusItem("Switch to 'BitLang COBOL'", "cobolplugin.change_lang_to_cobol", "Change", _settings, langid + "_6", langid));

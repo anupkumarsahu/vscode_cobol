@@ -1,0 +1,102 @@
+{
+	"comments": {
+		"lineComment": "*"
+	},
+	"brackets": [
+		[
+			"[",
+			"]"
+		],
+		[
+			"(",
+			")"
+		]
+	],
+	"autoClosingPairs": [
+		{
+			"open": "[",
+			"close": "]",
+			"notIn": [
+				"string",
+				"comment"
+			]
+		},
+		{
+			"open": "(",
+			"close": ")"
+		},
+		{
+			"open": "'",
+			"close": "'",
+			"notIn": [
+				"string",
+				"comment"
+			]
+		},
+		{
+			"open": "\"",
+			"close": "\"",
+			"notIn": [
+				"string",
+				"comment"
+			]
+		}
+	],
+	"surroundingPairs": [
+		[
+			"{",
+			"}"
+		],
+		[
+			"[",
+			"]"
+		],
+		[
+			"(",
+			")"
+		],
+		[
+			"\"",
+			"\""
+		],
+		[
+			"'",
+			"'"
+		]
+	],
+	"folding": {
+		"markers": {
+			"start": "^\\s*(?i:\\$region\\b)",
+			"end": "^\\s*(?i:\\$end-region\\b)"
+		}
+	},
+	"wordPattern": "([#]?[0-9a-zA-Z]?[a-zA-Z-0-9_$]*[a-zA-Z0-9])",
+	"onEnterRules": [
+		{
+			"beforeText": "^\\s*[cC][aA][lL][lL].*[uU][sS][iI][nN][gG]$",
+			"endTest": "^\\s*[eE][nN][dD]-[cC][aA][lL][lL]$",
+			"action": {
+				"indent": "indent"
+			}
+		},
+		{
+			"beforeText": "^\\s*[eE][nN][dD]-[cC][aA][lL][lL]$",
+			"action": {
+				"indent": "none"
+			}
+		},
+		{
+			"beforeText": "^\\s*[eE][vV][aA][lL][uU][aA][tT][eE].*$",
+			"endTest": "^\\s*[eE][nN][dD]-[eE][vV][aA][lL][uU][aA][tT][eE]$",
+			"action": {
+				"indent": "indent"
+			}
+		},
+		{
+			"beforeText": "^\\s*[eE][nN][dD]-[eE][vV][aA][lL][uU][aA][tT][eE]$",
+			"action": {
+				"indent": "none"
+			}
+		}
+	]
+}

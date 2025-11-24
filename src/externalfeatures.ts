@@ -32,6 +32,7 @@ export enum ESourceFormat {
     free = "free",
     terminal = "terminal",
     variable = "variable",
+    tandem = "tandem",
     jcl = "jcl"
 }
 

@@ -12,11 +12,7 @@ export class VSExtensionUtils {
     public static isSupportedLanguage(document: vscode.TextDocument): TextLanguage {
 
         switch (document.languageId.toLowerCase()) {
-            case "cobolit":
-            case "bitlang-cobol":
             case "cobol":
-            case "rmcobol":
-            case "ilecobol":
                 return TextLanguage.COBOL;
             case "jcl":
                 return TextLanguage.JCL;

@@ -50,14 +50,9 @@ export class BldScriptTaskProvider implements vscode.TaskProvider {
 	public static getProblemMatchers(): string[] {
 		const matchers = 	[];
 		const envCOBDIR = process.env["COBDIR"];
-		const envCOBOLIT = process.env["COBOLITDIR"];
 
 		if (envCOBDIR !== undefined) {
 			matchers.push("$mfcobol-errformat3");
-		}
-
-		if (envCOBOLIT !== undefined) {
-			matchers.push("$cobolit-cobc");
 		}
 
 		return matchers;

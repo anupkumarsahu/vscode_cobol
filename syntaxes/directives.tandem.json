@@ -1,0 +1,43 @@
+{
+  "name": "directivestandem",
+  "scopeName": "source.directivestandem",
+  "patterns": [
+    {
+      "begin": "(^[ \\t]+)?(?=\\*)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.whitespace.comment.leading.directivestandem"
+        }
+      },
+      "end": "(?!\\G)",
+      "patterns": [
+        {
+          "begin": "\\*",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.directivestandem"
+            }
+          },
+          "end": "\\n",
+          "name": "comment.line.asterisk.directivestandem"
+        }
+      ]
+    },
+    {
+      "match": "^\\s*\\?\\s*(ANSI|NOLIST|LIST|PAGE|EJECT|SOURCE|NOSOURCE|MAP|NOMAP|SYMBOLS|NOSYMBOLS|XREF|NOXREF|CHECK|NOCHECK|INSPECT|NOINSPECT|OPTIMIZE|NOOPTIMIZE|WARNINGS|NOWARNINGS|SUPPRESS|UNSUPPRESS|HIGHPIN|NOHIGHPIN|HIGHREQUESTERS|NOHIGHREQUESTERS|SAVEABEND|NOSAVEABEND|SYNTAX|NOSYNTAX|RUNNAMED|NORUNNAMED|NOCROSSREF|CROSSREF|REELS|NOREELS|ENV|NOENV|FIXEDOVERFLOW|NOFIXEDOVERFLOW|FIPS|NOFIPS|SECTIONS|NOSECTIONS|SPOOLER|NOSPOOLER|CODE|NOCODE|SQLMX|NOSQLMX|INSPECT_FILE_DEFAULTS|DEFINETOG|UNDEFINETOG|DEFINETOGGLE|UNDEFINETOGGLE|SAVEABEND_DEFAULTS|ERRORFILE|GMAP|NOGMAP|INNERLIST|NOINNERLIST|INHIBIT-WARNS|INHIBITWARNS|ICODE|NOICODE|UL|NOUL|COMMON|NOCOMMON|SEARCH|NOSEARCH)\\b",
+      "name": "keyword.directive.tandem"
+    },
+    {
+      "match": "^\\s*\\?\\s*SECTION\\s+\\w+",
+      "name": "keyword.directive.section.tandem"
+    },
+    {
+      "match": "^\\s*\\$",
+      "name": "keyword.directive.tandem"
+    },
+    {
+      "match": "\\b(ANSI85|ANSI74|TANDEM)\\b",
+      "name": "constant.language.tandem"
+    }
+  ]
+}

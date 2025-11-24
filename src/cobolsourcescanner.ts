@@ -975,7 +975,6 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
         this.COBOLKeywordDictionary = getCOBOLKeywordDictionary(this.languageId);
         switch (this.languageId.toLocaleLowerCase()) {
             case "cobol":
-            case "bitlang-cobol":
                 this.usePortationSourceScanner = configHandler.linter_port_helper;
                 break;
             default:

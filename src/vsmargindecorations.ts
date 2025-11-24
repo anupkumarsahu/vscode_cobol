@@ -138,7 +138,8 @@ export class VSmargindecorations extends ColourTagHandler {
                 return;
         }
 
-        if (sf == ESourceFormat.variable || sf == ESourceFormat.free) {
+        if (sf == ESourceFormat.variable || sf == ESourceFormat.free || sf == ESourceFormat.tandem) {
+            decSequenceNumber = false;
             decArea73_80 = false;
         }
 

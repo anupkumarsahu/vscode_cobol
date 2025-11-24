@@ -1,0 +1,69 @@
+{
+	"identification-division": {
+		"prefix": "id",
+		"body": [
+			"IDENTIFICATION DIVISION.",
+			"PROGRAM-ID. $1."
+		],
+		"description": "Identification Division",
+		"scope": "cobol_tandem"
+	},
+	"environment-division": {
+		"prefix": "env",
+		"body": [
+			"ENVIRONMENT DIVISION.",
+			"CONFIGURATION SECTION."
+		],
+		"description": "Environment Division",
+		"scope": "cobol_tandem"
+	},
+	"data-division": {
+		"prefix": "data",
+		"body": [
+			"DATA DIVISION.",
+			"WORKING-STORAGE SECTION."
+		],
+		"description": "Data Division",
+		"scope": "cobol_tandem"
+	},
+	"procedure-division": {
+		"prefix": "proc",
+		"body": [
+			"PROCEDURE DIVISION.",
+			"    $0",
+			"    STOP RUN."
+		],
+		"description": "Procedure Division",
+		"scope": "cobol_tandem"
+	},
+	"perform": {
+		"prefix": "perform",
+		"body": [
+			"PERFORM $1"
+		],
+		"description": "Perform statement",
+		"scope": "cobol_tandem"
+	},
+	"if": {
+		"prefix": "if",
+		"body": [
+			"IF $1",
+			"    $0",
+			"END-IF"
+		],
+		"description": "If statement",
+		"scope": "cobol_tandem"
+	},
+	"evaluate": {
+		"prefix": "evaluate",
+		"body": [
+			"EVALUATE $1",
+			"    WHEN $2",
+			"        $0",
+			"    WHEN OTHER",
+			"END-EVALUATE"
+		],
+		"description": "Evaluate statement",
+		"scope": "cobol_tandem"
+	}
+}
