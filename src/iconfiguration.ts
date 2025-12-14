@@ -389,13 +389,11 @@ export class COBOLSettings implements ICOBOLSettings {
         this.enable_source_scanner = true;
         this.valid_cobol_language_ids = [
             "COBOL",
-            "COBOL_MF_LISTFILE",
             "COBOL_TANDEM"
         ];
 
         this.valid_cobol_language_ids_for_intellisense = [
             "COBOL",
-            "COBOL_MF_LISTFILE",
             "COBOL_TANDEM"
         ];
 

@@ -1,0 +1,199 @@
+*******************************************************************************
+*
+* Source file for Program: XCB55P0
+*
+* Purpose:
+*
+?SECTION main-begin-code
+ main-begin-code SECTION.
+   main-program-begin.
+
+     DISPLAY "PARAGRAPH: main-program-begin OF main-begin-code".
+
+     PERFORM main-program-set-data.
+
+     PERFORM main-program-display.
+
+     PERFORM main-program-tp-01.
+
+     CALL nested-sub-main-program USING main-alpha-a.
+
+     PERFORM main-program-display.
+
+     PERFORM main-program-tp-01.
+
+     CALL nested-sub-main-program USING main-alpha-a.
+
+     PERFORM main-program-display.
+
+     PERFORM main-program-tp-01.
+
+     CALL sub-program-one USING main-alpha-a.
+
+     PERFORM main-program-display.
+
+     PERFORM main-program-tp-01.
+
+     CALL sub-program-two USING main-alpha-a.
+
+     PERFORM main-program-display.
+
+     PERFORM main-program-tp-01.
+
+     CALL sub-program-two USING main-alpha-a.
+
+     PERFORM main-program-display.
+
+     PERFORM main-program-tp-01.
+
+     PERFORM main-program-exit.
+
+?SOURCE SCB0055B(main-exit-code)
+
+?SOURCE SCB0055B(main-set-data-code)
+
+?SOURCE SCB0055B(main-display-code)
+
+?SOURCE SCB0055B(main-tp-01-code)
+
+?SECTION nested-sub-main-begin-code
+ nested-sub-main-begin-code SECTION.
+   nested-sub-main-program-begin.
+
+     DISPLAY "PARAGRAPH: nested-sub-main-program-begin OF nested-sub-main-begin-code".
+
+     PERFORM nested-sub-main-display.
+
+     PERFORM nested-sub-main-tp-01.
+
+     PERFORM nested-sub-main-set-data.
+
+     PERFORM nested-sub-main-display.
+
+     PERFORM nested-sub-main-tp-01.
+
+     PERFORM nested-sub-main-exit.
+
+?SOURCE SCB0055B(nested-sub-main-exit-code)
+
+?SOURCE SCB0055B(nested-sub-main-set-data-code)
+
+?SOURCE SCB0055B(nested-sub-main-display-code)
+
+?SOURCE SCB0055B(nested-sub-main-tp-01-code)
+
+?SECTION sub-one-begin-code
+ sub-one-begin-code SECTION.
+   sub-program-one-begin.
+
+     DISPLAY "PARAGRAPH: sub-program-one-begin OF sub-one-begin-code".
+
+     PERFORM sub-program-one-display.
+
+     PERFORM sub-program-one-tp-01.
+
+     CALL nested-sub-program-levelOne USING s-p-one-alpha-a.
+
+     PERFORM sub-program-one-display.
+
+     PERFORM sub-program-one-tp-01.
+
+     PERFORM sub-program-one-set-data.
+
+     PERFORM sub-program-one-display.
+
+     PERFORM sub-program-one-tp-01.
+
+     PERFORM sub-program-one-exit.
+
+?SOURCE SCB0055B(sub-one-exit-code)
+
+?SOURCE SCB0055B(sub-one-set-data-code)
+
+?SOURCE SCB0055B(sub-one-display-code)
+
+?SOURCE SCB0055B(sub-one-tp-01-code)
+
+?SECTION nested-levelOne-begin-code
+ nested-levelOne-begin-code SECTION.
+   nested-sub-levelOne-begin.
+
+     DISPLAY "PARAGRAPH: nested-sub-levelOne-begin OF nested-levelOne-begin-code".
+
+     PERFORM nested-sub-levelOne-display.
+
+     PERFORM nested-sub-levelOne-tp-01.
+
+     CALL nested-sub-program-levelTwo USING n-s-p-one-alpha-a.
+
+     PERFORM nested-sub-levelOne-display.
+
+     PERFORM nested-sub-levelOne-tp-01.
+
+     PERFORM nested-sub-levelOne-set-data.
+
+     PERFORM nested-sub-levelOne-display.
+
+     PERFORM nested-sub-levelOne-tp-01.
+
+     PERFORM nested-sub-levelOne-exit.
+
+?SOURCE SCB0055B(nested-levelOne-exit-code)
+
+?SOURCE SCB0055B(nested-levelOne-set-data-code)
+
+?SOURCE SCB0055B(nested-levelOne-display-code)
+
+?SOURCE SCB0055B(nested-levelOne-tp-01-code)
+
+?SECTION nested-levelTwo-begin-code
+ nested-levelTwo-begin-code SECTION.
+   nested-sub-levelTwo-begin.
+
+     DISPLAY "PARAGRAPH: nested-sub-levelTwo-begin OF nested-levelTwo-begin-code".
+
+     PERFORM nested-sub-levelTwo-display.
+
+     PERFORM nested-sub-levelTwo-tp-01.
+
+     PERFORM nested-sub-levelTwo-set-data.
+
+     PERFORM nested-sub-levelTwo-display.
+
+     PERFORM nested-sub-levelTwo-tp-01.
+
+     PERFORM nested-sub-levelTwo-exit.
+
+?SOURCE SCB0055B(nested-levelTwo-exit-code)
+
+?SOURCE SCB0055B(nested-levelTwo-set-data-code)
+
+?SOURCE SCB0055B(nested-levelTwo-display-code)
+
+?SOURCE SCB0055B(nested-levelTwo-tp-01-code)
+
+?SECTION sub-two-begin-code
+ sub-two-begin-code SECTION.
+   sub-program-two-begin.
+
+     DISPLAY "PARAGRAPH: sub-program-two-begin OF sub-two-begin-code".
+
+     PERFORM sub-program-two-display.
+
+     PERFORM sub-program-two-tp-01.
+
+     PERFORM sub-program-two-set-data.
+
+     PERFORM sub-program-two-display.
+
+     PERFORM sub-program-two-tp-01.
+
+     PERFORM sub-program-two-exit.
+
+?SOURCE SCB0055B(sub-two-exit-code)
+
+?SOURCE SCB0055B(sub-two-set-data-code)
+
+?SOURCE SCB0055B(sub-two-display-code)
+
+?SOURCE SCB0055B(sub-two-tp-01-code)

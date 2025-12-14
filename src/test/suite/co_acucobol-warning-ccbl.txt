@@ -1,3 +1,0 @@
-100
-a.cbl, line 8: Warning: '.' expected, ' ' found
-a.cbl, line 8: Warning: Area A should be blank

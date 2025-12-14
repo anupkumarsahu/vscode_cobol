@@ -11,11 +11,9 @@ import { ICOBOLSettings, intellisenseStyle } from "./iconfiguration";
 import { COBOLFileSymbol } from "./cobolglobalcache";
 import { VSCOBOLFileUtils } from "./vsfileutils";
 import { IExternalFeatures } from "./externalfeatures";
-import { ExtensionDefaults } from "./extensionDefaults";
 import { VSCustomIntelliseRules } from "./vscustomrules";
 import { SplitTokenizer } from "./splittoken";
 import { VSExtensionUtils } from "./vsextutis";
-import { setMicroFocusSuppressFileAssociationsPrompt } from "./vscommon_commands";
 import { VSCOBOLEditorConfiguration } from "./vsconfiguration";
 import { workspace } from "vscode";
 import { VSExternalFeatures } from "./vsexternalfeatures";
@@ -835,12 +833,6 @@ export class VSCOBOLUtils {
         // const fileConfig = vscode.workspace
         const filesConfig = vscode.workspace.getConfiguration("files");
 
-        if (requiredLanguage == ExtensionDefaults.microFocusCOBOLLanguageId) {
-            setMicroFocusSuppressFileAssociationsPrompt(settings, true);
-        } else {
-            setMicroFocusSuppressFileAssociationsPrompt(settings, false);
-        }
-
         const filesAssociationsConfig = filesConfig.get<{ [name: string]: string }>("associations") ?? {} as { [key: string]: string }
         let updateRequired = false;
 
@@ -853,14 +845,6 @@ export class VSCOBOLUtils {
             }
             if (verbose) {
                 externalFeatures.logMessage(` ${assoc} = ${assocTo}`)
-            }
-
-            if (requiredLanguage !== ExtensionDefaults.microFocusCOBOLLanguageId) {
-                // grab back 
-                if (assocTo === ExtensionDefaults.microFocusCOBOLLanguageId) {
-                    filesAssociationsConfig[assoc] = requiredLanguage;
-                    updateRequired = true;
-                }
             }
 
             fileAssocMap.set(assoc, assocTo);
@@ -1386,29 +1370,19 @@ export class VSCOBOLUtils {
 
         let prefRunner = "";
         let prefRunnerDebug = "";
-        const fsDir = path.dirname(fsPath);
 
         // TODO: need to add .NET dll support!
         if (fsPath.endsWith("int") || fsPath.endsWith("gnt") || fsPath.endsWith("so") || fsPath.endsWith("dll")) {
-            const mfExtension = vscode.extensions.getExtension(ExtensionDefaults.rocketCOBOLExtension);
-
-            if (mfExtension === undefined) {
-                if (COBOLFileUtils.isWin32) {
-                    prefRunner = "run";
-                    prefRunnerDebug = debug ? "(+A) " : "";
-                } else {
-                    prefRunner = debug ? "anim" : "cobrun";
-                }
-
-                commandTerminal.show(true);
-                commandTerminal.sendText(`${prefRunner} ${prefRunnerDebug}${fsPath}`);
-                return;
+            if (COBOLFileUtils.isWin32) {
+                prefRunner = "run";
+                prefRunnerDebug = debug ? "(+A) " : "";
             } else {
-                const workspacePath = VSCOBOLFileUtils.getBestWorkspaceFolder(fsDir);
-                if (workspacePath !== undefined) {
-                    vscode.debug.startDebugging(workspacePath, VSCOBOLUtils.getDebugConfig(workspacePath, fsPath));
-                }
+                prefRunner = debug ? "anim" : "cobrun";
             }
+
+            commandTerminal.show(true);
+            commandTerminal.sendText(`${prefRunner} ${prefRunnerDebug}${fsPath}`);
+            return;
         }
     }
 }

@@ -116,24 +116,7 @@ export class VSExtensionUtils {
             return;
         }
 
-        if (doc.languageId === "plaintext" || doc.languageId === "tsql") {  // one tsql ext grabs .lst!
-            const lineCount = doc.lineCount;
-            if (lineCount >= 3) {
-                const firstLine = doc.lineAt((0)).text;
-                const secondLine = doc.lineAt(1).text;
 
-                if ((firstLine.length >= 1 && firstLine.charCodeAt(0) === 12) && secondLine.startsWith("* Micro Focus COBOL ")) {
-                    vscode.languages.setTextDocumentLanguage(doc, "COBOL_MF_LISTFILE");
-                    return;
-                }
-
-                //NOTE: If we have more.. refactor..
-                if (firstLine.startsWith("Pro*COBOL: Release")) {
-                    vscode.languages.setTextDocumentLanguage(doc, "COBOL_PCOB_LISTFILE");
-                    return;
-                }
-            }
-        }
 
         if (doc.uri.fsPath.endsWith(".map") && !doc.languageId.startsWith("bms")) {
             const maxLines = doc.lineCount < 10 ? doc.lineCount : 10;

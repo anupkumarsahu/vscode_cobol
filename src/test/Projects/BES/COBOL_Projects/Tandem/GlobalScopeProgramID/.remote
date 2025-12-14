@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Remote settings for GlobalScopeProgramID</comment>
+<entry key="nsdee.deployUser.Release_with_COBOL TNS-X Tools"/>
+<entry key="nsdee.deployFileName.Release_with_COBOL TNS-E Tools"/>
+<entry key="nsdee.deployDest.Debug_with_COBOL TNS-E Tools"/>
+<entry key="nsdee.deployUser.Debug_with_COBOL TNS-X Tools"/>
+<entry key="nsdee.deploySystem.Debug_with_COBOL TNS-X Tools"/>
+<entry key="nsdee.deployDest.Release_with_COBOL TNS-E Tools"/>
+<entry key="nsdee.deployFileName.Release_with_COBOL TNS-X Tools"/>
+<entry key="nsdee.deployDest.Debug_with_COBOL TNS-X Tools"/>
+<entry key="nsdee.deployFileName.Debug_with_COBOL TNS-E Tools"/>
+<entry key="nsdee.deploySystem.Release_with_COBOL TNS-E Tools"/>
+<entry key="nsdee.deployDest.Release_with_COBOL TNS-X Tools"/>
+<entry key="nsdee.deployUser.Release_with_COBOL TNS-E Tools"/>
+<entry key="nsdee.deployUser.Debug_with_COBOL TNS-E Tools"/>
+<entry key="nsdee.deploySystem.Debug_with_COBOL TNS-E Tools"/>
+<entry key="nsdee.deployFileName.Debug_with_COBOL TNS-X Tools"/>
+<entry key="nsdee.deploySystem.Release_with_COBOL TNS-X Tools"/>
+</properties>

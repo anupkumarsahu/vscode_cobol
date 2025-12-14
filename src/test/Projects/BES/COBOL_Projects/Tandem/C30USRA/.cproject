@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="nsdee.managedbuild.cobol.config.tnsx.exe.debug.887275040">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="nsdee.managedbuild.cobol.config.tnsx.exe.debug.887275040" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+				<externalSettings/>
+				<extensions>
+					<extension id="com.hpe.nsdee.devp.core.NONSTOP_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.hpe.nsdee.devp.core.parsers.LinkerParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.hpe.nsdee.devp.core.parsers.CobParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="" id="nsdee.managedbuild.cobol.config.tnsx.exe.debug.887275040" name="Debug" parent="nsdee.managedbuild.cobol.config.tnsx.exe.debug">
+					<folderInfo id="nsdee.managedbuild.cobol.config.tnsx.exe.debug.887275040." name="/" resourcePath="">
+						<toolChain id="nsdee.managedbuild.toolchain.cobol.tnsx.exe.debug.847916273" name="COBOL TNS-X Tools" superClass="nsdee.managedbuild.toolchain.cobol.tnsx.exe.debug" unusedChildren="nsdee.managedbuild.cobol.tool.c.compiler.sqlmp.tnsx.exe.debug;nsdee.managedbuild.cobol.tool.tal.compiler.tnsx.exe.debug;nsdee.managedbuild.tool.cobol.compiler.sqlmp.tnsx.exe.debug;nsdee.managedbuild.cobol.tool.c.sqlmx.pre.tnsx.exe.debug;nsdee.managedbuild.tool.cobol.sqlmp.tnsx.exe.debug;nsdee.managedbuild.cobol.tool.c.sqlmp.tnsx.exe.debug;nsdee.managedbuild.cobol.tool.cpp.compiler.tnsx.exe.debug;nsdee.managedbuild.cobol.tool.c.compiler.tnsx.exe.debug;nsdee.managedbuild.tool.cobol.sqlmx.pre.tnsx.exe.debug;nsdee.managedbuild.cobol.tool.c.sqlmx.tnsx.exe.debug;nsdee.managedbuild.tool.cobol.sqlmx.tnsx.exe.debug">
+							<targetPlatform id="nsdee.managedbuild.cobol.target.platform.exe.tnsx.debug.719181810" isAbstract="false" name="Debug Platform" superClass="nsdee.managedbuild.cobol.target.platform.exe.tnsx.debug"/>
+							<builder buildPath="${workspace_loc:/C30USRA}/Debug" customBuilderProperties="nsdee.compRoot.default=[TNS/X L23.08] C:\\Program Files (x86)\\HPE NonStop\\L23.08|nsdee.compRoot=[TNS/X L23.08] C:\\Program Files (x86)\\HPE NonStop\\L23.08|nsdee.setCompRootAndPath=true|nsdee.deployTarget=deploy|nsdee.deploySystem=|nsdee.postDeployTarget=|nsdee.deployDest=|nsdee.deployUser=|nsdee.targetSystype=oss|nsdee.posixBin=C:\\cygwin\\bin|nsdee.posixBin.default=C:\\cygwin\\bin|nsdee.preDeployTarget=|nsdee.deployFileName=|" id="nsdee.managedbuild.cobol.target.builder.tnsx.exe.debug.355005549" managedBuildOn="true" name="NonStop Make Builder.Debug" superClass="nsdee.managedbuild.cobol.target.builder.tnsx.exe.debug"/>
+							<tool id="nsdee.managedbuild.tool.cobol.linker.tnsx.exe.debug.491988774" name="COBOL Linker (TNS/X)" superClass="nsdee.managedbuild.tool.cobol.linker.tnsx.exe.debug">
+								<inputType id="nsdee.managedbuild.tool.cobol.linker.input.2059815083" superClass="nsdee.managedbuild.tool.cobol.linker.input">
+									<additionalInput kind="additionalinput" paths="$(USER_OBJS_WOESC)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+									<additionalInput kind="additionaldependency" paths="$(USER_OBJS)"/>
+								</inputType>
+							</tool>
+							<tool id="nsdee.managedbuild.tool.cobol.compiler.tnsx.exe.debug.640990376" name="COBOL Compiler (TNS/X)" superClass="nsdee.managedbuild.tool.cobol.compiler.tnsx.exe.debug">
+								<inputType id="nsdee.managedbuild.tool.cobol.compiler.input.1985075182" superClass="nsdee.managedbuild.tool.cobol.compiler.input"/>
+							</tool>
+							<tool id="nsdee.managedbuild.cobol.tool.deploy.tnsx.exe.debug.1962683849" name="Deploy Tool" superClass="nsdee.managedbuild.cobol.tool.deploy.tnsx.exe.debug"/>
+							<tool id="nsdee.managedbuild.cobol.tool.profmrg.tnsx.exe.debug.1946575893" name="Profmrg Tool" superClass="nsdee.managedbuild.cobol.tool.profmrg.tnsx.exe.debug"/>
+							<tool id="nsdee.managedbuild.cobol.tool.codecov.tnsx.exe.debug.1472295094" name="Code coverage Tool" superClass="nsdee.managedbuild.cobol.tool.codecov.tnsx.exe.debug"/>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="nsdee.managedbuild.cobol.config.tnsx.exe.release.108203269">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="nsdee.managedbuild.cobol.config.tnsx.exe.release.108203269" moduleId="org.eclipse.cdt.core.settings" name="Release">
+				<externalSettings/>
+				<extensions>
+					<extension id="com.hpe.nsdee.devp.core.NONSTOP_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.hpe.nsdee.devp.core.parsers.LinkerParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.hpe.nsdee.devp.core.parsers.CobParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="rm -rf" description="" id="nsdee.managedbuild.cobol.config.tnsx.exe.release.108203269" name="Release" parent="nsdee.managedbuild.cobol.config.tnsx.exe.release">
+					<folderInfo id="nsdee.managedbuild.cobol.config.tnsx.exe.release.108203269." name="/" resourcePath="">
+						<toolChain id="nsdee.managedbuild.toolchain.cobol.tnsx.exe.release.1404645524" name="COBOL TNS-X Tools" superClass="nsdee.managedbuild.toolchain.cobol.tnsx.exe.release" unusedChildren="nsdee.managedbuild.cobol.tool.c.sqlmp.tnsx.exe.release;nsdee.managedbuild.tool.cobol.sqlmp.tnsx.exe.release;nsdee.managedbuild.cobol.tool.tal.compiler.tnsx.exe.release;nsdee.managedbuild.cobol.tool.c.compiler.tnsx.exe.release;nsdee.managedbuild.tool.cobol.compiler.sqlmp.tnsx.exe.release;nsdee.managedbuild.cobol.tool.c.sqlmx.pre.tnsx.exe.release;nsdee.managedbuild.tool.cobol.sqlmx.tnsx.exe.release;nsdee.managedbuild.cobol.tool.c.compiler.sqlmp.tnsx.exe.release;nsdee.managedbuild.cobol.tool.cpp.compiler.tnsx.exe.release;nsdee.managedbuild.tool.cobol.sqlmx.pre.tnsx.exe.release;nsdee.managedbuild.cobol.tool.c.sqlmx.tnsx.exe.release">
+							<targetPlatform id="nsdee.managedbuild.cobol.target.platform.tnsx.exe.release.1411457710" isAbstract="false" name="Debug Platform" superClass="nsdee.managedbuild.cobol.target.platform.tnsx.exe.release"/>
+							<builder buildPath="${workspace_loc:/C30USRA}/Release" customBuilderProperties="nsdee.compRoot.default=[TNS/X L23.08] C:\\Program Files (x86)\\HPE NonStop\\L23.08|nsdee.compRoot=[TNS/X L23.08] C:\\Program Files (x86)\\HPE NonStop\\L23.08|nsdee.setCompRootAndPath=true|nsdee.deployTarget=deploy|nsdee.deploySystem=|nsdee.postDeployTarget=|nsdee.deployDest=|nsdee.deployUser=|nsdee.targetSystype=oss|nsdee.posixBin=C:\\cygwin\\bin|nsdee.posixBin.default=C:\\cygwin\\bin|nsdee.preDeployTarget=|nsdee.deployFileName=|" id="nsdee.managedbuild.cobol.target.builder.tnsx.exe.release.527849330" managedBuildOn="true" name="NonStop Make Builder.Release" superClass="nsdee.managedbuild.cobol.target.builder.tnsx.exe.release"/>
+							<tool id="nsdee.managedbuild.tool.cobol.linker.tnsx.exe.release.171393795" name="COBOL Linker (TNS/X)" superClass="nsdee.managedbuild.tool.cobol.linker.tnsx.exe.release">
+								<inputType id="nsdee.managedbuild.tool.cobol.linker.input.1286014925" superClass="nsdee.managedbuild.tool.cobol.linker.input">
+									<additionalInput kind="additionalinput" paths="$(USER_OBJS_WOESC)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+									<additionalInput kind="additionaldependency" paths="$(USER_OBJS)"/>
+								</inputType>
+							</tool>
+							<tool id="nsdee.managedbuild.tool.cobol.compiler.tnsx.exe.release.1928707372" name="COBOL Compiler (TNS/X)" superClass="nsdee.managedbuild.tool.cobol.compiler.tnsx.exe.release">
+								<option defaultValue="false" id="cobol.compiler.category.optdebug.debug.1811351919" superClass="cobol.compiler.category.optdebug.debug" valueType="boolean"/>
+								<inputType id="nsdee.managedbuild.tool.cobol.compiler.input.1299103177" superClass="nsdee.managedbuild.tool.cobol.compiler.input"/>
+							</tool>
+							<tool id="nsdee.managedbuild.cobol.tool.deploy.tnsx.exe.release.1869392317" name="Deploy Tool" superClass="nsdee.managedbuild.cobol.tool.deploy.tnsx.exe.release"/>
+							<tool id="nsdee.managedbuild.cobol.tool.profmrg.tnsx.exe.release.1413957710" name="Profmrg Tool" superClass="nsdee.managedbuild.cobol.tool.profmrg.tnsx.exe.release"/>
+							<tool id="nsdee.managedbuild.cobol.tool.codecov.tnsx.exe.release.220477852" name="Code coverage Tool" superClass="nsdee.managedbuild.cobol.tool.codecov.tnsx.exe.release"/>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="C30USRA.nsdee.managedbuild.cobol.target.exe.511114075" name="NonStop Executable" projectType="nsdee.managedbuild.cobol.target.exe"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope"/>
+</cproject>

@@ -26,6 +26,9 @@
 		},
 		"coboleditor.preprocessor_extensions": [
 		],
+		"coboleditor.perfile_copybookdirs": [
+			"${fileDirname}"
+		],
 		"coboleditor.metadata_symbols": [
 			"sample,issue189_coboldoc.cbl,5",
 			"fred,rainbow_code.cbl,1",

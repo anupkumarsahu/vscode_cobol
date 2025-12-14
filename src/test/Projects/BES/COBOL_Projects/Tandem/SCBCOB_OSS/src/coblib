@@ -1,0 +1,197 @@
+?SECTION SPCL-NAMES
+           F1 IS F1,    F10 IS F10,    SF1 IS SF1,    SF10 IS SF10,
+           F2 IS F2,    F11 IS F11,    SF2 IS SF2,    SF11 IS SF11,
+           F3 IS F3,    F12 IS F12,    SF3 IS SF3,    SF12 IS SF12,
+           F4 IS F4,    F13 IS F13,    SF4 IS SF4,    SF13 IS SF13,
+           F5 IS F5,    F14 IS F14,    SF5 IS SF5,    SF14 IS SF14,
+           F6 IS F6,    F15 IS F15,    SF6 IS SF6,    SF15 IS SF15,
+           F7 IS F7,    F16 IS F16,    SF7 IS SF7,    SF16 IS SF16,
+           F8 IS F8,                   SF8 IS SF8,
+           F9 IS F9,                   SF9 IS SF9,
+           PREV-PAGE IS PREV-PAGE,
+           NEXT-PAGE IS NEXT-PAGE,
+           NORMAL-REVERSE IS (NORMAL, REVERSE),
+           BLINK IS BLINK,
+           DIM IS DIM,
+           HIDDEN IS HIDDEN,
+           MDTON IS MDTON,
+           NORMAL IS NORMAL,
+           PROTECTED IS PROTECTED,
+           UNPROTECTED IS UNPROTECTED,
+           REVERSE IS REVERSE,
+           UNDERLINE IS UNDERLINE.
+
+?SECTION SPCL-NAMES-3270
+           PF1 IS PF1,    PF10 IS PF10,    PF19 IS PF19,   PA4 IS PA4,
+           PF2 IS PF2,    PF11 IS PF11,    PF20 IS PF20,   PA5 IS PA5,
+           PF3 IS PF3,    PF12 IS PF12,    PF21 IS PF21,   PA6 IS PA6,
+           PF4 IS PF4,    PF13 IS PF13,    PF22 IS PF22,   PA7 IS PA7,
+           PF5 IS PF5,    PF14 IS PF14,    PF23 IS PF23,   PA8 IS PA8,
+           PF6 IS PF6,    PF15 IS PF15,    PF24 IS PF24,   PA9 IS PA9,
+           PF7 IS PF7,    PF16 IS PF16,    PA1 IS PA1,     PA10 IS PA10,
+           PF8 IS PF8,    PF17 IS PF17,    PA2 IS PA2,
+           PF9 IS PF9,    PF18 IS PF18,    PA3 IS PA3,
+           CLR IS CLEAR,
+           ENTR IS ENTER,
+           BLINK IS BLINK,
+           HIDDEN IS HIDDEN,
+           MDTON IS MDTON,
+           BRIGHT IS BRIGHT
+           NORMAL IS NORMAL,
+           PROTECTED IS PROTECTED,
+           UNPROTECTED IS UNPROTECTED,
+           REVERSE IS REVERSE,
+           UNDERLINE IS UNDERLINE.
+
+?SECTION COMMON-REQUESTER-MSGS
+ 01 COMMON-REQUESTER-MSGS.
+     05  INVALID-FUNC-KEY-MSG     PIC X(43) VALUE
+         "PLEASE USE ONE OF THE FUNCTION KEYS DEFINED".
+     05  INVALID-PRINT-LOC-MSG    PIC X(78) VALUE
+         "The PRINT Location Specified is Invalid".
+     05  PROMPT-MESSAGE           PIC X(78) VALUE
+         " Please select one of the functions above.".
+     05  WORKING-MSG              PIC X(13) VALUE
+         "WORKING . . .".
+     05  LINE24-MESSAGE-OUT.
+         10  FILLER               PIC X(76).
+         10  LINE24-BELL-SPACE    PIC 9(4) COMP.
+     05  BELL-CODE                PIC 9(4) COMP VALUE 1824.
+
+?SECTION COMMON-SERVER-MSGS
+ 01 COMMON-SERVER-MSGS.
+     05 INVALID-TRAN-CODE-MSG          PIC X(78) VALUE
+        "Invalid Tran Code Received From Requester".
+
+?SECTION DATE-TIME-FIELDS
+ 01 DATE-TIME-FIELDS.
+    05 TODAYS-DATE.
+        13 YY                        PIC 99.
+        13 MM                        PIC 99.
+        13 DD                        PIC 99.
+    05 TODAYS-DATE-REFORMATTED.
+        13 MM                        PIC 99.
+        13 DD                        PIC 99.
+        13 YY                        PIC 99.
+    05 TIME-NOW.
+        13 HH                        PIC 99.
+        13 MM                        PIC 99.
+        13 SS                        PIC 99.
+    05 TIME-NOW-REFORMATTED.
+        13 HH                        PIC 99.
+        13 FILLER                    PIC X(1) VALUE ":".
+        13 MM                        PIC 99.
+        13 FILLER                    PIC X(1) VALUE ":".
+        13 SS                        PIC 99.
+
+?SECTION PASSWORD-FILE-STAT
+ 01  PASSWORD-FILE-STAT.
+     05 FILE-STAT                      PIC 9(2).
+        88 SUCCESS                     VALUE 0.
+        88 NO-ERROR                    VALUE 0.
+        88 FILE-ERROR                  VALUE 10 THRU 99.
+        88 END-OF-FILE                 VALUE 10.
+        88 SEQUENCE-ERROR              VALUE 21.
+        88 DUPLICATE-KEY               VALUE 22.
+        88 NO-EXISTING-RECORD          VALUE 23.
+        88 PERMANENT-ERROR             VALUE 30.
+
+?SECTION RECEIVE-FILE-STAT
+ 01  RECEIVE-FILE-STAT.
+     05 FILE-STAT                      PIC 9(2).
+        88 SUCCESS                     VALUE 0.
+        88 NO-ERROR                    VALUE 0.
+        88 FILE-ERROR                  VALUE 10 THRU 99.
+        88 END-OF-FILE                 VALUE 10.
+        88 CLOSE-FROM-REQUESTER        VALUE 10.
+        88 SEQUENCE-ERROR              VALUE 21.
+        88 DUPLICATE-KEY               VALUE 22.
+        88 NO-EXISTING-RECORD          VALUE 23.
+        88 PERMANENT-ERROR             VALUE 30.
+
+?SECTION VEHICLE-FILE-STAT
+ 01  VEHICLE-FILE-STAT.
+     05 FILE-STAT                      PIC 9(2).
+        88 SUCCESS                     VALUE 0.
+        88 NO-ERROR                    VALUE 0.
+        88 FILE-ERROR                  VALUE 10 THRU 99.
+        88 END-OF-FILE                 VALUE 10.
+        88 SEQUENCE-ERROR              VALUE 21.
+        88 DUPLICATE-KEY               VALUE 22.
+        88 NO-EXISTING-RECORD          VALUE 23.
+        88 PERMANENT-ERROR             VALUE 30.
+
+?SECTION PERSON-FILE-STAT
+ 01  PERSON-FILE-STAT.
+     05 FILE-STAT                      PIC 9(2).
+        88 SUCCESS                     VALUE 0.
+        88 NO-ERROR                    VALUE 0.
+        88 FILE-ERROR                  VALUE 10 THRU 99.
+        88 END-OF-FILE                 VALUE 10.
+        88 SEQUENCE-ERROR              VALUE 21.
+        88 DUPLICATE-KEY               VALUE 22.
+        88 NO-EXISTING-RECORD          VALUE 23.
+        88 PERMANENT-ERROR             VALUE 30.
+
+?SECTION PERSONID-FILE-STAT
+ 01  PERSONID-FILE-STAT.
+     05 FILE-STAT                      PIC 9(2).
+        88 SUCCESS                     VALUE 0.
+        88 NO-ERROR                    VALUE 0.
+        88 FILE-ERROR                  VALUE 10 THRU 99.
+        88 END-OF-FILE                 VALUE 10.
+        88 SEQUENCE-ERROR              VALUE 21.
+        88 DUPLICATE-KEY               VALUE 22.
+        88 NO-EXISTING-RECORD          VALUE 23.
+        88 PERMANENT-ERROR             VALUE 30.
+
+?SECTION OWNER-FILE-STAT
+ 01  OWNER-FILE-STAT.
+     05 FILE-STAT                      PIC 9(2).
+        88 SUCCESS                     VALUE 0.
+        88 NO-ERROR                    VALUE 0.
+        88 FILE-ERROR                  VALUE 10 THRU 99.
+        88 END-OF-FILE                 VALUE 10.
+        88 SEQUENCE-ERROR              VALUE 21.
+        88 DUPLICATE-KEY               VALUE 22.
+        88 NO-EXISTING-RECORD          VALUE 23.
+        88 PERMANENT-ERROR             VALUE 30.
+
+?SECTION HELP-FILE-STAT
+ 01  HELP-FILE-STAT.
+     05 FILE-STAT                      PIC 9(2).
+        88 SUCCESS                     VALUE 0.
+        88 NO-ERROR                    VALUE 0.
+        88 FILE-ERROR                  VALUE 10 THRU 99.
+        88 END-OF-FILE                 VALUE 10.
+        88 SEQUENCE-ERROR              VALUE 21.
+        88 DUPLICATE-KEY               VALUE 22.
+        88 NO-EXISTING-RECORD          VALUE 23.
+        88 PERMANENT-ERROR             VALUE 30.
+
+?SECTION SQL-ERROR-BUFFER
+ 01  SQL-ERROR-BUFFER.
+     05 SEB-TABLE-ABBREVIATION         PIC X(8).
+     05 FILLER                         PIC X(29) VALUE
+        ": SQL Error Occurred; Err #: ".
+     05 SEB-SQL-ERROR                  PIC 9(4).
+     05 FILLER                         PIC X(14) VALUE
+        "; File Error: ".
+     05 SEB-FILE-ERROR                 PIC 9(4).
+     05 FILLER                         PIC X(10) VALUE
+        "; Line #: ".
+     05 SEB-LINE-NUM                   PIC 9(9).
+     05 SEB-LINE-REDF REDEFINES SEB-LINE-NUM.
+        10 FILLER                      PIC X(6).
+        10 SEB-LINE-IGNORE-IT          PIC X(3).
+
+?SECTION FILE-ERROR-BUFFER
+ 01  FILE-ERROR-BUFFER.
+     05 FILE-ABBREVIATION              PIC X(8).
+     05 FILLER                         PIC X(32) VALUE
+        ": File Error Occurred; Status: ".
+     05 FILE-STATUS-DISPLAY            PIC X(2).
+     05 FILLER                         PIC X(18) VALUE
+        "; Guardian Error: ".
+     05 FILE-GUARDIAN-ERROR-DISPLAY    PIC 9(4).
+

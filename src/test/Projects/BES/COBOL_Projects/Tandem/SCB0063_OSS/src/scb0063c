@@ -1,0 +1,77 @@
+*******************************************************************************
+*
+* Source file for Program: XCB63P0
+*
+?SECTION main-paragraph-01-01-sec
+ main-paragraph-01-01.
+
+   MOVE "    main-paragraph-01-01" TO main-string.
+   DISPLAY main-string.
+
+?SECTION main-paragraph-02-01-sec
+ main-paragraph-02-01.
+
+   MOVE "    main-paragraph-02-01" TO main-string.
+   DISPLAY main-string.
+
+   DISPLAY "    main-paragraph-02-01: performing main-paragraph-02-01-01".
+   PERFORM main-paragraph-02-01-01.
+   DISPLAY "    main-paragraph-02-01:  back from main-paragraph-02-01-01".
+
+   DISPLAY "    main-paragraph-02-01: performing main-paragraph-02-01-02".
+   PERFORM main-paragraph-02-01-02.
+   DISPLAY "    main-paragraph-02-01:  back from main-paragraph-02-01-02".
+
+   DISPLAY "    main-paragraph-02-01: performing main-paragraph-02-01-03".
+   PERFORM main-paragraph-02-01-03.
+   DISPLAY "    main-paragraph-02-01:  back from main-paragraph-02-01-03".
+
+?SECTION main-paragraph-02-01-01-sec
+ main-paragraph-02-01-01.
+
+   MOVE "      main-paragraph-02-01-01" TO main-string.
+   DISPLAY main-string.
+
+?SECTION main-paragraph-02-01-02-sec
+ main-paragraph-02-01-02.
+
+   MOVE "      main-paragraph-02-01-02" TO main-string.
+   DISPLAY main-string.
+
+?SECTION main-paragraph-02-01-03-sec
+ main-paragraph-02-01-03.
+
+   MOVE "      main-paragraph-02-01-03" TO main-string.
+   DISPLAY main-string.
+
+?SECTION main-paragraph-02-02-sec
+ main-paragraph-02-02.
+
+   MOVE "    main-paragraph-02-02" TO main-string.
+   DISPLAY main-string.
+
+   PERFORM main-paragraph-02-02-01.
+
+   PERFORM main-paragraph-02-02-02.
+
+?SECTION main-paragraph-02-02-01-sec
+ main-paragraph-02-02-01.
+
+   MOVE "      main-paragraph-02-02-01" TO main-string.
+   DISPLAY main-string.
+
+?SECTION main-paragraph-02-02-02-sec
+ main-paragraph-02-02-02.
+
+   MOVE "      main-paragraph-02-02-02" TO main-string.
+   DISPLAY main-string.
+
+   PERFORM main-paragraph-02-02-02-01.
+
+   MOVE "10" TO RESULT.
+
+?SECTION main-paragraph-02-02-02-01-sec
+ main-paragraph-02-02-02-01.
+
+   MOVE "        main-paragraph-02-02-02-01" TO main-string.
+   DISPLAY main-string.

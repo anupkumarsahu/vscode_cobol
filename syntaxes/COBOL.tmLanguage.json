@@ -31,6 +31,21 @@
   "name": "COBOL",
   "patterns": [
     {
+      "comment": "COBOL fixed-format identification area (columns 73-80)",
+      "begin": "^(.{72})",
+      "end": "$",
+      "beginCaptures": {
+        "1": {
+          "patterns": [
+            {
+              "include": "$self"
+            }
+          ]
+        }
+      },
+      "contentName": "comment.line.cobol.sequence"
+    },
+    {
       "match": "^\\*.*$",
       "name": "comment.line.cobol.fixed"
     },

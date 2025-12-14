@@ -34,6 +34,7 @@ export interface ICOBOLSourceScanner{
     readonly methods: Map<string, COBOLToken>;
     readonly copyBooksUsed: Map<string, COBOLCopybookToken[]>;
     readonly copyBooksUnresolved: Map<string, COBOLToken[]>;
+    readonly copyBookLibraries: Map<string, COBOLToken[]>;
     readonly diagMissingFileWarnings: Map<string, COBOLFileSymbol>;
     readonly portWarnings: portResult[];
     readonly generalWarnings: COBOLFileSymbol[];

@@ -22,48 +22,8 @@ import { VSMakeDep } from "./vsmakedep";
 
 async function emptyFile(title: string, doclang: string, config: ICOBOLSettings) {
     let fpath = "";
-    let data = "";
     let fdir = "";
 
-    const ws = VSWorkspaceFolders.get(config);
-    if (ws) {
-        fpath = path.join(ws[0].uri.fsPath, data + ".cbl");
-    } else {
-        fpath = path.join(process.cwd(), data + ".cbl");
-    }
-
-    vscode.window.showInputBox({
-        title: title,
-        prompt: `In directory : ${fdir}`,
-        value: "untitled",
-        validateInput: (text: string): string | undefined => {
-            if (!text || !COBOLSourceScanner.isValidLiteral(text)) {
-                return "Invalid program name";
-            }
-
-            fpath = path.join(fdir, text + ".cbl");
-
-            if (fs.existsSync(fpath)) {
-                return `File already exists (${fpath})`;
-            }
-
-            return undefined;
-        }
-    }
-    ).then(async function (data) {
-        const furl = vscode.Uri.file(fpath).with({ scheme: "untitled" });
-        await vscode.workspace.openTextDocument(furl).then(async document => {
-            const editor = await vscode.window.showTextDocument(document);
-            if (editor !== undefined) {
-                await vscode.languages.setTextDocumentLanguage(document, doclang);
-            }
-        });
-    })
-}
-
-function newFile(title: string, template: string, doclang: string, config: ICOBOLSettings) {
-    let fpath = "";
-    let fdir = "";
     const ws = VSWorkspaceFolders.get(config);
     if (ws) {
         fdir = ws[0].uri.fsPath;
@@ -98,96 +58,22 @@ function newFile(title: string, template: string, doclang: string, config: ICOBO
         }
         const furl = vscode.Uri.file(fpath).with({ scheme: "untitled" });
         await vscode.workspace.openTextDocument(furl).then(async document => {
-            const el = template;
-            const lines = vscode.workspace.getConfiguration().get<string[]>(el, []);
-            const linesArray = [...lines];
             const editor = await vscode.window.showTextDocument(document);
             if (editor !== undefined) {
-                const linesAsOne = linesArray.join("\n");
-                await editor.insertSnippet(new vscode.SnippetString(linesAsOne), new vscode.Range(0, 0, 1 + linesArray.length, 0));
                 await vscode.languages.setTextDocumentLanguage(document, doclang);
             }
         });
     });
 }
 
-export function isMicroFocusCOBOL_LSPActive(document: vscode.TextDocument): boolean {
-    const settings = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
-    if (VSWorkspaceFolders.get(settings)) {
-        const mfeditorConfig = vscode.workspace.getConfiguration("rocketCOBOL");
-        return mfeditorConfig.get<boolean>("languageServerAutostart", true);
-    }
-    const mfeditorConfig = vscode.workspace.getConfiguration("rocketCOBOL", document);
-    return mfeditorConfig.get<boolean>("languageServerAutostart", true);
-
-}
-
-export function isMicroFocusPLI_LSPActive(document: vscode.TextDocument): boolean {
-    const settings = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
-
-    if (VSWorkspaceFolders.get(settings)) {
-        const mfeditorConfig = vscode.workspace.getConfiguration("rocketPLI");
-        return mfeditorConfig.get<boolean>("languageServer.autostart", true);
-    }
-    const mfeditorConfig = vscode.workspace.getConfiguration("rocketPLI", document);
-    return mfeditorConfig.get<boolean>("languageServer.autostart", true);
-
-}
-
-export async function setMicroFocusSuppressFileAssociationsPrompt(settings: ICOBOLSettings, onOrOff: boolean) {
-    // is it disabled?
-    if (settings.enable_rocket_cobol_lsp_when_active === false) {
-        return;
-    }
-
-    const mfeditorConfig = vscode.workspace.getConfiguration("rocketCOBOL");
-    if (VSWorkspaceFolders.get(settings) === undefined) {
-        await mfeditorConfig.update("suppressFileAssociationsPrompt", onOrOff, vscode.ConfigurationTarget.Global);
-    } else {
-        await mfeditorConfig.update("suppressFileAssociationsPrompt", onOrOff, vscode.ConfigurationTarget.Workspace);
-    }
-
-}
-
-export async function toggleMicroFocusLSP(settings: ICOBOLSettings, document: vscode.TextDocument, onOrOff: boolean): Promise<void> {
-    // is it disabled?
-    if (settings.enable_rocket_cobol_lsp_when_active === false) {
-        return;
-    }
-
-    // is it already set?
-    if (isMicroFocusCOBOL_LSPActive(document) !== onOrOff) {
-        const mfeditorConfig = vscode.workspace.getConfiguration("rocketCOBOL");
-        if (VSWorkspaceFolders.get(settings) === undefined) {
-            await mfeditorConfig.update("languageServerAutostart", onOrOff, vscode.ConfigurationTarget.Global);
-        } else {
-            await mfeditorConfig.update("languageServerAutostart", onOrOff, vscode.ConfigurationTarget.Workspace);
-        }
-    }
-
-    if (isMicroFocusPLI_LSPActive(document) != onOrOff) {
-        const microFocusPLIConfig = vscode.workspace.getConfiguration("rocketPLI");
-        if (VSWorkspaceFolders.get(settings) === undefined) {
-            microFocusPLIConfig.update("languageServer.autostart", onOrOff, vscode.ConfigurationTarget.Global);
-        } else {
-            microFocusPLIConfig.update("languageServer.autostart", onOrOff, vscode.ConfigurationTarget.Workspace);
-        }
-    }
-}
-
-
 const blessed_extensions: string[] = [
     "HCLTechnologies.hclappscancodesweep",          // code scanner
-    ExtensionDefaults.rocketCOBOLExtension,         // Rocket COBOL extension
-    ExtensionDefaults.rocketEnterpriseExtenstion,   // Rocket enterprise extension
-    "micro-focus-amc.",                             // old micro focus extension's
     "bitlang.",                                     // mine
     "vscode.",                                      // vscode internal extensions
     "ms-vscode.",                                   //
     "ms-python.",                                   //
     "ms-vscode-remote.",
-    "redhat.",                                      // redhat
-    "rocketsoftware."                               // rocket software
+    "redhat."                                       // redhat
 ];
 
 const known_problem_extensions: [string, string, boolean][] = [
@@ -195,8 +81,7 @@ const known_problem_extensions: [string, string, boolean][] = [
     ["A control flow extension that is not compatible with this dialect of COBOL", "BroadcomMFD.ccf", true],             // control flow extension
     ["COBOL debugger for different dialect of COBOL", "COBOLworx.cbl-gdb", true],
     ["Inline completion provider causes problems with this extension", "bloop.bloop-write", false],
-    ["Language provider of COBOL/PLI that is not supported with extension", "heirloomcomputinginc", true],
-    ["COBOL Formatter that does not support 'Rocket COBOL'","kopo-formatter", false]
+    ["Language provider of COBOL/PLI that is not supported with extension", "heirloomcomputinginc", true]
 ];
 
 
@@ -503,13 +388,6 @@ export function checkForExtensionConflicts(settings: ICOBOLSettings, context: Ex
         if (conflictingDebuggerFound) {
             const msg = "This Extension is now inactive until conflict is resolved";
             VSLogger.logMessage(`\n${msg}\nRestart 'vscode' once the conflict is resolved or you can disabled the ${ExtensionDefaults.thisExtensionName} extension`);
-
-            const mfExt = vscode.extensions.getExtension(ExtensionDefaults.rocketCOBOLExtension);
-            if (mfExt !== undefined) {
-                VSLogger.logMessage("\nYou already have a 'Rocket COBOL' compatible debugger installed, so may not need the above extension(s)");
-            } else {
-                VSLogger.logMessage(`\nIf you want a 'Rocket COBOL' compatible debugger install the extension using the following command\ncode --install-extension ${ExtensionDefaults.rocketCOBOLExtension}`);
-            }
             throw new Error(msg);
         }
 
@@ -531,32 +409,7 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
         await VSCOBOLUtils.changeDocumentId(act.document.languageId, ExtensionDefaults.defaultCOBOLLanguage);
 
         const settings = VSCOBOLConfiguration.get_resource_settings(act.document, VSExternalFeatures);
-        const mfExt = vscode.extensions.getExtension(ExtensionDefaults.rocketCOBOLExtension);
-        if (mfExt) {
-            await toggleMicroFocusLSP(settings, act.document, false);
-        }
-
         VSCOBOLUtils.enforceFileExtensions(settings, act, VSExternalFeatures, true, ExtensionDefaults.defaultCOBOLLanguage);
-    }));
-
-    context.subscriptions.push(commands.registerCommand("cobolplugin.change_lang_to_mfcobol", async function () {
-        const act = vscode.window.activeTextEditor;
-        if (act === null || act === undefined) {
-            return;
-        }
-
-        const settings = VSCOBOLConfiguration.get_resource_settings(act.document, VSExternalFeatures);
-
-        // ensure all documents with the same id are change to the 'Rocket COBOL lang id'
-        await VSCOBOLUtils.changeDocumentId(act.document.languageId, ExtensionDefaults.microFocusCOBOLLanguageId);
-        VSCOBOLUtils.enforceFileExtensions(settings, act, VSExternalFeatures, true, ExtensionDefaults.microFocusCOBOLLanguageId);
-
-        await toggleMicroFocusLSP(settings, act.document, true);
-
-        // invoke 'Micro Focus LSP Control'
-        if (settings.enable_rocket_cobol_lsp_lang_server_control) {
-            vscode.commands.executeCommand("mfcobol.languageServer.controls");
-        }
     }));
 
     context.subscriptions.push(commands.registerCommand("cobolplugin.move2pd", function () {
@@ -798,12 +651,7 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.enforceFileExtensions", () => {
         if (vscode.window.activeTextEditor) {
             const dialects = ["COBOL"];
-            const mfExt = vscode.extensions.getExtension(ExtensionDefaults.rocketCOBOLExtension);
             const settings = VSCOBOLConfiguration.get_resource_settings(vscode.window.activeTextEditor.document, VSExternalFeatures);
-
-            if (mfExt !== undefined) {
-                dialects.push(ExtensionDefaults.microFocusCOBOLLanguageId);
-            }
 
 
             vscode.window.showQuickPick(dialects, { placeHolder: "Which Dialect do you prefer?" }).then(function (dialect) {
@@ -845,23 +693,6 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
         emptyFile("Empty COBOL file", "COBOL", settings);
     }));
 
-    context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.newFile_MicroFocus", async function () {
-        if (vscode.window.activeTextEditor === undefined) {
-            return;
-        }
-        const settings = VSCOBOLConfiguration.get_resource_settings(vscode.window.activeTextEditor.document, VSExternalFeatures);
-        newFile("COBOL program name?", "coboleditor.template_rocket_cobol", "COBOL", settings);
-    }));
-
-    context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.newFile_MicroFocus_mfunit", async function () {
-        if (vscode.window.activeTextEditor === undefined) {
-            return;
-        }
-        const settings = VSCOBOLConfiguration.get_resource_settings(vscode.window.activeTextEditor.document, VSExternalFeatures);
-        newFile("COBOL Unit Test program name?", "coboleditor.template_rocket_cobol_mfunit", "COBOL", settings);
-    }));
-
-
     const _settings = VSCOBOLConfiguration.get_workspace_settings();
 
     context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.dumpAllSymbols", async function () {
@@ -873,31 +704,10 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
     }));
 
     const langIds = _settings.valid_cobol_language_ids;
-    const mfExt = vscode.extensions.getExtension(ExtensionDefaults.rocketCOBOLExtension);
-    if (mfExt) {
-        langIds.push(ExtensionDefaults.microFocusCOBOLLanguageId);
-    }
 
     for (const langid of langIds) {
-        if (langid !== ExtensionDefaults.microFocusCOBOLLanguageId) {
-            context.subscriptions.push(getLangStatusItem("Output Window", "cobolplugin.showCOBOLChannel", "Show", _settings, langid + "_1", langid));
-        }
-
-        switch (langid) {
-            case "COBOL":
-                {
-                    if (mfExt !== undefined) {
-                        context.subscriptions.push(getLangStatusItem("Switch to 'Rocket COBOL'", "cobolplugin.change_lang_to_mfcobol", "Change", _settings, langid + "_6", langid));
-                    }
-                }
-                break;
-            case ExtensionDefaults.microFocusCOBOLLanguageId:
-                context.subscriptions.push(getLangStatusItem("Switch to 'BitLang COBOL'", "cobolplugin.change_lang_to_cobol", "Change", _settings, langid + "_6", langid));
-                break;
-        }
-
+        context.subscriptions.push(getLangStatusItem("Output Window", "cobolplugin.showCOBOLChannel", "Show", _settings, langid + "_1", langid));
         context.subscriptions.push(vscode.languages.registerDocumentDropEditProvider(VSExtensionUtils.getAllCobolSelector(langid), new CopyBookDragDropProvider()));
-    
     }
 
     context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.dot_callgraph", async function () {

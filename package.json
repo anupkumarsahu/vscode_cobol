@@ -14,15 +14,10 @@
     "ilecobol",
     "jcl",
     "ims",
-    "mfcobol",
-    "mfu",
     "multi-root ready",
     "ocds",
     "pl/i",
     "pli",
-    "visual cobol",
-    "rocket cobol",
-    "opentext",
     "copilot"
   ],
   "repository": {
@@ -112,7 +107,6 @@
         "coboleditor.sourceview_include_script_files",
         "coboleditor.sourceview_include_object_files",
         "coboleditor.sourceview_include_test_files",
-        "coboleditor.mfunit.diagnostic.color",
         "coboleditor.disable_unc_copybooks_directories",
         "coboleditor.intellisense_item_limit",
         "coboleditor.process_metadata_cache_on_start",
@@ -190,16 +184,6 @@
           "markdownDescription": "Enable tabstop anchors",
           "default": false,
           "scope": "window"
-        },
-        "coboleditor.enable_rocket_cobol_lsp_when_active": {
-          "type": "boolean",
-          "markdownDescription": "Enable 'Micro Focus COBOL Extensions LSP' when active",
-          "default": true
-        },
-        "coboleditor.enable_rocket_cobol_lsp_lang_server_control": {
-          "type": "boolean",
-          "markdownDescription": "Invoke 'Micro Focus COBOL LSP Server Control' when switching to Micro Focus language",
-          "default": true
         },
         "coboleditor.enable_exec_sql_cursors": {
           "type": "boolean",
@@ -603,11 +587,6 @@
           "description": "Replace standard comment in/out with COBOL specific version",
           "default": true
         },
-        "coboleditor.mfunit.diagnostic.color": {
-          "type": "boolean",
-          "description": "Enable ANSI color when using the Micro Focus™Unit Testing Framework (mfunit) in terminal",
-          "default": true
-        },
         "coboleditor.disable_unc_copybooks_directories": {
           "type": "boolean",
           "description": "Disable UNC Copybooks (default false)",
@@ -910,8 +889,8 @@
           "items": {
             "type": "string",
             "title": "Valid Visual Studio COBOL Language Id",
-            "pattern": "(^COBOL$|^COBOL_MF_LISTFILE$|^COBOL_TANDEM$)",
-            "patternErrorMessage": "Invalid language id, can be COBOL, COBOL_MF_LISTFILE or COBOL_TANDEM"
+            "pattern": "(^COBOL$|^COBOL_TANDEM$)",
+            "patternErrorMessage": "Invalid language id, can be COBOL or COBOL_TANDEM"
           },
           "default": [
             "COBOL",
@@ -966,7 +945,7 @@
         },
         "coboleditor.hover_show_known_api": {
           "title": "Show description of known api during 'hover'",
-          "markdownDescription": "Show a short description of known apis when hovered on.  Known apis include 'Micro Focus™Library apis' and some ILE apis.",
+          "markdownDescription": "Show a short description of known apis when hovered on.  Known apis include Library apis and some ILE apis.",
           "enum": [
             "off",
             "short",
@@ -1163,98 +1142,6 @@
           "description": "When enabled, process coboleditor.fileformat before scanning the file",
           "default": true
         },
-        "coboleditor.template_rocket_cobol": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "       program-id. ${1:${TM_FILENAME/(.*)\\..+$/$1/}}.",
-            "",
-            "       environment division.",
-            "       configuration section.",
-            "",
-            "       data division.",
-            "       working-storage section.",
-            "       linkage section.",
-            "",
-            "       procedure division.",
-            "           $0",
-            "           goback.",
-            "",
-            "       end program $1.",
-            ""
-          ],
-          "description": "Template for a minimum 'Micro Focus' COBOL program",
-          "scope": "resource"
-        },
-        "coboleditor.template_rocket_cobol_mfunit": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "       copy \"mfunit_prototypes.cpy\".",
-            "",
-            "       identification division.",
-            "       program-id. Test${1:${TM_FILENAME_BASE/Test(.*)/$1/}}.",
-            "",
-            "       data division.",
-            "       working-storage section.",
-            "       78 TEST-Program value \"${1}\".",
-            "       copy \"mfunit.cpy\".",
-            "       78 TEST-PRELOAD-LIBRARY value \"${3}\".",
-            "       01 TEST-PP              procedure-pointer.",
-            "",
-            "       *> Testcase     : $1",
-            "       *>  Description : ${2:The description of the test case}",
-            "       procedure division.",
-            "           goback returning 0",
-            "       .",
-            "",
-            "       entry MFU-TC-PREFIX & TEST-${1}.",
-            "      *> Test code goes here.",
-            "           $0",
-            "           goback returning MFU-PASS-RETURN-CODE",
-            "       .",
-            "",
-            "      \\$region Test Configuration",
-            "      *> Setup Code:",
-            "       entry MFU-TC-SETUP-PREFIX & TEST-${1}.",
-            "           perform InitializeLinkageData",
-            "",
-            "           *> Add any other test setup code here",
-            "           goback returning 0",
-            "       .",
-            "",
-            "      *> Teardown Code:",
-            "       entry MFU-TC-TEARDOWN-PREFIX & TEST-${1}.",
-            "           goback returning 0",
-            "       .",
-            "",
-            "      *> Metadata:",
-            "       entry MFU-TC-METADATA-SETUP-PREFIX & TEST-${1}.",
-            "           move \"${2}\" to MFU-MD-TESTCASE-DESCRIPTION",
-            "           move ${4:100000} to MFU-MD-TIMEOUT-IN-MS",
-            "           move \"${5:smoke,regression,sanity,interface,other}\" to MFU-MD-TRAITS",
-            "           set MFU-MD-SKIP-TESTCASE to False",
-            "           goback returning 0",
-            "       .",
-            "",
-            "       InitializeLinkageData section.",
-            "           if TEST-PRELOAD-LIBRARY not equal spaces",
-            "      *> Load the library that is being tested",
-            "               set TEST-PP to entry TEST-PRELOAD-LIBRARY",
-            "           end-if",
-            "           exit section",
-            "       .",
-            "      \\$end-region",
-            "",
-            "       end program Test${1}."
-          ],
-          "scope": "resource"
-        },
-
         "coboleditor.enable_codelens_variable_references": {
           "type": "boolean",
           "description": "When enabled, turn on codelens for variable references",
@@ -1338,16 +1225,11 @@
         "*.COB": "MFU*$(basename).cpy,Test$(basename).cpy"
       },
       "explorer.fileNesting.enabled": true,
-      "rocketCOBOL.suppressFileAssociationsPrompt": true,
       "github.copilot.inlineSuggest.enable": true,
       "github.copilot.editor.enableAutoCompletions": true,
       "github.copilot.enable": {
         "COBOL": true,
         "COBOL_TANDEM": true,
-        "COBOL_MF_LISTFILE": false,
-        "COBOL_PCOB_LISTFILE": false,
-        "COBOL_ACU_LISTFILE": false,
-        "COBOL_MF_PREP": false,
         "mfu": false,
         "utreport": false
       },
@@ -1526,28 +1408,6 @@
       },
       {
         "id": "markdown-cobol-injection"
-      },
-      {
-        "id": "COBOL_MF_LISTFILE",
-        "extensions": [],
-        "configuration": "./cobol.configuration.json"
-      },
-      {
-        "id": "COBOL_PCOB_LISTFILE",
-        "extensions": [],
-        "configuration": "./cobol.configuration.json"
-      },
-      {
-        "id": "COBOL_ACU_LISTFILE",
-        "extensions": [],
-        "configuration": "./cobol.configuration.json"
-      },
-      {
-        "id": "COBOL_MF_PREP",
-        "extensions": [
-          ".prep"
-        ],
-        "configuration": "./cobol.configuration.json"
       },
       {
         "id": "JCL",
@@ -1730,42 +1590,6 @@
         }
       },
       {
-        "language": "COBOL_MF_LISTFILE",
-        "scopeName": "source.cobol_mf_listfile",
-        "path": "./syntaxes/COBOL_mf_listfile.tmLanguage.json",
-        "embeddedLanguages": {
-          "meta.embedded.block.openesql": "openesql",
-          "meta.embedded.block.html": "html"
-        }
-      },
-      {
-        "language": "COBOL_MF_PREP",
-        "scopeName": "source.cobol_mfprep",
-        "path": "./syntaxes/COBOL_mfprep.tmLanguage.json",
-        "embeddedLanguages": {
-          "meta.embedded.block.openesql": "openesql",
-          "meta.embedded.block.html": "html"
-        }
-      },
-      {
-        "language": "COBOL_ACU_LISTFILE",
-        "scopeName": "source.cobol_acu_listfile",
-        "path": "./syntaxes/COBOL_acu_listfile.tmLanguage.json",
-        "embeddedLanguages": {
-          "meta.embedded.block.openesql": "openesql",
-          "meta.embedded.block.html": "html"
-        }
-      },
-      {
-        "language": "COBOL_PCOB_LISTFILE",
-        "scopeName": "source.cobol_pcob_listfile",
-        "path": "./syntaxes/COBOL_pcob_listfile.tmLanguage.json",
-        "embeddedLanguages": {
-          "meta.embedded.block.openesql": "openesql",
-          "meta.embedded.block.html": "html"
-        }
-      },
-      {
         "language": "JCL",
         "scopeName": "source.jcl",
         "path": "./syntaxes/jcl.tmLanguage.json"
@@ -1913,11 +1737,6 @@
         "command": "cobolplugin.change_lang_to_cobol",
         "category": "COBOL",
         "title": "Select COBOL language"
-      },
-      {
-        "command": "cobolplugin.change_lang_to_mfcobol",
-        "category": "COBOL",
-        "title": "Select 'Micro Focus™ COBOL' language"
       },
       {
         "command": "cobolplugin.clearGlobalCache",
@@ -2118,16 +1937,6 @@
         "title": "Convert to HEX (UTF16)"
       },
       {
-        "command": "cobolplugin.newFile_MicroFocus",
-        "category": "COBOL",
-        "title": "New COBOL Program"
-      },
-      {
-        "command": "cobolplugin.newFile_MicroFocus_mfunit",
-        "category": "COBOL",
-        "title": "New COBOL Unit Test Program (Micro Focus)"
-      },
-      {
         "command": "cobolplugin.newFile_BlankFile",
         "category": "COBOL",
         "title": "New Empty COBOL Program"
@@ -2163,14 +1972,6 @@
         {
           "command": "cobolplugin.newFile_BlankFile",
           "group": "COBOL@1"
-        },
-        {
-          "command": "cobolplugin.newFile_MicroFocus",
-          "group": "COBOL@2"
-        },
-        {
-          "command": "cobolplugin.newFile_MicroFocus_mfunit",
-          "group": "COBOL@3"
         }
       ],
       "editor/context": [
@@ -2394,11 +2195,6 @@
         "when": "editorLangId =~ /^cobol$/ && !inSnippetMode"
       },
       {
-        "key": "alt+shift+c",
-        "command": "cobolplugin.change_lang_to_mfcobol",
-        "when": "editorLangId =~ /^COBOL$/ && !inSnippetMode"
-      },
-      {
         "key": "alt+right",
         "command": "cobolplugin.padTo72",
         "when": "editorLangId =~ /^COBOL$/ && !inSnippetMode"
@@ -2521,123 +2317,6 @@
     ],
     "problemPatterns": [
       {
-        "name": "mfcobol-msbuild",
-        "regexp": "^\\s*(.*)\\((\\d+),(\\d+)\\):\\s+(error|warning)\\s+(.*)\\s+\\[.*$",
-        "file": 1,
-        "line": 2,
-        "column": 3,
-        "severity": 4,
-        "message": 5
-      },
-      {
-        "name": "mfcobol-errformat2-netx-sx",
-        "regexp": "^\\*+\\s+(COBCH\\d+)([USEWI])\\s+([^:]+):\\s+(.*)\\((\\d+),(\\d+).*\\).*$",
-        "code": 1,
-        "severity": 2,
-        "message": 3,
-        "file": 4,
-        "line": 5,
-        "column": 6
-      },
-      {
-        "name": "mfcobol-errformat2-copybook-netx-sx",
-        "regexp": "^\\*+\\s+(COBCH\\d+)([USEWI])\\s+([^:]+):[^,]+,(.*)\\((\\d+),(\\d+).*\\).*$",
-        "code": 1,
-        "severity": 2,
-        "message": 3,
-        "file": 4,
-        "line": 5,
-        "column": 6
-      },
-      {
-        "name": "mfcobol-errformat3-netx-sx",
-        "regexp": "^(.*)\\((\\d+),(\\d+)\\)\\s+:\\s+(unrecoverable|severe|error|warning|information)\\s+(\\d+)\\s+:\\s+(.*)$",
-        "file": 1,
-        "line": 2,
-        "column": 3,
-        "severity": 4,
-        "code": 5,
-        "message": 6
-      },
-      {
-        "name": "mfcobol-errformat2",
-        "regexp": "^\\*+\\s+(COB[A-Z][A-Z]\\d+)([USEWI])\\s+(.*)\\s+(.*)\\((\\d+),(\\d+),.*\\)$",
-        "code": 1,
-        "severity": 2,
-        "message": 3,
-        "file": 4,
-        "line": 5,
-        "column": 6
-      },
-      {
-        "name": "mfcobol-errformat2-copybook",
-        "regexp": "^\\*+\\s+(COB[A-Z][A-Z]\\d+)([USEWI])\\s+([^:]+)[^,]+,(\\S.*)\\((\\d+),(\\d+),.*\\).*$",
-        "code": 1,
-        "severity": 2,
-        "message": 3,
-        "file": 4,
-        "line": 5,
-        "column": 6
-      },
-      {
-        "name": "mfcobol-errformat2-basefn",
-        "regexp": "^\\*+\\s+(COB[A-Z][A-Z]\\d+)([a-zA-Z])\\s+([^:]+):\\s+[\\.\\/].*[\\/](\\S*)\\((\\d+)(\\d+)[,].*\\).*$",
-        "code": 1,
-        "severity": 2,
-        "message": 3,
-        "file": 4,
-        "line": 5,
-        "column": 6
-      },
-      {
-        "name": "mfcobol-errformat3-absolute",
-        "regexp": "(.*)\\((\\d+),(\\d+)\\).*(unrecoverable|severe|error|warning|information)\\s+(COB[A-Z][A-Z]\\d+)\\s+:\\s+(.*)$",
-        "file": 1,
-        "line": 2,
-        "column": 3,
-        "severity": 4,
-        "code": 5,
-        "message": 6
-      },
-      {
-        "name": "mfcobol-errformat3",
-        "regexp": "(.*)\\((\\d+),(\\d+)\\).*(unrecoverable|severe|error|warning|information)\\s+(COB[A-Z][A-Z]\\d+)\\s+:\\s+(.*).*$",
-        "file": 1,
-        "line": 2,
-        "column": 3,
-        "severity": 4,
-        "code": 5,
-        "message": 6
-      },
-      {
-        "name": "mfcobol-errformat3-info",
-        "regexp": "(.*)\\((\\d+),(\\d+)\\).*(information)\\s+(COB[A-Z][A-Z]\\d+)\\s+:\\s+(.*).*$",
-        "file": 1,
-        "line": 2,
-        "column": 3,
-        "code": 5,
-        "message": 6
-      },
-      {
-        "name": "mfcobol-errformat3-basefn",
-        "regexp": "\\.\\..*[/\\x5c](.*)\\((\\d+),(\\d+)\\).*(unrecoverable|severe|error|warning|information)\\s+(COB[A-Z][A-Z]\\d+)\\s+:\\s+(.*).*$",
-        "file": 1,
-        "line": 2,
-        "column": 3,
-        "severity": 4,
-        "code": 5,
-        "message": 6
-      },
-      {
-        "name": "mfcobol-errformat3-info-basefn",
-        "regexp": "\\.\\..*[/\\x5c](.*)\\((\\d+),(\\d+)\\).*(information)\\s+(COB[A-Z][A-Z]\\d+)\\s+:\\s+(.*).*$",
-        "file": 1,
-        "line": 2,
-        "column": 3,
-        "code": 4,
-        "message": 6
-      },
-      {
         "name": "procobol-preprocessor",
         "patterns": [
           {
@@ -2661,101 +2340,6 @@
       }
     ],
     "problemMatchers": [
-      {
-        "name": "mfcobol-msbuild",
-        "owner": "cobol",
-        "fileLocation": "autoDetect",
-        "pattern": "$mfcobol-msbuild",
-        "source": "MSBuild"
-      },
-      {
-        "name": "mfcobol-errformat3-absolute",
-        "owner": "cobol",
-        "fileLocation": "absolute",
-        "pattern": "$mfcobol-errformat3-absolute",
-        "source": "VC"
-      },
-      {
-        "name": "mfcobol-errformat3",
-        "owner": "cobol",
-        "fileLocation": "autoDetect",
-        "pattern": "$mfcobol-errformat3",
-        "source": "VC"
-      },
-      {
-        "name": "mfcobol-errformat3-info",
-        "owner": "cobol",
-        "fileLocation": "autoDetect",
-        "pattern": "$mfcobol-errformat3-info",
-        "severity": "info",
-        "source": "VC"
-      },
-      {
-        "name": "mfcobol-errformat3-basefn",
-        "owner": "cobol",
-        "fileLocation": [
-          "autoDetect",
-          "${workspaceFolder}"
-        ],
-        "pattern": "$mfcobol-errformat3-basefn",
-        "source": "VC"
-      },
-      {
-        "name": "mfcobol-errformat3-info-basefn",
-        "owner": "cobol",
-        "fileLocation": [
-          "autoDetect",
-          "${workspaceFolder}"
-        ],
-        "severity": "info",
-        "pattern": "$mfcobol-errformat3-info-basefn",
-        "source": "VC"
-      },
-      {
-        "name": "mfcobol-errformat2-netx-sx",
-        "owner": "cobol",
-        "fileLocation": "autoDetect",
-        "pattern": "$mfcobol-errformat2-netx-sx",
-        "source": "NETX/SX"
-      },
-      {
-        "name": "mfcobol-errformat2-copybook-netx-sx",
-        "owner": "cobol",
-        "fileLocation": "autoDetect",
-        "pattern": "$mfcobol-errformat2-copybook-netx-sx",
-        "source": "NETX/SX"
-      },
-      {
-        "name": "mfcobol-errformat3-netx-sx",
-        "owner": "cobol",
-        "fileLocation": "autoDetect",
-        "pattern": "$mfcobol-errformat3-netx-sx",
-        "source": "NETX/SX"
-      },
-      {
-        "name": "mfcobol-errformat2-copybook",
-        "owner": "cobol",
-        "fileLocation": "autoDetect",
-        "pattern": "$mfcobol-errformat2-copybook",
-        "source": "VC"
-      },
-      {
-        "name": "mfcobol-errformat2",
-        "owner": "cobol",
-        "fileLocation": "autoDetect",
-        "pattern": "$mfcobol-errformat2",
-        "source": "VC"
-      },
-      {
-        "name": "mfcobol-errformat2-basefn",
-        "owner": "cobol",
-        "fileLocation": [
-          "autoDetect",
-          "${workspaceFolder}"
-        ],
-        "pattern": "$mfcobol-errformat2-basefn",
-        "source": "VC"
-      },
       {
         "name": "procobol-preprocessor",
         "fileLocation": "autoDetect",

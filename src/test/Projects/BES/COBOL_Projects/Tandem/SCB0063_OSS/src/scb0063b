@@ -1,0 +1,86 @@
+*******************************************************************************
+*
+* Source file for Program: XCB63P0
+*
+?SECTION main-program-begin-sec
+ main-program-begin.
+
+   DISPLAY "main-program-begin".
+
+   PERFORM main-paragraph-00.
+
+   PERFORM main-paragraph-01.
+
+   PERFORM main-paragraph-02.
+
+   PERFORM main-paragraph-03 THRU main-paragraph-05.
+
+   PERFORM main-program-exit.
+
+?SECTION main-paragraph-00-sec
+ main-paragraph-00.
+
+   MOVE "  main-paragraph-00" TO main-string.
+   DISPLAY main-string.
+
+?SECTION main-paragraph-01-sec
+ main-paragraph-01.
+
+   MOVE "  main-paragraph-01" TO main-string.
+   DISPLAY main-string.
+
+   PERFORM main-paragraph-01-01.
+
+?SOURCE scb0063c (main-paragraph-01-01-sec)
+
+?SECTION main-paragraph-02-sec
+ main-paragraph-02.
+
+   MOVE "  main-paragraph-02" TO main-string.
+   DISPLAY main-string.
+
+   PERFORM main-paragraph-02-01.
+
+   PERFORM main-paragraph-02-02.
+
+?SOURCE scb0063c (main-paragraph-02-01-sec)
+
+?SOURCE scb0063c (main-paragraph-02-01-01-sec)
+
+?SOURCE scb0063c (main-paragraph-02-01-02-sec)
+
+?SOURCE scb0063c (main-paragraph-02-01-03-sec)
+
+?SOURCE scb0063c (main-paragraph-02-02-sec)
+
+?SOURCE scb0063c (main-paragraph-02-02-01-sec)
+
+?SOURCE scb0063c (main-paragraph-02-02-02-sec)
+
+?SOURCE scb0063c (main-paragraph-02-02-02-01-sec)
+
+?SECTION main-paragraph-03-sec
+ main-paragraph-03.
+
+   MOVE "  main-paragraph-03" TO main-string.
+   DISPLAY main-string.
+
+?SECTION main-paragraph-04-sec
+ main-paragraph-04.
+
+   MOVE "  main-paragraph-04" TO main-string.
+   DISPLAY main-string.
+
+?SECTION main-paragraph-05-sec
+ main-paragraph-05.
+
+   MOVE "  main-paragraph-05" TO main-string.
+   DISPLAY main-string.
+
+?SECTION main-program-exit-sec
+ main-program-exit.
+
+   MOVE "main-program-exit" TO main-string.
+   DISPLAY main-string.
+
+   STOP RUN.

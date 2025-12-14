@@ -3,9 +3,11 @@ import vscode from "vscode";
 import { ICOBOLSettings, hoverApi } from "./iconfiguration";
 import { CallTarget, KnownAPIs } from "./keywords/cobolCallTargets";
 import { VSCOBOLUtils } from "./vscobolutils";
-import { COBOLToken, COBOLVariable, SQLDeclare } from "./cobolsourcescanner";
+import { COBOLToken, COBOLVariable, SQLDeclare, COBOLCopybookToken } from "./cobolsourcescanner";
 import { VSCOBOLSourceScanner } from "./vscobolscanner";
 import { ICOBOLSourceScanner } from "./icobolsourcescanner";
+import * as path from "path";
+import * as fs from "fs";
 // import { ESourceFormat } from "./externalfeatures";
 
 const nhexRegEx = new RegExp("[nN][xX][\"'][0-9A-Fa-f]*[\"']");
@@ -14,6 +16,82 @@ const wordRegEx = new RegExp("[#0-9a-zA-Z][a-zA-Z0-9-_$]*");
 const variableRegEx = new RegExp("[$#0-9a-zA-Z_][a-zA-Z0-9-_]*");
 
 export class VSHoverProvider {
+
+    private static getLibraryHover(document: vscode.TextDocument, libraryName: string, settings: ICOBOLSettings): vscode.Hover | undefined {
+        const sourceUri = vscode.Uri.parse(document.uri.toString());
+        const sourceDir = path.dirname(sourceUri.fsPath);
+        
+        // Try to find the library file
+        const extensions = settings.copybookexts || [".cpy", ".cbl", ".cob"];
+        
+        // Try with configured extensions
+        for (const ext of extensions) {
+            const filePath = path.join(sourceDir, libraryName + ext);
+            if (fs.existsSync(filePath)) {
+                return new vscode.Hover(`**Library File**: ${libraryName}${ext}\n\n**Path**: ${filePath}\n\n*Click to open library definition*`);
+            }
+        }
+        
+        // Try without extension
+        const filePathNoExt = path.join(sourceDir, libraryName);
+        if (fs.existsSync(filePathNoExt)) {
+            return new vscode.Hover(`**Library File**: ${libraryName}\n\n**Path**: ${filePathNoExt}\n\n*Click to open library definition*`);
+        }
+        
+        // Try lowercase variations
+        for (const ext of extensions) {
+            const filePath = path.join(sourceDir, libraryName.toLowerCase() + ext);
+            if (fs.existsSync(filePath)) {
+                return new vscode.Hover(`**Library File**: ${libraryName.toLowerCase()}${ext}\n\n**Path**: ${filePath}\n\n*Click to open library definition*`);
+            }
+        }
+        
+        const filePathNoExtLower = path.join(sourceDir, libraryName.toLowerCase());
+        if (fs.existsSync(filePathNoExtLower)) {
+            return new vscode.Hover(`**Library File**: ${libraryName.toLowerCase()}\n\n**Path**: ${filePathNoExtLower}\n\n*Click to open library definition*`);
+        }
+        
+        // File not found
+        return new vscode.Hover(`**Library**: ${libraryName}\n\n⚠️ Library file not found in source directory`);
+    }
+
+    private static getCopybookHover(document: vscode.TextDocument, copybookName: string, copybookToken: COBOLCopybookToken, settings: ICOBOLSettings): vscode.Hover | undefined {
+        let hoverText = `**Copybook**: ${copybookName}\n\n`;
+        
+        const token = copybookToken.token;
+        if (!token) {
+            return new vscode.Hover(`**Copybook**: ${copybookName}\n\n⚠️ Token not available`);
+        }
+        
+        // Get the COPY statement line
+        const line = token.sourceHandler.getLine(token.startLine, false);
+        if (line) {
+            hoverText += `**Statement**:\n\`\`\`cobol\n${line.trim()}\n\`\`\`\n\n`;
+        }
+        
+        // Check if copybook file exists in the workspace
+        const copybookPath = token.extraInformation1;
+        if (copybookPath && copybookPath.length > 0) {
+            hoverText += `**File**: ${copybookPath}\n\n`;
+            
+            try {
+                if (fs.existsSync(copybookPath)) {
+                    const stats = fs.statSync(copybookPath);
+                    hoverText += `**Size**: ${stats.size} bytes\n\n`;
+                    hoverText += `*Click to navigate to copybook*`;
+                } else {
+                    hoverText += `⚠️ File not found`;
+                }
+            } catch {
+                hoverText += `⚠️ Unable to access file`;
+            }
+        } else {
+            hoverText += `⚠️ Copybook file not resolved\n\n`;
+            hoverText += `Check \`coboleditor.copybookdirs\` setting`;
+        }
+        
+        return new vscode.Hover(hoverText);
+    }
 
     private static wrapCommentAndCode(comment: string, code: string): string {
         let cleanCode = code;
@@ -42,6 +120,30 @@ ${cleanCode}
     }
 
     public static provideHover(settings: ICOBOLSettings, document: vscode.TextDocument, position: vscode.Position): ProviderResult<vscode.Hover> {
+        // Check if hovering over a COPY statement with IN/OF clause
+        const line = document.lineAt(position.line).text;
+        if (/.*copy\s+.*\s+(in|of)\s+.*/i.test(line)) {
+            const wordRange = document.getWordRangeAtPosition(position, variableRegEx);
+            const word = document.getText(wordRange);
+            
+            if (word && word.length > 0) {
+                const sf: ICOBOLSourceScanner | undefined = VSCOBOLSourceScanner.getCachedObject(document, settings);
+                if (sf !== undefined) {
+                    // Check if hovering over a library name
+                    const libraryTokens = sf.copyBookLibraries.get(word.toLowerCase());
+                    if (libraryTokens && libraryTokens.length > 0) {
+                        return VSHoverProvider.getLibraryHover(document, word, settings);
+                    }
+                    
+                    // Check if hovering over a copybook name
+                    const copybookTokens = sf.copyBooksUsed.get(word.toLowerCase());
+                    if (copybookTokens && copybookTokens.length > 0) {
+                        return VSHoverProvider.getCopybookHover(document, word, copybookTokens[0], settings);
+                    }
+                }
+            }
+        }
+
         if (settings.hover_show_known_api !== hoverApi.Off) {
             const txt = document.getText(document.getWordRangeAtPosition(position, wordRegEx));
             const txtTarget: CallTarget | undefined = KnownAPIs.getCallTarget(document.languageId, txt);

@@ -710,10 +710,6 @@ If this behavior is not desired, then the setting ```coboleditor.enable_rocket_c
         "COBOLIT": true,
         "ACUCOBOL": true,
         "RMCOBOL": true,
-        "COBOL_MF_LISTFILE": false,
-        "COBOL_PCOB_LISTFILE": false,
-        "COBOL_ACU_LISTFILE": false,
-        "COBOL_MF_PREP": false,
         "mfu": false,
         "utreport": false
       }

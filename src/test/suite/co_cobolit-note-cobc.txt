@@ -1,2 +1,0 @@
-100
-/tmp/TEST.lib:19: Warning: -> 'MY-CODE' defined here as PIC X(01)

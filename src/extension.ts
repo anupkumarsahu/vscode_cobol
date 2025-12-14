@@ -65,7 +65,7 @@ import { ExtensionDefaults } from "./extensionDefaults";
 
 // Additional language service providers
 import { VSCobolRenameProvider } from "./vsrenameprovider";
-import { activateCommonCommands, checkForExtensionConflicts, install_call_hierarchy, isMicroFocusCOBOL_LSPActive, toggleMicroFocusLSP } from "./vscommon_commands";
+import { activateCommonCommands, checkForExtensionConflicts, install_call_hierarchy } from "./vscommon_commands";
 import { VSHelpAndFeedViewHandler } from "./feedbacktree";
 import { VSCustomIntelliseRules } from "./vscustomrules";
 import { VSHoverProvider } from "./vshoverprovider";
@@ -170,7 +170,6 @@ async function setupLogChannel(hide: boolean, settings: ICOBOLSettings, quiet: b
 
     if (thisExtension !== undefined) {
         const githubCopilotExtension = extensions.getExtension("GitHub.copilot");
-        const mfExt = extensions.getExtension(ExtensionDefaults.rocketCOBOLExtension);
 
         // Display environment information
         if (vscode.env.uriScheme !== "vscode") {
@@ -240,17 +239,9 @@ async function setupLogChannel(hide: boolean, settings: ICOBOLSettings, quiet: b
         VSLogger.logMessage(` Is Workspace Trusted                       : ${workspace.isTrusted}`);
 
         // Log information about related extensions
-        if (mfExt !== undefined || githubCopilotExtension !== undefined) {
+        if (githubCopilotExtension !== undefined) {
             VSLogger.logMessage("Other Extension Information:");
-            if (githubCopilotExtension !== undefined) {
-                VSLogger.logMessage(` GitHub Copilot                             : ${githubCopilotExtension.packageJSON.version}`);
-            }
-            if (mfExt !== undefined) {
-                VSLogger.logMessage(` Rocket COBOL                               : ${mfExt.packageJSON.version}`);
-                if (window.activeTextEditor) {
-                    VSLogger.logMessage(`  microFocusCOBOL.languageServerAutostart   = ${isMicroFocusCOBOL_LSPActive(window.activeTextEditor.document)}`);
-                }
-            }
+            VSLogger.logMessage(` GitHub Copilot                             : ${githubCopilotExtension.packageJSON.version}`);
         }
     }
 }
@@ -772,9 +763,6 @@ export async function activate(context: ExtensionContext) {
         await VSCOBOLUtils.setupUrlPaths(settings);
     }));
 
-    // Enable Micro Focus migration tasks context (controlled by package.json when clauses)
-    vscode.commands.executeCommand("setContext", `${ExtensionDefaults.defaultEditorConfig}.enable_migrate2mf_tasks`, true);
-
     // Monitor document open events for language detection and metadata seeding
     context.subscriptions.push(workspace.onDidOpenTextDocument(async (doc: vscode.TextDocument) => {
         // Convert plain text files to COBOL language if they match COBOL patterns
@@ -889,7 +877,7 @@ export async function activate(context: ExtensionContext) {
         const symbolInformationProvider = new CobolSymbolInformationProvider();
         context.subscriptions.push(languages.registerDocumentSymbolProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), symbolInformationProvider));
 
-        // Micro Focus directives outline provider
+        // Directives outline provider for .mf files
         // TODO: Consider adding .DIR keywords for enhanced directive support
         const mfDirectivesProvider = new MFDirectivesSymbolProvider();
         context.subscriptions.push(languages.registerDocumentSymbolProvider(VSExtensionUtils.getAllMFProvidersSelectors(settings), mfDirectivesProvider));
@@ -1070,20 +1058,9 @@ export async function activate(context: ExtensionContext) {
     //     retriggerCharacters: [","]
     // });
 
-    // Process visible editors for Micro Focus LSP integration
-    let toggleDone = false;
     for (const vte of vscode.window.visibleTextEditors) {
         // Update decorations for all visible editors
         await updateDecorationsOnTextEditor(vte);
-
-        // Enable Micro Focus LSP if a document with 'cobol' language ID is detected
-        if (!toggleDone && vte.document.languageId === ExtensionDefaults.microFocusCOBOLLanguageId) {
-            const mfExt = extensions.getExtension(ExtensionDefaults.rocketCOBOLExtension);
-            if (mfExt) {
-                await toggleMicroFocusLSP(settings, vte.document, true);
-            }
-            toggleDone = true;
-        }
     }
 
     // Register terminal profile provider (Linux only)

@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import * as path from "path";
+import * as fs from "fs";
 import { COBOLTokenStyle, COBOLToken, COBOLVariable } from "./cobolsourcescanner";
 import { VSCOBOLSourceScanner } from "./vscobolscanner";
 import { VSCOBOLConfiguration } from "./vsconfiguration";
@@ -26,6 +28,19 @@ export class COBOLSourceDefinition implements vscode.DefinitionProvider {
         const config = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
 
         const theline = document.lineAt(position.line).text;
+        
+        // Check for copybook library names first (in COPY statements with IN/OF)
+        if (theline.match(/.*copy\s+.*\s+(in|of)\s+.*/i)) {
+            const qcp: ICOBOLSourceScanner | undefined = VSCOBOLSourceScanner.getCachedObject(document,config);
+            if (qcp !== undefined) {
+                const libLoc = this.getCopyBookLibrary(document, qcp, position);
+                if (libLoc !== undefined) {
+                    locations.push(libLoc);
+                    return locations;
+                }
+            }
+        }
+        
         if (theline.match(/.*(perform|thru|go\s*to|until|varying).*$/i)) {
             const qcp: ICOBOLSourceScanner | undefined = VSCOBOLSourceScanner.getCachedObject(document,config);
             if (qcp === undefined) {
@@ -82,6 +97,85 @@ export class COBOLSourceDefinition implements vscode.DefinitionProvider {
         }
 
         return locations;
+    }
+
+    private getCopyBookLibrary(document: vscode.TextDocument, sf: ICOBOLSourceScanner, position: vscode.Position): vscode.Location | undefined {
+        const wordRange = document.getWordRangeAtPosition(position, this.sectionRegEx);
+        const word = wordRange ? document.getText(wordRange) : "";
+        if (word === "") {
+            return undefined;
+        }
+
+        const config = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
+        
+        try {
+            // Get the source file's directory
+            const sourceUri = vscode.Uri.parse(sf.sourceHandler.getUriAsString());
+            const sourcePath = sourceUri.fsPath;
+            const sourceDir = path.dirname(sourcePath);
+            
+            VSLogger.logMessage(`Looking for library file: ${word} in directory: ${sourceDir}`, config);
+            
+            // Try to find the library file in the same directory as the source
+            let fileName = "";
+            
+            // Try with configured extensions
+            for (const ext of config.copybookexts) {
+                const possiblePath = path.join(sourceDir, word + "." + ext);
+                VSLogger.logMessage(`  Checking: ${possiblePath}`, config);
+                if (fs.existsSync(possiblePath)) {
+                    fileName = possiblePath;
+                    VSLogger.logMessage(`  Found: ${fileName}`, config);
+                    break;
+                }
+            }
+            
+            // Try without extension
+            if (fileName.length === 0) {
+                const possiblePath = path.join(sourceDir, word);
+                VSLogger.logMessage(`  Checking (no ext): ${possiblePath}`, config);
+                if (fs.existsSync(possiblePath)) {
+                    fileName = possiblePath;
+                    VSLogger.logMessage(`  Found: ${fileName}`, config);
+                }
+            }
+            
+            // Try lowercase
+            if (fileName.length === 0) {
+                for (const ext of config.copybookexts) {
+                    const possiblePath = path.join(sourceDir, word.toLowerCase() + "." + ext);
+                    VSLogger.logMessage(`  Checking (lowercase): ${possiblePath}`, config);
+                    if (fs.existsSync(possiblePath)) {
+                        fileName = possiblePath;
+                        VSLogger.logMessage(`  Found: ${fileName}`, config);
+                        break;
+                    }
+                }
+            }
+            
+            // Try lowercase without extension
+            if (fileName.length === 0) {
+                const possiblePath = path.join(sourceDir, word.toLowerCase());
+                VSLogger.logMessage(`  Checking (lowercase, no ext): ${possiblePath}`, config);
+                if (fs.existsSync(possiblePath)) {
+                    fileName = possiblePath;
+                    VSLogger.logMessage(`  Found: ${fileName}`, config);
+                }
+            }
+            
+            if (fileName.length > 0) {
+                // Open the library file
+                const uri = vscode.Uri.file(fileName);
+                return new vscode.Location(uri, new vscode.Position(0, 0));
+            } else {
+                VSLogger.logMessage(`  Library file not found for: ${word}`, config);
+            }
+        }
+        catch (e) {
+            VSLogger.logMessage(`Error in getCopyBookLibrary: ${(e as Error).message}`, config);
+        }
+
+        return undefined;
     }
 
     private getSectionOrParaLocation(document: vscode.TextDocument, sf: ICOBOLSourceScanner, position: vscode.Position): vscode.Location | undefined {

@@ -1,0 +1,100 @@
+?SECTION K5SDB   
+     DATA RECORD IS J-RECORD. 
+     
+?SECTION K501B
+     02 KEY-A        PICTURE A(36) JUSTIFIED RIGHT.  
+     02 XYZ-KEYS              PICTURE 9(8).
+     02 KEY-2              PICTURE 9(8).
+     02 KEY-3              PICTURE 9(8).
+     02 KEY-4              PICTURE 9(8).
+     02 KEY-5              PICTURE 9(8).
+     
+?SECTION K3SCA
+ XXXXX082.
+ 
+?SECTION K3OCA
+ XXXXX083.
+ 
+?SECTION K3SNA
+ DECIMAL-POINT IS COMMA.
+ 
+?SECTION K3FCA
+ SELECT TEST-FILE ASSIGN TO XXXXP001.                  
+ SELECT TEST-FILE2 ASSIGN TO XXXXP002.                  
+ SELECT PRINT-FILE ASSIGN TO XXXXX055.  
+ 
+?SECTION K3IOA
+ SAME AREA FOR TEST-FILE  
+              TEST-FILE2.
+
+?SECTION K3SML
+ 8
+ 
+?SECTION K3LGE
+  MOVE 1 TO WRK-DU-9, ADD 1 TO WRK-DU-9, ADD 1 TO WRK-DU-9, ADD
+  1 TO WRK-DU-99, ADD 1 TO WRK-DU-9, ADD 1 TO WRK-DU-99, ADD 1
+  TO WRK-DU-99, ADD 1 TO WRK-DU-99, ADD 1 TO WRK-DU-99, ADD 1 
+ TO WRK-DU-9, ADD 1 TO WRK-DU-9, ADD 1 TO WRK-DU-99, ADD 1 TO 
+ WRK-DU-99, ADD 1 TO WRK-DU-99, ADD 1 TO WRK-DU-99, ADD 10 TO 
+ WRK-DU-99-LONGER.       
+ 
+?SECTION KP001                                     
+ PST-TEST-001.                                                  
+    MOVE    "PSEUDO-TEXT" TO FEATURE.                          
+*    THIS        TEXT IS COPIED INTO A SOURCE PROGRAM THE PSEUDO
+*    TEXT CONTAINING PERFORM FAIL  IS REPLACED WITH A NULL PSEUDO TEXT.                                               
+    MOVE    "PST-TEST-001" TO PAR-NAME                         
+    PERFORM PASS.                                              
+    PERFORM FAIL.                                              
+ PST-WRITE-001.                                                 
+    PERFORM PRINT-DETAIL. 
+
+?SECTION KP002
+ MOVE 1 TO WRK-DS-09V00-901.
+ 
+?SECTION KP003
+ PST-TEST-003.                                              
+    MOVE    +0009 TO WRK-DS-05V00-O005-001  IN GRP-003 (3).
+    ADD     +00001 TO WRK-DS-09V00-901.                    
+    SUBTRACT 1 FROM WRK-DS-05V00-O005-001 IN GRP-002 (3).  
+ PST-EXIT-003-X. 
+ 
+?SECTION KP004
+*    THIS COMMENT IS THE FIRST IMAGE IN KP004 
+*    ADD  1 TO THE LIST.                      
+ PST-INIT-004.                                
+     MOVE "PSEUDO-TEXT/WORD" TO FEATURE.      
+     MOVE    ZERO TO WRK-DS-09V00-901.        
+     MOVE    "PST-TEST-004" TO PAR-NAME.      
+ PST-TEST-004.                                
+     ADD     5 TO WRK-DS-09V00-901.           
+     THIS IS NOT REAL COBOL-74 SYNTAX HOWEVER SHOVE +2 TO WRK-DS-09V00-902.    
+     GO TO   PST-EXIT-004.                    
+ PST-DELETE-004.                              
+     PERFORM DELETE.                          
+ PST-EXIT-004.                                
+     EXIT.                                    
+                                           
+?SECTION KP005
+ MOVE 1 TO WRK-DS-09V00-901.
+ 
+?SECTION KP006
+ ADD      001                     
+         005 TO WRK-DS-09V00-901.
+ 
+?SECTION KP007
+     PERFORM FAIL.                                       
+*    THIS COMMENT SHOULD NOT AFFECT PSEUDO-TEXT MATCHING.
+     SUBTRACT 1 FROM ERROR-COUNTER.                      
+
+?SECTION KP008
+ PERFORM FAIL.     
+ THIS IS GARBAGE. SUBTRACT 1 FROM ERROR-COUNTER.
+ 
+?SECTION KP009
+ IF      WRK-XN-00001 = "G"
+
+
+
+               
+ 

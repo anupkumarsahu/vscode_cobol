@@ -1,0 +1,250 @@
+******************************************************************************
+* File:     CLIBCLB1
+* Synopsis: Copy library used by SCOBLIB
+* Author:   Seth Hawthorne
+*
+* Details:  This test case tests different cases of including lines from a
+*                       COPYLIB (CLIBCLB).
+*
+*           Note: Line numbers are important so observe relevant comments
+*              Line numbers   1-99   common to CLIBCLB1 and CLIBCLB2
+*              Line numbers 100-199  unique to CLIBCLB1
+*              Line numbers 200-299  are common program and CLIBCLB1
+*              Line numbers 300-...  are unique to the program
+*
+* Copyright 2006 (c) Hewlett Packard Inc. All Rights Reserved
+*
+******************************************************************************
+
+
+
+*##############################################################################
+* Lines 1-99 Common to CLIBCLB1 and CLIBCLB2
+*##############################################################################
+?SECTION RANGE-25-30
+  DISPLAY "  CLIBCLB1: RANGE-25-30: line 25".
+  DISPLAY "  CLIBCLB1: RANGE-25-30: line 26".
+  DISPLAY "  CLIBCLB1: RANGE-25-30: line 27".
+  DISPLAY "  CLIBCLB1: RANGE-25-30: line 28".
+  DISPLAY "  CLIBCLB1: RANGE-25-30: line 29".
+  DISPLAY "  CLIBCLB1: RANGE-25-30: line 30".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*##############################################################################
+* Lines 100-199 unique to CLIBCLB1
+*##############################################################################
+
+
+?SECTION DEFINE-DATA
+     01 rec-REC-ALPHA.
+       02 ALPHA-A       PIC A VALUE "a".
+       02 ALPHA-A26     PIC A(26) VALUE "abcdefghijklmnopqrstuvwxyz".
+
+
+
+?SECTION RANGE-110-112
+  DISPLAY "  CLIBCLB1: RANGE-110-112: line 110".
+  DISPLAY "  CLIBCLB1: RANGE-110-112: line 111".
+  DISPLAY "  CLIBCLB1: RANGE-110-112: line 112".
+
+
+?SECTION RANGE-116
+  DISPLAY "  CLIBCLB1: RANGE-115: line 116".
+
+?SECTION RANGE-119
+  DISPLAY "  CLIBCLB1: RANGE-119: line 119".
+
+?SECTION RANGE-122
+  DISPLAY "  CLIBCLB1: RANGE-122: line 122".
+
+?SECTION RANGE-125
+  DISPLAY "  CLIBCLB1: RANGE-125: line 125".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*##############################################################################
+* Lines 200-299 common to CLIBCLB1 and program
+*##############################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?SECTION RANGE-240-245
+  DISPLAY "  CLIBCLB1: RANGE-240-245: line 240".
+  DISPLAY "  CLIBCLB1: RANGE-240-245: line 241".
+  DISPLAY "  CLIBCLB1: RANGE-240-245: line 242".
+  DISPLAY "  CLIBCLB1: RANGE-240-245: line 243".
+  DISPLAY "  CLIBCLB1: RANGE-240-245: line 244".
+  DISPLAY "  CLIBCLB1: RANGE-240-245: line 245".
+
+
+
+
+

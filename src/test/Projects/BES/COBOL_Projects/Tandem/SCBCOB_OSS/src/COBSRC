@@ -1,0 +1,288 @@
+* SCHEMA PRODUCED DATE - TIME :10/03/91 14:38:05
+?SECTION CITY,TANDEM
+* Definition CITY created on 10/03/91 at 14:38
+  01 CITY                            PIC X(30).
+?SECTION DATE-TODAY,TANDEM
+* Definition DATE-TODAY created on 10/03/91 at 14:38
+  01 DATE-TODAY                      PIC 9(6).
+?SECTION ENGINE-NUMBER,TANDEM
+* Definition ENGINE-NUMBER created on 10/03/91 at 14:38
+  01 ENGINE-NUMBER                   PIC X(30).
+?SECTION FIRST-NAME,TANDEM
+* Definition FIRST-NAME created on 10/03/91 at 14:38
+  01 FIRST-NAME                      PIC X(30).
+?SECTION HORSEPOWER,TANDEM
+* Definition HORSEPOWER created on 10/03/91 at 14:38
+  01 HORSEPOWER                      PIC 9(4).
+?SECTION LAST-NAME,TANDEM
+* Definition LAST-NAME created on 10/03/91 at 14:38
+  01 LAST-NAME                       PIC X(30).
+?SECTION LICENSE-PLATE,TANDEM
+* Definition LICENSE-PLATE created on 10/03/91 at 14:38
+  01 LICENSE-PLATE                   PIC X(7).
+?SECTION MAKE,TANDEM
+* Definition MAKE created on 10/03/91 at 14:38
+  01 MAKE                            PIC X(12).
+?SECTION MIDDLE-NAME,TANDEM
+* Definition MIDDLE-NAME created on 10/03/91 at 14:38
+  01 MIDDLE-NAME                     PIC X(30).
+?SECTION MODEL,TANDEM
+* Definition MODEL created on 10/03/91 at 14:38
+  01 MODEL                           PIC X(12).
+?SECTION NUMBER-OF-AXLES,TANDEM
+* Definition NUMBER-OF-AXLES created on 10/03/91 at 14:38
+  01 NUMBER-OF-AXLES                 PIC 9(2).
+?SECTION PERSON-ID,TANDEM
+* Definition PERSON-ID created on 10/03/91 at 14:38
+  01 PERSON-ID                       PIC 9(10).
+?SECTION REGISTRATION-DATE,TANDEM
+* Definition REGISTRATION-DATE created on 10/03/91 at 14:38
+  01 REGISTRATION-DATE               PIC 9(6).
+?SECTION SALES-PRICE,TANDEM
+* Definition SALES-PRICE created on 10/03/91 at 14:38
+  01 SALES-PRICE                     PIC 9(9).
+?SECTION SMOG-DATE,TANDEM
+* Definition SMOG-DATE created on 10/03/91 at 14:38
+  01 SMOG-DATE                       PIC 9(6).
+?SECTION STATE,TANDEM
+* Definition STATE created on 10/03/91 at 14:38
+  01 STATE                           PIC X(2).
+?SECTION STREET,TANDEM
+* Definition STREET created on 10/03/91 at 14:38
+  01 STREET                          PIC X(30).
+?SECTION SUFFIX,TANDEM
+* Definition SUFFIX created on 10/03/91 at 14:38
+  01 SUFFIX                          PIC X(3).
+?SECTION TIME-NOW,TANDEM
+* Definition TIME-NOW created on 10/03/91 at 14:38
+  01 TIME-NOW                        PIC 9(8).
+?SECTION VEHICLE-ID,TANDEM
+* Definition VEHICLE-ID created on 10/03/91 at 14:38
+  01 VEHICLE-ID                      PIC X(30).
+?SECTION VEHICLE-TYPE,TANDEM
+* Definition VEHICLE-TYPE created on 10/03/91 at 14:38
+  01 VEHICLE-TYPE                    PIC 9(2).
+?SECTION YEAR,TANDEM
+* Definition YEAR created on 10/03/91 at 14:38
+  01 YEAR                            PIC 9(4).
+?SECTION ZIP,TANDEM
+* Definition ZIP created on 10/03/91 at 14:38
+  01 ZIP                             PIC X(10).
+?SECTION SMOG-DATE-EXPANDED,TANDEM
+* Definition SMOG-DATE-EXPANDED created on 10/03/91 at 14:38
+  01 SMOG-DATE-EXPANDED.
+    02 SMOG-DATE                     PIC 9(6).
+    02 SMOG-DATE-REDEFINED REDEFINES SMOG-DATE.
+      03 YY                          PIC 99.
+      03 MM                          PIC 99.
+      03 DD                          PIC 99.
+?SECTION VEHICLE-RECORD-DEF,TANDEM
+* Definition VEHICLE-RECORD-DEF created on 10/03/91 at 14:38
+  01 VEHICLE-RECORD-DEF.
+    02 LICENSE-PLATE                 PIC X(7).
+    02 VEHICLE-TYPE                  PIC 9(2).
+    02 YEAR                          PIC 9(4).
+    02 MAKE                          PIC X(12).
+    02 MODEL                         PIC X(12).
+    02 ENGINE-NUMBER                 PIC X(30).
+    02 REGISTRATION-DATE             PIC 9(6).
+    02 SALES-PRICE                   PIC 9(9).
+    02 HORSEPOWER                    PIC 9(4).
+    02 SMOG-DATE                     PIC 9(6).
+    02 NUMBER-OF-AXLES               PIC 9(2).
+?SECTION PERSON-RECORD-DEF,TANDEM
+* Definition PERSON-RECORD-DEF created on 10/03/91 at 14:38
+  01 PERSON-RECORD-DEF.
+    02 PERSON-ID                     PIC 9(10).
+    02 PERSON-NAME-KEY.
+      03 LAST-NAME                   PIC X(30).
+      03 FIRST-NAME                  PIC X(30).
+    02 MIDDLE-NAME                   PIC X(30).
+    02 SUFFIX                        PIC X(3).
+    02 STREET                        PIC X(30).
+    02 CITY                          PIC X(30).
+    02 STATE                         PIC X(2).
+    02 ZIP                           PIC X(10).
+?SECTION OWNER-RECORD-DEF,TANDEM
+* Definition OWNER-RECORD-DEF created on 10/03/91 at 14:38
+  01 OWNER-RECORD-DEF.
+    02 PERSON-ID                     PIC 9(10).
+    02 LICENSE-PLATE                 PIC X(7).
+?SECTION HELP-REQUEST,TANDEM
+* Definition HELP-REQUEST created on 10/03/91 at 14:38
+  01 HELP-REQUEST.
+    02 HELPMSG-SEARCH-FIELDS.
+      03 HELPMSG-PROG-ID             PIC X(8).
+      03 HELPMSG-ROW                 PIC 9(2).
+      03 HELPMSG-COLUMN              PIC 9(2).
+?SECTION HELP-REPLY,TANDEM
+* Definition HELP-REPLY created on 10/03/91 at 14:38
+  01 HELP-REPLY.
+    02 HELPMSG-TRANS-FIELDS.
+      03 HELPMSG-REPLY-CODE          PIC S9(4)      COMP.
+    02 HELPMSG-TEXT-FIELDS.
+      03 HELPMSG-TEXT                PIC X(78)
+                                     OCCURS 8 TIMES.
+?SECTION MSMV002-IN,TANDEM
+* Definition MSMV002-IN created on 10/03/91 at 14:38
+  01 MSMV002-IN.
+    02 MSMV002-IN-FIELDS.
+      03 MSMV002-TRAN-CODE           PIC 9(1).
+        88 GET-FIRST-OWNER           VALUE IS 1.
+        88 GET-NEXT-OWNER            VALUE IS 2.
+      03 MSMV002-LICENSE-PLATE       PIC X(7).
+      03 MSMV002-NEXT-OWNER-PERSON-ID PIC 9(10).
+?SECTION MSMV002-OUT,TANDEM
+* Definition MSMV002-OUT created on 10/03/91 at 14:38
+  01 MSMV002-OUT.
+    02 MSMV002-MSG-FIELDS.
+      03 MSMV002-REPLY-CODE          PIC S9(4)      COMP.
+      03 MSMV002-MESSAGE             PIC X(78).
+    02 MSMV002-NUMERIC-DISPLAY-FIELDS.
+      03 MSMV002-VEHICLE-TYPE        PIC 9(2).
+      03 MSMV002-REGISTRATION-DATE   PIC 9(6).
+      03 MSMV002-YEAR                PIC 9(4).
+      03 MSMV002-NEXT-OWNER-PERSON-ID PIC 9(10).
+    02 MSMV002-ALPHA-DISPLAY-FIELDS.
+      03 MSMV002-ENGINE-NUMBER       PIC X(30).
+      03 MSMV002-MAKE                PIC X(12).
+      03 MSMV002-MODEL               PIC X(12).
+      03 MSMV002-FIRST-NAME          PIC X(30).
+      03 MSMV002-MIDDLE-INITIAL      PIC X(1).
+      03 MSMV002-LAST-NAME           PIC X(30).
+      03 MSMV002-STREET              PIC X(30).
+      03 MSMV002-CITY                PIC X(30).
+      03 MSMV002-STATE               PIC X(2).
+      03 MSMV002-ZIP                 PIC X(10).
+?SECTION MSMV003-IN,TANDEM
+* Definition MSMV003-IN created on 10/27/89 at 13:19
+  01 MSMV003-IN.
+    02 MSMV003-IN-FIELDS.
+      03 MSMV003-TRAN-CODE           PIC 9(1).
+        88 GET-NAMES                 VALUE IS 1.
+        88 GET-MORE-NAMES            VALUE IS 2.
+        88 GET-PLATES                VALUE IS 3.
+        88 GET-MORE-PLATES           VALUE IS 4.
+      03 MSMV003-SEARCH-LAST-NAME    PIC X(19).
+      03 MSMV003-SEARCH-FIRST-NAME   PIC X(19).
+      03 MSMV003-SEARCH-PERSON-ID    PIC 9(10).
+      03 MSMV003-SEARCH-PLATE        PIC X(7).
+?SECTION MSMV003-OUT,TANDEM
+* Definition MSMV003-OUT created on 10/27/89 at 13:19
+  01 MSMV003-OUT.
+    02 MSMV003-MSG-FIELDS.
+      03 MSMV003-REPLY-CODE          PIC S9(4)      COMP.
+      03 MSMV003-MESSAGE             PIC X(78).
+    02 MSMV003-NUMERIC-DISPLAY-FIELDS.
+      03 MSMV003-NUMERIC-ARRAY-FIELDS OCCURS 12 TIMES.
+        04 MSMV003-PERSON-ID         PIC 9(10).
+    02 MSMV003-ALPHA-DISPLAY-FIELDS.
+      03 MSMV003-ALPHA-ARRAY-FIELDS  OCCURS 12 TIMES.
+        04 MSMV003-LICENSE-PLATE     PIC X(7).
+        04 MSMV003-FIRST-NAME        PIC X(19).
+        04 MSMV003-LAST-NAME         PIC X(19).
+        04 MSMV003-STREET            PIC X(20).
+        04 MSMV003-CITY              PIC X(10).
+        04 MSMV003-ZIP               PIC X(5).
+?SECTION MSMV004-IN,TANDEM
+* Definition MSMV004-IN created on 10/03/91 at 14:38
+  01 MSMV004-IN.
+    02 MSMV004-IN-FIELDS.
+      03 MSMV004-TRAN-CODE           PIC 9(1).
+        88 ADD-VEHICLE-AND-OWNER-DATA VALUE IS 1.
+        88 ADD-OWNER-DATA            VALUE IS 2.
+    02 MSMV004-NUMERIC-DISPLAY-IN.
+      03 MSMV004-VEHICLE-TYPE        PIC 9(2).
+      03 MSMV004-YEAR                PIC 9(4).
+      03 MSMV004-HORSEPOWER          PIC 9(4).
+      03 MSMV004-NUMBER-OF-AXLES     PIC 9(2).
+      03 MSMV004-SALES-PRICE         PIC 9(9).
+      03 MSMV004-PERSON-ID           PIC 9(10).
+    02 MSMV004-ALPHA-DISPLAY-IN.
+      03 MSMV004-LICENSE-PLATE       PIC X(7).
+      03 MSMV004-ENGINE-NUMBER       PIC X(30).
+      03 MSMV004-MAKE                PIC X(12).
+      03 MSMV004-MODEL               PIC X(12).
+?SECTION MSMV004-OUT,TANDEM
+* Definition MSMV004-OUT created on 10/03/91 at 14:38
+  01 MSMV004-OUT.
+    02 MSMV004-MSG-FIELDS.
+      03 MSMV004-REPLY-CODE          PIC S9(4)      COMP.
+      03 MSMV004-MESSAGE             PIC X(78).
+    02 MSMV004-NUMERIC-DISPLAY-OUT.
+      03 MSMV004-SMOG-DATE.
+        04 SMOG-DATE                 PIC 9(6).
+        04 SMOG-DATE-REDEFINED REDEFINES SMOG-DATE.
+          05 YY                      PIC 99.
+          05 MM                      PIC 99.
+          05 DD                      PIC 99.
+    02 MSMV004-ALPHA-DISPLAY-OUT.
+      03 MSMV004-FIRST-NAME          PIC X(30).
+      03 MSMV004-MIDDLE-NAME         PIC X(30).
+      03 MSMV004-LAST-NAME           PIC X(30).
+      03 MSMV004-SUFFIX              PIC X(3).
+      03 MSMV004-STREET              PIC X(30).
+      03 MSMV004-CITY                PIC X(30).
+      03 MSMV004-STATE               PIC X(2).
+      03 MSMV004-ZIP                 PIC X(10).
+?SECTION VEHICLE-RECORD,TANDEM
+* Record VEHICLE-RECORD created on 10/03/91 at 14:38
+  01 VEHICLE-RECORD.
+    02 VEHICLE-REC-GROUP.
+      03 LICENSE-PLATE               PIC X(7).
+      03 VEHICLE-TYPE                PIC 9(2).
+      03 YEAR                        PIC 9(4).
+      03 MAKE                        PIC X(12).
+      03 MODEL                       PIC X(12).
+      03 ENGINE-NUMBER               PIC X(30).
+      03 REGISTRATION-DATE           PIC 9(6).
+      03 SALES-PRICE                 PIC 9(9).
+      03 HORSEPOWER                  PIC 9(4).
+      03 SMOG-DATE                   PIC 9(6).
+      03 NUMBER-OF-AXLES             PIC 9(2).
+?SECTION PERSON-RECORD,TANDEM
+* Record PERSON-RECORD created on 10/03/91 at 14:38
+  01 PERSON-RECORD.
+    02 PERSON-REC-GROUP.
+      03 PERSON-ID                   PIC 9(10).
+      03 PERSON-NAME-KEY.
+        04 LAST-NAME                 PIC X(30).
+        04 FIRST-NAME                PIC X(30).
+      03 MIDDLE-NAME                 PIC X(30).
+      03 SUFFIX                      PIC X(3).
+      03 STREET                      PIC X(30).
+      03 CITY                        PIC X(30).
+      03 STATE                       PIC X(2).
+      03 ZIP                         PIC X(10).
+?SECTION PERSONID-RECORD,TANDEM
+* Record PERSONID-RECORD created on 10/03/91 at 14:38
+  01 PERSONID-RECORD.
+    02 PERSON-ID                     PIC 9(10).
+?SECTION OWNER-RECORD,TANDEM
+* Record OWNER-RECORD created on 10/03/91 at 14:38
+  01 OWNER-RECORD.
+    02 OWNER-REC-GROUP.
+      03 PERSON-ID                   PIC 9(10).
+      03 LICENSE-PLATE               PIC X(7).
+?SECTION HELP-RECORD,TANDEM
+* Record HELP-RECORD created on 10/03/91 at 14:38
+  01 HELP-RECORD.
+    02 HELP-KEY.
+      03 HELP-GENERIC-KEY.
+        04 HELP-PROG-ID              PIC X(8).
+        04 HELP-ROW                  PIC 9(2).
+        04 HELP-COLUMN               PIC 9(2).
+      03 HELP-KEY-SEQNO              PIC 9(2).
+    02 HELP-TEXT                     PIC X(78).
+* SCHEMA PRODUCED DATE - TIME :10/08/91 13:26:32
+?SECTION MSMVERR,TANDEM
+* Definition MSMVERR version 1 updated on 10/08/91 at 13:25
+  01 MSMVERR.
+    02 MSMVERR-TRAN-CODE             PIC 9(1).
+      88 GET-SEND-ERR                VALUE IS 1.
+      88 GET-CALL-ERR                VALUE IS 2.
+    02 MSMVERR-ERR-FIELDS.
+      03 FILLER                      PIC X(1).
+      03 ERR-TERM-STAT               PIC S9(4)      COMP.
+      03 ERR-TERM-SUB-STAT           PIC S9(4)      COMP.
+      03 ERR-MESSAGE                 PIC X(78).

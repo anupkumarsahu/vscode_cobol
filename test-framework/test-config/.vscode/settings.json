@@ -1,0 +1,49 @@
+{
+    "coboleditor.perfile_copybookdirs": [
+        "${fileDirname}"
+    ],
+    "coboleditor.copybookdirs": [
+        "${workspaceFolder}/test-framework/test-fixtures"
+    ],
+    "coboleditor.copybookexts": [
+        "cpy",
+        "CPY",
+        "cbl",
+        "CBL",
+        "cob",
+        "COB"
+    ],
+    "coboleditor.enable_source_scanner": true,
+    "coboleditor.enable_semantic_token_provider": true,
+    "coboleditor.linter": true,
+    "coboleditor.linter_unused_sections": true,
+    "coboleditor.linter_unused_paragraphs": true,
+    "coboleditor.enable_comment_tags": true,
+    "coboleditor.margin": true,
+    "coboleditor.logging_level": [
+        "debug",
+        "info",
+        "warning",
+        "error"
+    ],
+    "coboleditor.fileformat_strategy": "normal",
+    "coboleditor.fileformat": [
+        {
+            "pattern": "**/free-format.cbl",
+            "sourceformat": "free"
+        },
+        {
+            "pattern": "**/tandem-format.cob",
+            "sourceformat": "terminal"
+        },
+        {
+            "pattern": "**/FIXED*.cbl",
+            "sourceformat": "fixed"
+        }
+    ],
+    "files.associations": {
+        "*.cob": "COBOL_TANDEM",
+        "*.cbl": "COBOL",
+        "*.cpy": "COBOL"
+    }
+}

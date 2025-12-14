@@ -1,0 +1,28 @@
+      *****************************************************************
+      * B30QALIB - Library File for Testing
+      * Contains reusable code sections
+      *****************************************************************
+       
+       SECTION COPYLIB-STANDARD-DATA.
+      * Standard data definitions section
+       01  STANDARD-DATE-FIELDS.
+           05  STD-CURRENT-DATE.
+               10  STD-YEAR        PIC 9(4).
+               10  STD-MONTH       PIC 99.
+               10  STD-DAY         PIC 99.
+           05  STD-CURRENT-TIME.
+               10  STD-HOUR        PIC 99.
+               10  STD-MINUTE      PIC 99.
+               10  STD-SECOND      PIC 99.
+       
+       SECTION COPYLIB-PRINT-FILE.
+      * Print file definitions
+       01  PRINT-RECORD.
+           05  PR-LINE             PIC X(132).
+           05  PR-STATUS           PIC XX.
+       
+       SECTION COPYLIB-OPEN-FILE.
+      * File open utilities
+       01  FILE-OPEN-STATUS.
+           05  FO-STATUS-CODE      PIC XX.
+           05  FO-FILE-NAME        PIC X(30).

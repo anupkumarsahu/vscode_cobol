@@ -1,0 +1,431 @@
+*******************************************************************************
+*
+* Program: XCB51P0
+*
+* Purpose: This program has a main program with a nested "sub main" program,
+*          a sub-program with two levels of nested sub-programs, and a
+*          sub-program with no nested sub-programs.  Each sub-program
+*          (including nested sub-programs and the main program) has a set of
+*          uniquely named global data items of varying types.  Some of the
+*          data items are grouped into a record strcuture at different levels.
+*
+?symbols
+ identification division.
+ program-id.  main-program.
+
+ data division.
+ working-storage section.
+
+ 01 MAIN-ALPHA-A              PIC A VALUE "a" GLOBAL.
+ 01 MAIN-ALPHA-A26            PIC A(26) VALUE "abcdefghijklmnopqrstuvwxyz" GLOBAL.
+
+ 01 MAIN-ALPHANUMERIC-A499    PIC A(4)99 VALUE "fred02" GLOBAL.
+ 01 MAIN-ALPHANUMERIC-X       PIC X VALUE "X" GLOBAL.
+ 01 MAIN-ALPHANUMERIC-X37     PIC X(37) VALUE "abcdefghijklmnopqrstuvwxyz1234567890 " GLOBAL.
+
+ 01 MAIN-REC-01-L01 GLOBAL.
+   05 MAIN-EDITEDNUMERIC-1 PIC ZZZ,ZZZ,ZZZ.99 VALUE "  1,000,000.50".
+   05 MAIN-EDITEDNUMERIC-2 PIC $999 VALUE "$555".
+   05 MAIN-EDITEDNUMERIC-3 PIC 999CR VALUE "294CR".
+   05 MAIN-EDITEDNUMERIC-4 PIC 99/99/9999 VALUE "11/28/2005".
+   05 MAIN-EDITEDNUMERIC-5 PIC ***99 VALUE "***03".
+   05 MAIN-EDITEDNUMERIC-6 PIC 9(3)B9(3)B9(4) VALUE "408 285 5000".
+   05 MAIN-EDITEDNUMERIC-7 PIC 9(5).99CR VALUE "12300.01CR".
+   05 MAIN-EDITEDNUMERIC-8 PIC 9(5).99DB VALUE "12300.01DB".
+   05 MAIN-EDITEDALPHA-1   PIC XX/XX/XXXX VALUE "11/28/2005".
+   05 MAIN-EDITEDALPHA-2   PIC XBXBXBXBXBX VALUE "1 2 3 4 5 6".
+   05 MAIN-EDITEDALPHA-3   PIC X0X0X0X0X0X VALUE "10203040506".
+
+ 01 MAIN-REC-02-L01 GLOBAL.
+   05 MAIN-REC-02-L02.
+     10 MAIN-DISPLAY-S9999-TS     DISPLAY PIC  S9(4) Trailing Separate VALUE -20.
+     10 MAIN-DISPLAY-S99-T        DISPLAY PIC S99 Trailing VALUE -16.
+     10 MAIN-BINARY-9             BINARY PIC 9 VALUE 5.
+     10 MAIN-DISPLAY-S9-LE        DISPLAY PIC S9 Leading VALUE 1.
+     10 MAIN-DEFAULT-S99          PIC S99 VALUE 17.
+     10 MAIN-COMP-S9999           COMP PIC S9(4) VALUE -1234.
+     10 MAIN-COMP-999V9           COMP PIC 999V9 VALUE 234.5.
+     10 MAIN-COMPUTATIONAL-9999   COMPUTATIONAL PIC 9(4) VALUE 7891.
+     10 MAIN-DISPLAY-S9-LS        DISPLAY PIC S9 Leading Separate VALUE -1.
+     10 MAIN-DEFAULT-99           PIC 99 VALUE 22.
+     10 MAIN-COMP-9999            COMP PIC 9(4) VALUE 1234.
+     10 MAIN-DISPLAY-S9-TS        DISPLAY PIC S9 Trailing Separate VALUE -5.
+     10 MAIN-DISPLAY-S999-LS      DISPLAY PIC S9(3) Leading Separate VALUE -129.
+     10 MAIN-DISPLAY-S999-LENEG   DISPLAY PIC S9(3) Leading VALUE -999.
+     10 MAIN-DISPLAY-S999-TS      DISPLAY PIC S9(3) Trailing Separate VALUE -19.
+     10 MAIN-DEFAULT-S99V9        PIC S99V9 VALUE 22.1.
+     10 MAIN-DISPLAY-MIN          PIC S9(16)V99 VALUE -9999999999999999.99.
+     10 MAIN-DISPLAY-MAX          PIC S9(16)V99 VALUE 9999999999999999.99.
+     10 MAIN-REC-02-L03.
+       15 MAIN-DISPLAY-999PP        DISPLAY PIC 999PP VALUE 78900.
+       15 MAIN-DISPLAY-S999-LEPOS   DISPLAY PIC S9(3) Leading VALUE 999.
+       15 MAIN-DISPLAY-S99-LE       DISPLAY PIC S99 Leading VALUE -99.
+       15 MAIN-DISPLAY-S9           DISPLAY PIC S9 VALUE -1.
+       15 MAIN-DISPLAY-S916V99      DISPLAY PIC S9(16)V99 VALUE -1234567890123456.78.
+       15 MAIN-DISPLAY-S99-LS       DISPLAY PIC S99 Leading Separate VALUE -19.
+       15 MAIN-DISPLAY-S9999-LE     DISPLAY PIC S9(4) Leading VALUE -9999.
+     10 MAIN-DEFAULT-999V99       PIC 999V99 VALUE 123.45.
+     10 MAIN-DISPLAY-9            DISPLAY PIC 9 VALUE 3.
+     10 MAIN-COMP-9999PP          COMP PIC S999PP VALUE 71700.
+     10 MAIN-DISPLAY-S99-TS       DISPLAY PIC S99 Trailing Separate VALUE 18.
+     10 MAIN-BINARY-S9            BINARY PIC S9 VALUE -5.
+   05 MAIN-DISPLAY-916V99       DISPLAY PIC 9(16)V99 VALUE 1234567890123456.78.
+   05 MAIN-COMP-99P             COMP PIC 99PP VALUE 220.
+   05 MAIN-DISPLAY-S9999-LS     DISPLAY PIC S9(4) Leading Separate VALUE -1234.
+   05 MAIN-COMP-S999V9          COMP PIC S999V9 VALUE -234.5.
+   05 MAIN-COMPUTATIONAL-S9999  COMPUTATIONAL PIC S9(4) VALUE -7891.
+
+ 01 param-item-00 native-4 value 2.
+
+ procedure division.
+ begin-main-program.
+
+    DISPLAY "Main-Program".
+    DISPLAY MAIN-ALPHA-A26.
+    CALL nested-sub-main-program using param-item-00.
+    CALL sub-program-one using param-item-00.
+    STOP RUN.
+
+*****************************************************************************
+
+ identification division.
+ program-id.  nested-sub-main-program.
+
+ data division.
+ working-storage section.
+
+ 01 N-S-MAIN-ALPHA-A              PIC A VALUE "a" GLOBAL.
+ 01 N-S-MAIN-ALPHA-A26            PIC A(26) VALUE "abcdefghijklmnopqrstuvwxyz" GLOBAL.
+
+ 01 N-S-MAIN-ALPHANUMERIC-A499    PIC A(4)99 VALUE "fred02" GLOBAL.
+ 01 N-S-MAIN-ALPHANUMERIC-X       PIC X VALUE "X" GLOBAL.
+ 01 N-S-MAIN-ALPHANUMERIC-X37     PIC X(37) VALUE "abcdefghijklmnopqrstuvwxyz1234567890 " GLOBAL.
+
+ 01 N-S-MAIN-REC-01-L01 GLOBAL.
+   05 N-S-MAIN-EDITEDNUMERIC-1 PIC ZZZ,ZZZ,ZZZ.99 VALUE "  1,000,000.50".
+   05 N-S-MAIN-EDITEDNUMERIC-2 PIC $999 VALUE "$555".
+   05 N-S-MAIN-EDITEDNUMERIC-3 PIC 999CR VALUE "294CR".
+   05 N-S-MAIN-EDITEDNUMERIC-4 PIC 99/99/9999 VALUE "11/28/2005".
+   05 N-S-MAIN-EDITEDNUMERIC-5 PIC ***99 VALUE "***03".
+   05 N-S-MAIN-EDITEDNUMERIC-6 PIC 9(3)B9(3)B9(4) VALUE "408 285 5000".
+   05 N-S-MAIN-EDITEDNUMERIC-7 PIC 9(5).99CR VALUE "12300.01CR".
+   05 N-S-MAIN-EDITEDNUMERIC-8 PIC 9(5).99DB VALUE "12300.01DB".
+   05 N-S-MAIN-EDITEDALPHA-1   PIC XX/XX/XXXX VALUE "11/28/2005".
+   05 N-S-MAIN-EDITEDALPHA-2   PIC XBXBXBXBXBX VALUE "1 2 3 4 5 6".
+   05 N-S-MAIN-EDITEDALPHA-3   PIC X0X0X0X0X0X VALUE "10203040506".
+
+ 01 N-S-MAIN-REC-02-L01 GLOBAL.
+   05 N-S-MAIN-REC-02-L02.
+     10 N-S-MAIN-DISPLAY-S9999-TS     DISPLAY PIC  S9(4) Trailing Separate VALUE -20.
+     10 N-S-MAIN-DISPLAY-S99-T        DISPLAY PIC S99 Trailing VALUE -16.
+     10 N-S-MAIN-BINARY-9             BINARY PIC 9 VALUE 5.
+     10 N-S-MAIN-DISPLAY-S9-LE        DISPLAY PIC S9 Leading VALUE 1.
+     10 N-S-MAIN-DEFAULT-S99          PIC S99 VALUE 17.
+     10 N-S-MAIN-COMP-S9999           COMP PIC S9(4) VALUE -1234.
+     10 N-S-MAIN-COMP-999V9           COMP PIC 999V9 VALUE 234.5.
+     10 N-S-MAIN-COMPUTATIONAL-9999   COMPUTATIONAL PIC 9(4) VALUE 7891.
+     10 N-S-MAIN-DISPLAY-S9-LS        DISPLAY PIC S9 Leading Separate VALUE -1.
+     10 N-S-MAIN-DEFAULT-99           PIC 99 VALUE 22.
+     10 N-S-MAIN-COMP-9999            COMP PIC 9(4) VALUE 1234.
+     10 N-S-MAIN-DISPLAY-S9-TS        DISPLAY PIC S9 Trailing Separate VALUE -5.
+     10 N-S-MAIN-DISPLAY-S999-LS      DISPLAY PIC S9(3) Leading Separate VALUE -129.
+     10 N-S-MAIN-DISPLAY-S999-LENEG   DISPLAY PIC S9(3) Leading VALUE -999.
+     10 N-S-MAIN-DISPLAY-S999-TS      DISPLAY PIC S9(3) Trailing Separate VALUE -19.
+     10 N-S-MAIN-DEFAULT-S99V9        PIC S99V9 VALUE 22.1.
+     10 N-S-MAIN-DISPLAY-MIN          PIC S9(16)V99 VALUE -9999999999999999.99.
+     10 N-S-MAIN-DISPLAY-MAX          PIC S9(16)V99 VALUE 9999999999999999.99.
+     10 N-S-MAIN-REC-02-L03.
+       15 N-S-MAIN-DISPLAY-999PP        DISPLAY PIC 999PP VALUE 78900.
+       15 N-S-MAIN-DISPLAY-S999-LEPOS   DISPLAY PIC S9(3) Leading VALUE 999.
+       15 N-S-MAIN-DISPLAY-S99-LE       DISPLAY PIC S99 Leading VALUE -99.
+       15 N-S-MAIN-DISPLAY-S9           DISPLAY PIC S9 VALUE -1.
+       15 N-S-MAIN-DISPLAY-S916V99      DISPLAY PIC S9(16)V99 VALUE -1234567890123456.78.
+       15 N-S-MAIN-DISPLAY-S99-LS       DISPLAY PIC S99 Leading Separate VALUE -19.
+       15 N-S-MAIN-DISPLAY-S9999-LE     DISPLAY PIC S9(4) Leading VALUE -9999.
+     10 N-S-MAIN-DEFAULT-999V99       PIC 999V99 VALUE 123.45.
+     10 N-S-MAIN-DISPLAY-9            DISPLAY PIC 9 VALUE 3.
+     10 N-S-MAIN-COMP-9999PP          COMP PIC S999PP VALUE 71700.
+     10 N-S-MAIN-DISPLAY-S99-TS       DISPLAY PIC S99 Trailing Separate VALUE 18.
+     10 N-S-MAIN-BINARY-S9            BINARY PIC S9 VALUE -5.
+   05 N-S-MAIN-DISPLAY-916V99       DISPLAY PIC 9(16)V99 VALUE 1234567890123456.78.
+   05 N-S-MAIN-COMP-99P             COMP PIC 99PP VALUE 220.
+   05 N-S-MAIN-DISPLAY-S9999-LS     DISPLAY PIC S9(4) Leading Separate VALUE -1234.
+   05 N-S-MAIN-COMP-S999V9          COMP PIC S999V9 VALUE -234.5.
+   05 N-S-MAIN-COMPUTATIONAL-S9999  COMPUTATIONAL PIC S9(4) VALUE -7891.
+
+ linkage section.
+ 01 param-item-01 native-4.
+
+ procedure division using param-item-01.
+ begin-nested-sub-main-program.
+
+   DISPLAY "Nested-Sub-Main-Program".
+   DISPLAY N-S-MAIN-ALPHA-A26.
+   DISPLAY MAIN-ALPHA-A26.
+   DISPLAY MAIN-DISPLAY-S9 OF MAIN-REC-02-L03.
+
+ end program nested-sub-main-program.
+*****************************************************************************
+
+ end program main-program.
+******************************************************************************
+
+ identification division.
+ program-id.  sub-program-one.
+
+ data division.
+ working-storage section.
+
+ 01 S-P-ONE-ALPHA-A              PIC A VALUE "a" GLOBAL.
+ 01 S-P-ONE-ALPHA-A26            PIC A(26) VALUE "abcdefghijklmnopqrstuvwxyz" GLOBAL.
+
+ 01 S-P-ONE-ALPHANUMERIC-A499    PIC A(4)99 VALUE "fred02" GLOBAL.
+ 01 S-P-ONE-ALPHANUMERIC-X       PIC X VALUE "X" GLOBAL.
+ 01 S-P-ONE-ALPHANUMERIC-X37     PIC X(37) VALUE "abcdefghijklmnopqrstuvwxyz1234567890 " GLOBAL.
+
+ 01 S-P-ONE-REC-01-L01 GLOBAL.
+   05 S-P-ONE-EDITEDNUMERIC-1 PIC ZZZ,ZZZ,ZZZ.99 VALUE "  1,000,000.50".
+   05 S-P-ONE-EDITEDNUMERIC-2 PIC $999 VALUE "$555".
+   05 S-P-ONE-EDITEDNUMERIC-3 PIC 999CR VALUE "294CR".
+   05 S-P-ONE-EDITEDNUMERIC-4 PIC 99/99/9999 VALUE "11/28/2005".
+   05 S-P-ONE-EDITEDNUMERIC-5 PIC ***99 VALUE "***03".
+   05 S-P-ONE-EDITEDNUMERIC-6 PIC 9(3)B9(3)B9(4) VALUE "408 285 5000".
+   05 S-P-ONE-EDITEDNUMERIC-7 PIC 9(5).99CR VALUE "12300.01CR".
+   05 S-P-ONE-EDITEDNUMERIC-8 PIC 9(5).99DB VALUE "12300.01DB".
+   05 S-P-ONE-EDITEDALPHA-1   PIC XX/XX/XXXX VALUE "11/28/2005".
+   05 S-P-ONE-EDITEDALPHA-2   PIC XBXBXBXBXBX VALUE "1 2 3 4 5 6".
+   05 S-P-ONE-EDITEDALPHA-3   PIC X0X0X0X0X0X VALUE "10203040506".
+
+ 01 S-P-ONE-REC-02-L01 GLOBAL.
+   05 S-P-ONE-REC-02-L02.
+     10 S-P-ONE-DISPLAY-S9999-TS     DISPLAY PIC  S9(4) Trailing Separate VALUE -20.
+     10 S-P-ONE-DISPLAY-S99-T        DISPLAY PIC S99 Trailing VALUE -16.
+     10 S-P-ONE-BINARY-9             BINARY PIC 9 VALUE 5.
+     10 S-P-ONE-DISPLAY-S9-LE        DISPLAY PIC S9 Leading VALUE 1.
+     10 S-P-ONE-DEFAULT-S99          PIC S99 VALUE 17.
+     10 S-P-ONE-COMP-S9999           COMP PIC S9(4) VALUE -1234.
+     10 S-P-ONE-COMP-999V9           COMP PIC 999V9 VALUE 234.5.
+     10 S-P-ONE-COMPUTATIONAL-9999   COMPUTATIONAL PIC 9(4) VALUE 7891.
+     10 S-P-ONE-DISPLAY-S9-LS        DISPLAY PIC S9 Leading Separate VALUE -1.
+     10 S-P-ONE-DEFAULT-99           PIC 99 VALUE 22.
+     10 S-P-ONE-COMP-9999            COMP PIC 9(4) VALUE 1234.
+     10 S-P-ONE-DISPLAY-S9-TS        DISPLAY PIC S9 Trailing Separate VALUE -5.
+     10 S-P-ONE-DISPLAY-S999-LS      DISPLAY PIC S9(3) Leading Separate VALUE -129.
+     10 S-P-ONE-DISPLAY-S999-LENEG   DISPLAY PIC S9(3) Leading VALUE -999.
+     10 S-P-ONE-DISPLAY-S999-TS      DISPLAY PIC S9(3) Trailing Separate VALUE -19.
+     10 S-P-ONE-DEFAULT-S99V9        PIC S99V9 VALUE 22.1.
+     10 S-P-ONE-DISPLAY-MIN          PIC S9(16)V99 VALUE -9999999999999999.99.
+     10 S-P-ONE-DISPLAY-MAX          PIC S9(16)V99 VALUE 9999999999999999.99.
+     10 S-P-ONE-REC-02-L03.
+       15 S-P-ONE-DISPLAY-999PP        DISPLAY PIC 999PP VALUE 78900.
+       15 S-P-ONE-DISPLAY-S999-LEPOS   DISPLAY PIC S9(3) Leading VALUE 999.
+       15 S-P-ONE-DISPLAY-S99-LE       DISPLAY PIC S99 Leading VALUE -99.
+       15 S-P-ONE-DISPLAY-S9           DISPLAY PIC S9 VALUE -1.
+       15 S-P-ONE-DISPLAY-S916V99      DISPLAY PIC S9(16)V99 VALUE -1234567890123456.78.
+       15 S-P-ONE-DISPLAY-S99-LS       DISPLAY PIC S99 Leading Separate VALUE -19.
+       15 S-P-ONE-DISPLAY-S9999-LE     DISPLAY PIC S9(4) Leading VALUE -9999.
+     10 S-P-ONE-DEFAULT-999V99       PIC 999V99 VALUE 123.45.
+     10 S-P-ONE-DISPLAY-9            DISPLAY PIC 9 VALUE 3.
+     10 S-P-ONE-COMP-9999PP          COMP PIC S999PP VALUE 71700.
+     10 S-P-ONE-DISPLAY-S99-TS       DISPLAY PIC S99 Trailing Separate VALUE 18.
+     10 S-P-ONE-BINARY-S9            BINARY PIC S9 VALUE -5.
+   05 S-P-ONE-DISPLAY-916V99       DISPLAY PIC 9(16)V99 VALUE 1234567890123456.78.
+   05 S-P-ONE-COMP-99P             COMP PIC 99PP VALUE 220.
+   05 S-P-ONE-DISPLAY-S9999-LS     DISPLAY PIC S9(4) Leading Separate VALUE -1234.
+   05 S-P-ONE-COMP-S999V9          COMP PIC S999V9 VALUE -234.5.
+   05 S-P-ONE-COMPUTATIONAL-S9999  COMPUTATIONAL PIC S9(4) VALUE -7891.
+
+ linkage section.
+ 01 param-item-02 native-4.
+
+ procedure division using param-item-02.
+ begin-sub-program-one.
+
+   DISPLAY "Sub-Program-One".
+   DISPLAY S-P-ONE-ALPHA-A26.
+   CALL nested-sub-program-levelOne USING param-item-02.
+
+*****************************************************************************
+
+ identification division.
+ program-id.  nested-sub-program-levelOne.
+
+ data division.
+ working-storage section.
+
+ 01 N-S-P-ONE-ALPHA-A              PIC A VALUE "a" GLOBAL.
+ 01 N-S-P-ONE-ALPHA-A26            PIC A(26) VALUE "abcdefghijklmnopqrstuvwxyz" GLOBAL.
+
+ 01 N-S-P-ONE-ALPHANUMERIC-A499    PIC A(4)99 VALUE "fred02" GLOBAL.
+ 01 N-S-P-ONE-ALPHANUMERIC-X       PIC X VALUE "X" GLOBAL.
+ 01 N-S-P-ONE-ALPHANUMERIC-X37     PIC X(37) VALUE "abcdefghijklmnopqrstuvwxyz1234567890 " GLOBAL.
+
+ 01 N-S-P-ONE-REC-01-L01 GLOBAL.
+   05 N-S-P-ONE-EDITEDNUMERIC-1 PIC ZZZ,ZZZ,ZZZ.99 VALUE "  1,000,000.50".
+   05 N-S-P-ONE-EDITEDNUMERIC-2 PIC $999 VALUE "$555".
+   05 N-S-P-ONE-EDITEDNUMERIC-3 PIC 999CR VALUE "294CR".
+   05 N-S-P-ONE-EDITEDNUMERIC-4 PIC 99/99/9999 VALUE "11/28/2005".
+   05 N-S-P-ONE-EDITEDNUMERIC-5 PIC ***99 VALUE "***03".
+   05 N-S-P-ONE-EDITEDNUMERIC-6 PIC 9(3)B9(3)B9(4) VALUE "408 285 5000".
+   05 N-S-P-ONE-EDITEDNUMERIC-7 PIC 9(5).99CR VALUE "12300.01CR".
+   05 N-S-P-ONE-EDITEDNUMERIC-8 PIC 9(5).99DB VALUE "12300.01DB".
+   05 N-S-P-ONE-EDITEDALPHA-1   PIC XX/XX/XXXX VALUE "11/28/2005".
+   05 N-S-P-ONE-EDITEDALPHA-2   PIC XBXBXBXBXBX VALUE "1 2 3 4 5 6".
+   05 N-S-P-ONE-EDITEDALPHA-3   PIC X0X0X0X0X0X VALUE "10203040506".
+
+ 01 N-S-P-ONE-REC-02-L01 GLOBAL.
+   05 N-S-P-ONE-REC-02-L02.
+     10 N-S-P-ONE-DISPLAY-S9999-TS     DISPLAY PIC  S9(4) Trailing Separate VALUE -20.
+     10 N-S-P-ONE-DISPLAY-S99-T        DISPLAY PIC S99 Trailing VALUE -16.
+     10 N-S-P-ONE-BINARY-9             BINARY PIC 9 VALUE 5.
+     10 N-S-P-ONE-DISPLAY-S9-LE        DISPLAY PIC S9 Leading VALUE 1.
+     10 N-S-P-ONE-DEFAULT-S99          PIC S99 VALUE 17.
+     10 N-S-P-ONE-COMP-S9999           COMP PIC S9(4) VALUE -1234.
+     10 N-S-P-ONE-COMP-999V9           COMP PIC 999V9 VALUE 234.5.
+     10 N-S-P-ONE-COMPUTATIONAL-9999   COMPUTATIONAL PIC 9(4) VALUE 7891.
+     10 N-S-P-ONE-DISPLAY-S9-LS        DISPLAY PIC S9 Leading Separate VALUE -1.
+     10 N-S-P-ONE-DEFAULT-99           PIC 99 VALUE 22.
+     10 N-S-P-ONE-COMP-9999            COMP PIC 9(4) VALUE 1234.
+     10 N-S-P-ONE-DISPLAY-S9-TS        DISPLAY PIC S9 Trailing Separate VALUE -5.
+     10 N-S-P-ONE-DISPLAY-S999-LS      DISPLAY PIC S9(3) Leading Separate VALUE -129.
+     10 N-S-P-ONE-DISPLAY-S999-LENEG   DISPLAY PIC S9(3) Leading VALUE -999.
+     10 N-S-P-ONE-DISPLAY-S999-TS      DISPLAY PIC S9(3) Trailing Separate VALUE -19.
+     10 N-S-P-ONE-DEFAULT-S99V9        PIC S99V9 VALUE 22.1.
+     10 N-S-P-ONE-DISPLAY-MIN          PIC S9(16)V99 VALUE -9999999999999999.99.
+     10 N-S-P-ONE-DISPLAY-MAX          PIC S9(16)V99 VALUE 9999999999999999.99.
+     10 N-S-P-ONE-REC-02-L03.
+       15 N-S-P-ONE-DISPLAY-999PP        DISPLAY PIC 999PP VALUE 78900.
+       15 N-S-P-ONE-DISPLAY-S999-LEPOS   DISPLAY PIC S9(3) Leading VALUE 999.
+       15 N-S-P-ONE-DISPLAY-S99-LE       DISPLAY PIC S99 Leading VALUE -99.
+       15 N-S-P-ONE-DISPLAY-S9           DISPLAY PIC S9 VALUE -1.
+       15 N-S-P-ONE-DISPLAY-S916V99      DISPLAY PIC S9(16)V99 VALUE -1234567890123456.78.
+       15 N-S-P-ONE-DISPLAY-S99-LS       DISPLAY PIC S99 Leading Separate VALUE -19.
+       15 N-S-P-ONE-DISPLAY-S9999-LE     DISPLAY PIC S9(4) Leading VALUE -9999.
+     10 N-S-P-ONE-DEFAULT-999V99       PIC 999V99 VALUE 123.45.
+     10 N-S-P-ONE-DISPLAY-9            DISPLAY PIC 9 VALUE 3.
+     10 N-S-P-ONE-COMP-9999PP          COMP PIC S999PP VALUE 71700.
+     10 N-S-P-ONE-DISPLAY-S99-TS       DISPLAY PIC S99 Trailing Separate VALUE 18.
+     10 N-S-P-ONE-BINARY-S9            BINARY PIC S9 VALUE -5.
+   05 N-S-P-ONE-DISPLAY-916V99       DISPLAY PIC 9(16)V99 VALUE 1234567890123456.78.
+   05 N-S-P-ONE-COMP-99P             COMP PIC 99PP VALUE 220.
+   05 N-S-P-ONE-DISPLAY-S9999-LS     DISPLAY PIC S9(4) Leading Separate VALUE -1234.
+   05 N-S-P-ONE-COMP-S999V9          COMP PIC S999V9 VALUE -234.5.
+   05 N-S-P-ONE-COMPUTATIONAL-S9999  COMPUTATIONAL PIC S9(4) VALUE -7891.
+
+ 01 call-levelTwo PIC X value "F".
+    88 call-levelTwo-sub-program value "T".
+
+ linkage section.
+ 01 param-item-03 native-4.
+
+ procedure division using param-item-03.
+ begin-nested-sub-levelOne.
+
+   DISPLAY "Nested-Sub-Program-LevelOne".
+   DISPLAY N-S-P-ONE-ALPHA-A26.
+   DISPLAY S-P-ONE-ALPHA-A26.
+   CALL nested-sub-program-levelTwo using param-item-03.
+
+*****************************************************************************
+
+ identification division.
+ program-id.  nested-sub-program-levelTwo.
+
+ data division.
+ working-storage section.
+
+ 01 N-S-P-TWO-ALPHA-A              PIC A VALUE "a" GLOBAL.
+ 01 N-S-P-TWO-ALPHA-A26            PIC A(26) VALUE "abcdefghijklmnopqrstuvwxyz" GLOBAL.
+
+ 01 N-S-P-TWO-ALPHANUMERIC-A499    PIC A(4)99 VALUE "fred02" GLOBAL.
+ 01 N-S-P-TWO-ALPHANUMERIC-X       PIC X VALUE "X" GLOBAL.
+ 01 N-S-P-TWO-ALPHANUMERIC-X37     PIC X(37) VALUE "abcdefghijklmnopqrstuvwxyz1234567890 " GLOBAL.
+
+ 01 N-S-P-TWO-REC-01-L01 GLOBAL.
+   05 N-S-P-TWO-EDITEDNUMERIC-1 PIC ZZZ,ZZZ,ZZZ.99 VALUE "  1,000,000.50".
+   05 N-S-P-TWO-EDITEDNUMERIC-2 PIC $999 VALUE "$555".
+   05 N-S-P-TWO-EDITEDNUMERIC-3 PIC 999CR VALUE "294CR".
+   05 N-S-P-TWO-EDITEDNUMERIC-4 PIC 99/99/9999 VALUE "11/28/2005".
+   05 N-S-P-TWO-EDITEDNUMERIC-5 PIC ***99 VALUE "***03".
+   05 N-S-P-TWO-EDITEDNUMERIC-6 PIC 9(3)B9(3)B9(4) VALUE "408 285 5000".
+   05 N-S-P-TWO-EDITEDNUMERIC-7 PIC 9(5).99CR VALUE "12300.01CR".
+   05 N-S-P-TWO-EDITEDNUMERIC-8 PIC 9(5).99DB VALUE "12300.01DB".
+   05 N-S-P-TWO-EDITEDALPHA-1   PIC XX/XX/XXXX VALUE "11/28/2005".
+   05 N-S-P-TWO-EDITEDALPHA-2   PIC XBXBXBXBXBX VALUE "1 2 3 4 5 6".
+   05 N-S-P-TWO-EDITEDALPHA-3   PIC X0X0X0X0X0X VALUE "10203040506".
+
+ 01 N-S-P-TWO-REC-02-L01 GLOBAL.
+   05 N-S-P-TWO-REC-02-L02.
+     10 N-S-P-TWO-DISPLAY-S9999-TS     DISPLAY PIC  S9(4) Trailing Separate VALUE -20.
+     10 N-S-P-TWO-DISPLAY-S99-T        DISPLAY PIC S99 Trailing VALUE -16.
+     10 N-S-P-TWO-BINARY-9             BINARY PIC 9 VALUE 5.
+     10 N-S-P-TWO-DISPLAY-S9-LE        DISPLAY PIC S9 Leading VALUE 1.
+     10 N-S-P-TWO-DEFAULT-S99          PIC S99 VALUE 17.
+     10 N-S-P-TWO-COMP-S9999           COMP PIC S9(4) VALUE -1234.
+     10 N-S-P-TWO-COMP-999V9           COMP PIC 999V9 VALUE 234.5.
+     10 N-S-P-TWO-COMPUTATIONAL-9999   COMPUTATIONAL PIC 9(4) VALUE 7891.
+     10 N-S-P-TWO-DISPLAY-S9-LS        DISPLAY PIC S9 Leading Separate VALUE -1.
+     10 N-S-P-TWO-DEFAULT-99           PIC 99 VALUE 22.
+     10 N-S-P-TWO-COMP-9999            COMP PIC 9(4) VALUE 1234.
+     10 N-S-P-TWO-DISPLAY-S9-TS        DISPLAY PIC S9 Trailing Separate VALUE -5.
+     10 N-S-P-TWO-DISPLAY-S999-LS      DISPLAY PIC S9(3) Leading Separate VALUE -129.
+     10 N-S-P-TWO-DISPLAY-S999-LENEG   DISPLAY PIC S9(3) Leading VALUE -999.
+     10 N-S-P-TWO-DISPLAY-S999-TS      DISPLAY PIC S9(3) Trailing Separate VALUE -19.
+     10 N-S-P-TWO-DEFAULT-S99V9        PIC S99V9 VALUE 22.1.
+     10 N-S-P-TWO-DISPLAY-MIN          PIC S9(16)V99 VALUE -9999999999999999.99.
+     10 N-S-P-TWO-DISPLAY-MAX          PIC S9(16)V99 VALUE 9999999999999999.99.
+     10 N-S-P-TWO-REC-02-L03.
+       15 N-S-P-TWO-DISPLAY-999PP        DISPLAY PIC 999PP VALUE 78900.
+       15 N-S-P-TWO-DISPLAY-S999-LEPOS   DISPLAY PIC S9(3) Leading VALUE 999.
+       15 N-S-P-TWO-DISPLAY-S99-LE       DISPLAY PIC S99 Leading VALUE -99.
+       15 N-S-P-TWO-DISPLAY-S9           DISPLAY PIC S9 VALUE -1.
+       15 N-S-P-TWO-DISPLAY-S916V99      DISPLAY PIC S9(16)V99 VALUE -1234567890123456.78.
+       15 N-S-P-TWO-DISPLAY-S99-LS       DISPLAY PIC S99 Leading Separate VALUE -19.
+       15 N-S-P-TWO-DISPLAY-S9999-LE     DISPLAY PIC S9(4) Leading VALUE -9999.
+     10 N-S-P-TWO-DEFAULT-999V99       PIC 999V99 VALUE 123.45.
+     10 N-S-P-TWO-DISPLAY-9            DISPLAY PIC 9 VALUE 3.
+     10 N-S-P-TWO-COMP-9999PP          COMP PIC S999PP VALUE 71700.
+     10 N-S-P-TWO-DISPLAY-S99-TS       DISPLAY PIC S99 Trailing Separate VALUE 18.
+     10 N-S-P-TWO-BINARY-S9            BINARY PIC S9 VALUE -5.
+   05 N-S-P-TWO-DISPLAY-916V99       DISPLAY PIC 9(16)V99 VALUE 1234567890123456.78.
+   05 N-S-P-TWO-COMP-99P             COMP PIC 99PP VALUE 220.
+   05 N-S-P-TWO-DISPLAY-S9999-LS     DISPLAY PIC S9(4) Leading Separate VALUE -1234.
+   05 N-S-P-TWO-COMP-S999V9          COMP PIC S999V9 VALUE -234.5.
+   05 N-S-P-TWO-COMPUTATIONAL-S9999  COMPUTATIONAL PIC S9(4) VALUE -7891.
+
+ linkage section.
+ 01 ls-inner-item native-4.
+
+ procedure division using ls-inner-item.
+ begin-nested-sub-levelTwo.
+
+   DISPLAY "Nested-Sub-Program-LevelTwo".
+   DISPLAY N-S-P-TWO-ALPHA-A26.
+   DISPLAY N-S-P-ONE-ALPHA-A26.
+   DISPLAY S-P-ONE-ALPHA-A26.
+
+ end program nested-sub-program-levelTwo.
+*****************************************************************************
+
+ end program nested-sub-program-levelOne.
+*****************************************************************************
+
+ end program sub-program-one.
+*****************************************************************************
+
+ identification division.
+ program-id.  sub-program-two.
+
+ data division.
+ working-storage section.
+
+ linkage section.
+ 01 param-item-05 native-4.
+
+ procedure division using param-item-05.
+ begin-sub-program-two.
+
+   DISPLAY "Sub-Program-Two".
+
+ end program sub-program-two.
+*****************************************************************************

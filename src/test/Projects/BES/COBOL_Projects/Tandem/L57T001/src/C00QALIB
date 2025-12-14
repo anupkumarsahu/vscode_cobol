@@ -1,0 +1,301 @@
+?SECTION COPYLIB-PRINT-FILE
+     SELECT PRINT-FILE   ASSIGN TO $S.
+
+?SECTION COPYLIB-STANDARD-FILE
+********************************************************************************
+*                                                                              *
+*                              STANDARD FILES                                  *
+*                                                                              *
+********************************************************************************
+
+ FD PRINT-FILE
+    LABEL RECORDS OMITTED.
+
+ 01 PRINT-REC                        PICTURE X(132).
+
+ 01 DUMMY-RECORD                     PICTURE X(132).
+
+?SECTION COPYLIB-STANDARD-DATA
+********************************************************************************
+*                                                                              *
+*                            STANDARD DATA ITEMS                               *
+*                                                                              *
+********************************************************************************
+
+ 01 TEST-RESULTS.
+    05 PAGE-CONTROL-T                PICTURE X   VALUE SPACE.
+    05 FEATURE                       PICTURE X(20).
+    05 FILLER                        PICTURE X   VALUE SPACE.
+    05 P-OR-F                        PICTURE X(5).
+    05 FILLER                        PICTURE X   VALUE SPACE.
+    05 PAR-NAME.
+       10 FILLER                     PICTURE X(20).
+    05 FILLER                        PICTURE X(3) VALUE SPACE.
+    05 computed-a                    PICTURE X(20) JUSTIFIED RIGHT.
+    05 computed-x REDEFINES computed-a PICTURE X(20).
+    05 computed-n REDEFINES computed-a PICTURE -(20).
+    05 r1-computed-a REDEFINES computed-a.
+       10 FILLER                     PICTURE X(14).
+       10 computed-i                 PICTURE -9(5).
+    05 r2-computed-a REDEFINES computed-a.
+       10 FILLER                     PICTURE X(9).
+       10 computed-d                 PICTURE -9(10).
+    05 r3-computed-a REDEFINES computed-a.
+       10 FILLER                     PICTURE X.
+       10 computed-q                 PICTURE -9(18).
+    05 FILLER                        PICTURE X(6) VALUE SPACES.
+    05 correct-a                     PICTURE X(20) JUSTIFIED RIGHT.
+    05 correct-x REDEFINES correct-a PICTURE X(20).
+    05 correct-n REDEFINES correct-a PICTURE -(20).
+    05 r1-correct-a REDEFINES correct-a.
+       10 FILLER                     PICTURE X(14).
+       10 correct-i                  PICTURE -9(5).
+    05 r2-correct-a REDEFINES correct-a.
+       10 FILLER                     PICTURE X(9).
+       10 correct-d                  PICTURE -9(10).
+    05 r3-correct-a REDEFINES correct-a.
+       10 FILLER                     PICTURE X.
+       10 correct-q                  PICTURE -9(18).
+    05 FILLER                        PICTURE X(6) VALUE SPACES.
+    05 RE-MARK                       PICTURE X(29) VALUE SPACES.
+
+ 01 COLUMNS-LINE-1.
+    05 PAGE-CONTROL-C-1              PICTURE X   VALUE SPACE.
+    05 FILLER                        PICTURE X(131)
+                                     VALUE "FEATURE              PASS
+-                                          "  PARAGRAPH NAME         COMPUTED
+-                                          " DATA             CORRECT DATA
+-                                          "              REMARKS".
+    05 FILLER                        PICTURE X(20)   VALUE SPACES.
+
+ 01 COLUMNS-LINE-2.
+    05 PAGE-CONTROLC-2               PICTURE X      VALUE SPACES.
+    05 FILLER                        PICTURE X(6)   VALUE "TESTED".
+    05 FILLER                        PICTURE X(15)  VALUE SPACES.
+    05 FILLER                        PICTURE X(4)   VALUE "FAIL".
+    05 FILLER                        PICTURE X(106)  VALUE SPACES.
+
+ 01 REC-SKL-SUB                      PICTURE 9(2)   VALUE ZERO.
+
+ 01 SUBTEST-CNT                      PICTURE 9(2)   VALUE ZERO.
+
+ 01 PASS-COUNTER                     PICTURE 9(3)   VALUE ZERO.
+
+ 01 DELETE-CNT                       PICTURE 9(3)   VALUE ZERO.
+
+ 01 ERROR-COUNTER                    PICTURE 9(3)   VALUE ZERO.
+
+ 01 INSPECT-COUNTER                  PICTURE 9(3)   VALUE ZERO.
+
+ 01 ERROR-HOLD                       PICTURE 9(3)   VALUE ZERO.
+
+ 01 HEADER-LINE-1.
+    05 PAGE-CONTROL-H-1              PICTURE 9   VALUE 1.
+    05 FILLER                        PICTURE X(50)   VALUE SPACES.
+    05 FILLER                        PICTURE X(42)
+                                     VALUE "TANDEM COBOL85 TEST ROUTINES".
+    05 FILLER                        PICTURE X(43)   VALUE SPACES.
+
+ 01 HEADER-LINE-2.
+    05 PAGE-CONTROL-H-2              PICTURE X VALUE SPACE.
+    05 FILLER                        PICTURE X(47)
+                                     VALUE "TANDEM COMPUTERS:  PROPRIETARY
+-                                          " AND CONFIDENTIAL".
+    05 FILLER                        PIC X(5)   VALUE SPACES.
+    05 FILLER                        PICTURE X(19)
+                                     VALUE "TEST RESULTS SET-  ".
+    05 TEST-ID                       PICTURE X(9).
+    05 FILLER                        PICTURE X(36)   VALUE SPACES.
+
+ 01 HEADER-LINE-3.
+    05 PAGE-CONTROL-H-3              PICTURE X VALUE SPACE.
+    05 FILLER                        PICTURE X(16)   VALUE "TEST INTRODUCED ".
+    05 FILLER                        PIC X(4)   VALUE "MMMA".
+    05 FILLER                        PIC X      VALUE SPACE.
+    05 FILLER                        PIC X(4)   VALUE "YYYA".
+    05 FILLER                        PIC X(15)   VALUE "; LAST REVISED ".
+    05 FILLER                        PIC X(4)   VALUE "MMMB".
+    05 FILLER                        PIC X      VALUE SPACE.
+    05 FILLER                        PIC X(4)   VALUE "YYYB".
+    05 FILLER                        PICTURE X(71)   VALUE SPACES.
+
+ 01 ENDER-LINE-1.
+    05 PAGE-CONTROL-E-1              PICTURE X   VALUE SPACE.
+    05 FILLER                        PICTURE X(52)   VALUE SPACES.
+    05 FILLER                        PICTURE X(15)   VALUE "END OF TEST -- ".
+    05 ID-AGAIN                      PICTURE X(9).
+    05 FILLER                        PICTURE X(56)   VALUE SPACES.
+
+ 01 ENDER-LINE-2.
+    05 PAGE-CONTROL-E-2              PICTURE X   VALUE SPACE.
+    05 FILLER                        PICTURE X(52)   VALUE SPACES.
+    05 PASS-COUNTER-XXX              PICTURE X(3)    VALUE SPACE.
+    05 FILLER                        PICTURE X(4)    VALUE " OF ".
+    05 ERROR-HOLD-XXX                PICTURE X(3)    VALUE SPACE.
+    05 FILLER PIC X(40) VALUE "  TESTS WERE EXECUTED SUCCESSFULLY".
+
+ 01 ENDER-LINE-3.
+    05 PAGE-CONTROL-E-3              PICTURE X   VALUE SPACE.
+    05 FILLER                        PICTURE X(52)   VALUE SPACES.
+    05 ERROR-TOTAL                   PICTURE X(3)    VALUE SPACES.
+    05 FILLER                        PICTURE X       VALUE SPACE.
+    05 ENDER-DESC                    PICTURE X(44)   VALUE "ERROR(S)
+-                                    " ENCOUNTERED".
+    05 FILLER                        PICTURE X(20)   VALUE SPACES.
+
+ 01 ENDER-LINE-4.
+    05 PAGE-CONTROL-E-4              PICTURE X VALUE SPACE.
+    05 FILLER                        PICTURE X(47)
+                                     VALUE "TANDEM COMPUTERS:  PROPRIETARY
+-                                          " AND CONFIDENTIAL".
+    05 FILLER                        PICTURE X(73)   VALUE SPACES.
+
+ 01 HYPHEN-LINE.
+    05 PAGE-CONTROL-HY               PICTURE X   VALUE SPACE.
+    05 FILLER                        PICTURE X(131)
+                                     VALUE "------------------------
+-                                    "-----------------------------------------
+-                                    "------------------------
+-                                    "------------
+-                                    "------------------------------".
+?SECTION COPYLIB-PROG-ID
+********************************************************************************
+*                                                                              *
+*                        DATA ITEMS FOR THIS TEST                              *
+*                                                                              *
+********************************************************************************
+
+      77 PROG-ID                     PIC X(7)   VALUE "XXXXXXX".
+
+?SECTION COPYLIB-OPEN-FILE
+ COPYLIB-OPEN-FILE SECTION.
+
+ OPEN-IT.
+     OPEN OUTPUT PRINT-FILE
+     MOVE PROG-ID TO TEST-ID
+                     ID-AGAIN
+     MOVE SPACE TO TEST-RESULTS
+ .
+ HEAD-ROUTINE.
+     MOVE SPACE TO DUMMY-RECORD
+     WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+     MOVE HEADER-LINE-1 TO DUMMY-RECORD
+     PERFORM WRITE-LINE
+     PERFORM PRINT-BLANK-LINE
+     MOVE HEADER-LINE-2 TO DUMMY-RECORD
+     PERFORM WRITE-LINE
+     PERFORM PRINT-BLANK-LINE 4 TIMES
+     MOVE HEADER-LINE-3 TO DUMMY-RECORD
+     PERFORM WRITE-LINE
+     PERFORM PRINT-BLANK-LINE 2 TIMES
+ .
+ COLUMN-NAMES-ROUTINE.
+     MOVE COLUMNS-LINE-1 TO DUMMY-RECORD
+     PERFORM WRITE-LINE
+     MOVE SPACE TO PAGE-CONTROL-C-1
+     MOVE COLUMNS-LINE-2 TO DUMMY-RECORD
+     PERFORM WRITE-LINE
+     PERFORM PRINT-BLANK-LINE
+     MOVE HYPHEN-LINE TO DUMMY-RECORD
+     PERFORM WRITE-LINE
+ .
+?SECTION COPYLIB-TEST-INIT
+ COPYLIB-TEST-INIT SECTION.
+
+     MOVE SPACES TO FEATURE
+     MOVE SPACES TO PAR-NAME
+     MOVE SPACES TO P-OR-F
+     MOVE SPACES TO COMPUTED-A
+     MOVE SPACES TO CORRECT-A
+     MOVE SPACES TO RE-MARK
+ .
+?SECTION COPYLIB-CLOSE-FILE
+ COPYLIB-CLOSE-FILE SECTION.
+
+ END-ROUTINE.
+     MOVE HYPHEN-LINE TO DUMMY-RECORD
+     PERFORM WRITE-LINE
+ .
+ PARA-Z.
+     PERFORM PRINT-BLANK-LINE 4 TIMES
+     MOVE ENDER-LINE-1 TO DUMMY-RECORD
+     PERFORM WRITE-LINE
+ .
+ END-ROUTINE-1.
+* Test pass line
+     PERFORM PRINT-BLANK-LINE
+     COMPUTE ERROR-HOLD = PASS-COUNTER + ERROR-COUNTER +
+                          INSPECT-COUNTER + DELETE-CNT.
+     MOVE PASS-COUNTER TO PASS-COUNTER-XXX.
+     MOVE ERROR-HOLD TO ERROR-HOLD-XXX.
+     MOVE ENDER-LINE-2 TO DUMMY-RECORD.
+     PERFORM WRITE-LINE
+ .
+ END-ROUTINE-2.
+     IF ERROR-COUNTER IS EQUAL TO ZERO
+              GO TO END-ROUTINE-3.
+     MOVE ERROR-COUNTER TO ERROR-TOTAL
+     GO TO END-ROUTINE-4
+ .
+ END-ROUTINE-3.
+     MOVE "NO " TO ERROR-TOTAL
+ .
+ END-ROUTINE-4.
+* Test failed line
+     MOVE ENDER-LINE-3 TO DUMMY-RECORD
+     PERFORM WRITE-LINE
+* Test deleted line
+     IF DELETE-CNT IS EQUAL TO ZERO
+        MOVE "NO " TO ERROR-TOTAL
+     ELSE
+        MOVE DELETE-CNT TO ERROR-TOTAL.
+     MOVE "TEST(S) DELETED" TO ENDER-DESC
+     MOVE ENDER-LINE-3 TO DUMMY-RECORD
+     PERFORM WRITE-LINE.
+* Test required inspect line
+     IF INSPECT-COUNTER EQUAL TO ZERO
+        MOVE "NO " TO ERROR-TOTAL
+     ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+     MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+     MOVE ENDER-LINE-3 TO DUMMY-RECORD.
+     PERFORM WRITE-LINE.
+ END-ROUTINE-5.
+     MOVE ENDER-LINE-4 TO DUMMY-RECORD
+     PERFORM WRITE-LINE
+ .
+ CLOSE-IT.
+     CLOSE PRINT-FILE
+ .
+?SECTION COPYLIB-GENERAL-UTILITIES
+ COPYLIB-GENERAL-UTILITIES SECTION.
+
+ IN-SPECT.
+     ADD 1 TO INSPECT-COUNTER.
+     MOVE "INSPT" TO P-OR-F
+ .
+ PASS.
+     ADD 1 TO PASS-COUNTER.
+     MOVE "PASS" TO P-OR-F
+ .
+ FAIL.
+     ADD 1 TO ERROR-COUNTER
+     MOVE "FAIL*" TO P-OR-F
+ .
+ DE-LETE.
+     ADD 1 TO DELETE-CNT
+     MOVE SPACE TO P-OR-F
+     MOVE "    ************    " TO COMPUTED-A
+     MOVE "    ************    " TO CORRECT-A
+     MOVE "****TEST DELETED****" TO RE-MARK
+ .
+ PRINT-DETAIL.
+     MOVE TEST-RESULTS TO PRINT-REC
+     PERFORM WRITE-LINE
+ .
+ PRINT-BLANK-LINE.
+     MOVE SPACES TO DUMMY-RECORD
+     PERFORM WRITE-LINE
+ .
+ WRITE-LINE.
+     WRITE DUMMY-RECORD AFTER ADVANCING 1 LINE
+ .

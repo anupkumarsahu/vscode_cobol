@@ -20,6 +20,7 @@ import { COBSCANNER_END_OF_FILE, COBSCANNER_START_OF_FILE } from "./cobscannerda
 export enum COBOLTokenStyle {
     CopyBook = "Copybook",
     CopyBookInOrOf = "CopybookInOrOf",
+    CopyBookLib = "CopybookLib",
     ProgramId = "Program-Id",
     ImplicitProgramId = "ImplicitProgramId-Id",
     FunctionId = "Function-Id",
@@ -794,6 +795,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
     public readonly methods: Map<string, COBOLToken>;
     public readonly copyBooksUsed: Map<string, COBOLCopybookToken[]>;
     public readonly copyBooksUnresolved: Map<string, COBOLToken[]>;
+    public readonly copyBookLibraries: Map<string, COBOLToken[]>;
 
     public readonly diagMissingFileWarnings: Map<string, COBOLFileSymbol>;
     public readonly portWarnings: portResult[];
@@ -956,6 +958,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
         this.scan_comment_for_ls_control = configHandler.scan_comment_for_ls_control;
         this.copyBooksUsed = new Map<string, COBOLCopybookToken[]>();
         this.copyBooksUnresolved = new Map<string, COBOLToken[]>();
+        this.copyBookLibraries = new Map<string, COBOLToken[]>();
         this.sections = new Map<string, COBOLToken>();
         this.paragraphs = new Map<string, COBOLToken>();
         this.constantsOrVariables = new Map<string, COBOLVariable[]>();
@@ -1404,7 +1407,8 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
         const state: ParseState = this.sourceReferences.state;
         let startColumn = currentCol;
         if (tokenType !== COBOLTokenStyle.CopyBook &&
-            tokenType !== COBOLTokenStyle.CopyBookInOrOf) {
+            tokenType !== COBOLTokenStyle.CopyBookInOrOf &&
+            tokenType !== COBOLTokenStyle.CopyBookLib) {
             // if (currentCol === 0) {
             startColumn = _line.indexOf(token, currentCol);
             if (startColumn === -1) {
@@ -3154,6 +3158,25 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
             library_name_or_lit_desc = copyVerb + " " + copyBook + middleDesc + library_name_or_lit;
             // trim...
             copyToken = this.newCOBOLToken(COBOLTokenStyle.CopyBookInOrOf, lineNumber, line, tcurrentCurrentCol, trimmedCopyBook, library_name_or_lit_desc, insertInSection, library_name_or_lit, false);
+            
+            // Create a separate clickable token for the library name
+            const libSourceName = isIn ? cbInfo.literal2 : cbInfo.library_name;
+            if (libSourceName.length > 0) {
+                const trimmedLibName = COBOLSourceScanner.trimLiteral(libSourceName, true);
+                const libStartCol = line.toLowerCase().indexOf(libSourceName.toLowerCase(), tcurrentCurrentCol);
+                if (libStartCol !== -1) {
+                    const libToken = this.newCOBOLToken(COBOLTokenStyle.CopyBookLib, lineNumber, line, libStartCol, trimmedLibName, "Library: " + trimmedLibName, insertInSection, "", false);
+                    libToken.rangeEndLine = lineNumber;
+                    libToken.rangeEndColumn = libStartCol + libSourceName.length;
+                    // Store in the copyBookLibraries map for definition provider
+                    const libKey = trimmedLibName.toLowerCase();
+                    if (this.copyBookLibraries.has(libKey)) {
+                        this.copyBookLibraries.get(libKey)!.push(libToken);
+                    } else {
+                        this.copyBookLibraries.set(libKey, [libToken]);
+                    }
+                }
+            }
         }
         else {
             copyToken = this.newCOBOLToken(COBOLTokenStyle.CopyBook, lineNumber, line, tcurrentCurrentCol, trimmedCopyBook, copyVerb + " " + copyBook, insertInSection, "", false);

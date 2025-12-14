@@ -1,0 +1,35 @@
+*******************************************************************************
+*
+* Source file for Program: XCB63P0
+*
+?SECTION main-program-sec
+ identification division.
+ program-id.  main-program.
+
+ data division.
+ working-storage section.
+
+ 01 main-string PIC X(80) VALUE SPACES.
+
+ 01 RESULT  PIC 9(4).
+
+ procedure division.
+
+?SOURCE scb0063b(main-program-begin-sec)
+
+?SOURCE scb0063b(main-paragraph-00-sec)
+
+?SOURCE scb0063b(main-paragraph-01-sec)
+
+?SOURCE scb0063b(main-paragraph-02-sec)
+
+?SOURCE scb0063b(main-paragraph-03-sec)
+
+?SOURCE scb0063b(main-paragraph-04-sec)
+
+?SOURCE scb0063b(main-paragraph-05-sec)
+
+?SOURCE scb0063b(main-program-exit-sec)
+
+ END PROGRAM main-program.
+
