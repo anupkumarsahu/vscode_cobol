@@ -13,7 +13,7 @@ import * as opencopybook from "./opencopybook";
 
 // Language service providers for IntelliSense and code navigation
 import { KeywordAutocompleteCompletionItemProvider } from "./vskeywordprovider";
-import { CobolSymbolInformationProvider, JCLDocumentSymbolProvider, MFDirectivesSymbolProvider } from "./vssymbolprovider";
+import { CobolSymbolInformationProvider, MFDirectivesSymbolProvider } from "./vssymbolprovider";
 
 // Core COBOL source scanning and configuration
 import { VSCOBOLSourceScanner } from "./vscobolscanner";
@@ -858,9 +858,6 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(languages.registerCodeActionsProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), cobolfixer));
 
     // Register completion item providers for IntelliSense
-    // JCL (Job Control Language) keyword completion
-    context.subscriptions.push(languages.registerCompletionItemProvider(VSExtensionUtils.getAllJCLSelectors(settings), new KeywordAutocompleteCompletionItemProvider(false, settings)));
-    
     // COBOL keyword completion
     context.subscriptions.push(languages.registerCompletionItemProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), new KeywordAutocompleteCompletionItemProvider(true, settings)));
 
@@ -869,10 +866,6 @@ export async function activate(context: ExtensionContext) {
 
     // Register document symbol providers for outline view (conditional on user settings)
     if (settings.outline) {
-        // JCL document outline provider
-        const jclDocumentSymbolProvider = new JCLDocumentSymbolProvider();
-        context.subscriptions.push(languages.registerDocumentSymbolProvider(VSExtensionUtils.getAllJCLSelectors(settings), jclDocumentSymbolProvider));
-
         // COBOL document outline provider (shows programs, sections, paragraphs, etc.)
         const symbolInformationProvider = new CobolSymbolInformationProvider();
         context.subscriptions.push(languages.registerDocumentSymbolProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), symbolInformationProvider));

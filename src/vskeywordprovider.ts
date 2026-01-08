@@ -3,7 +3,6 @@ import { SourceScannerUtils } from "./cobolsourcescanner";
 import { VSCOBOLConfiguration } from "./vsconfiguration";
 import { ICOBOLSettings, intellisenseStyle } from "./iconfiguration";
 import { getCOBOLKeywordList } from "./keywords/cobolKeywords";
-import { jclStatements } from "./keywords/jclstatements";
 import { KeywordSnippetProvider, SnippetCompletionItemProvider } from "./vssnippetprovider";
 import { VSCustomIntelliseRules } from "./vscustomrules";
 import { VSExternalFeatures } from "./vsexternalfeatures";
@@ -41,21 +40,7 @@ export class KeywordAutocompleteCompletionItemProvider implements CompletionItem
 
 		const items: CompletionItem[] = [];
 		const wordToCompleteLower = wordToComplete.toLowerCase();
-		const words: string[] = this.isCOBOL === false ? jclStatements : getCOBOLKeywordList(langid);
-
-		if (!this.isCOBOL) {
-			for (const key of words) {
-				const keyLower = key.toLowerCase();
-				if (keyLower.startsWith(wordToCompleteLower) === false) {
-					continue;
-				}
-				const ci = new CompletionItem(key, CompletionItemKind.Keyword);
-				ci.detail = `Keyword ${key}`;
-				items.push(ci);
-			}
-
-			return items;
-		}
+		const words: string[] = getCOBOLKeywordList(langid);
 
 		switch (wordToCompleteLower) {
 			case "function":

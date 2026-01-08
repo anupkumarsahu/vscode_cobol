@@ -1,7 +1,11 @@
 # Copilot Instructions for VS Code COBOL Extension
 
 ## Overview
-This is a comprehensive VS Code extension for COBOL development (`bitlang.cobol`) supporting multiple COBOL dialects including Rocket COBOL (formerly Micro Focus), ACUCOBOL, RMCOBOL, COBOL-IT, and ILECOBOL. The extension provides syntax highlighting, IntelliSense, source navigation, linting, and integration with COBOL compilers.
+This is a comprehensive VS Code extension for COBOL development (`bitlang.cobol`) supporting multiple COBOL dialects including **NonStop COBOL (formerly Tandem)**. The extension provides syntax highlighting, IntelliSense, source navigation, linting, and integration with COBOL compilers.
+
+**Repository**: https://github.com/spgennard/vscode_cobol  
+**Marketplace ID**: `bitlang.cobol`  
+**License**: SEE LICENSE IN LICENSE
 
 ## Architecture & Core Components
 
@@ -24,12 +28,20 @@ This is a comprehensive VS Code extension for COBOL development (`bitlang.cobol`
 ### Multi-Dialect Language Support
 Each dialect has separate language IDs and configurations:
 - `COBOL` (default, Rocket/Micro Focus)
+- `COBOL_TANDEM` (HPE NonStop COBOL with `?` directive support)
 - `ACUCOBOL` (ACU COBOL-GT)
 - `RMCOBOL` (RM COBOL)
 - `ILECOBOL` (IBM i COBOL)
 - `COBOLIT` (COBOL-IT)
 
-File associations and settings are dialect-specific via `package.json` contributions.
+**Critical Pattern**: Language ID `COBOL_TANDEM` activates NonStop-specific features including:
+- Question mark directive parsing (`?ANSI`, `?HEADING`, `?IF`, `?INSPECT`, etc.)
+- Tandem reference format (different margins: columns 1-132)
+- Special syntax highlighting in [syntaxes/directives.tandem.json](syntaxes/directives.tandem.json)
+- Computer names like `TANDEM T16`, `TANDEM VLX`, `TANDEM/16`, `TANDEM NON-STOP`
+- See [NONSTOP-COBOL-TEST.md](NONSTOP-COBOL-TEST.md) and [test-complete-nonstop-cobol.cbl](test-complete-nonstop-cobol.cbl) for examples
+
+File associations and settings are dialect-specific via [package.json](package.json) contributions.
 
 ### Source Scanning & Symbol Management
 - **Primary Scanner**: `src/cobolsourcescanner.ts` - Parses COBOL source and extracts symbols
@@ -87,17 +99,20 @@ npm run test          # Run test suite
 
 ### Debug Configuration (`.vscode/launch.json`)
 - **Launch Extension**: Full extension in new VS Code window (requires `npm: webpack` pre-launch)
-- **Extension Tests**: Automated test execution
+- **Extension Tests**: Automated test execution (uses `npm: compile` pre-launch)
 - **Web Extension**: Browser-based debugging for vscode.dev (requires `npm: watch-web` pre-launch)
+- **Launch Extension (Watch Mode)**: Development with file watching (uses `npm: watch` pre-launch)
 - **Key Pattern**: Each debug config specifies its required `preLaunchTask` to ensure proper compilation
 
-### VS Code Tasks (`.vscode/tasks.json`)
-Five essential tasks for development workflow:
-- `npm: compile` - TypeScript compilation (`tsc -b`)
-- `npm: compile-web` - Webpack build for web extension
-- `npm: watch-web` - Development watch mode with hot reload
-- `npm: webpack` - Production webpack build for main extension
-- `npm: lint` - ESLint validation
+### VS Code Tasks
+Essential npm scripts for development workflow (no explicit tasks.json, uses package.json scripts):
+- `npm run compile` - TypeScript compilation (`tsc -b`)
+- `npm run webpack` - Production webpack build for main extension
+- `npm run compile-web` - Webpack build for web extension  
+- `npm run watch-web` - Development watch mode with hot reload
+- `npm run watch` - File watching for main extension
+- `npm run lint` - ESLint validation
+- `npm run test` - Run test suite via `node ./out/test/runTest.js`
 
 ### Problem Matchers
 Extensive compiler integration via `package.json` `problemMatchers`:
@@ -177,11 +192,32 @@ npm run lint          # ESLint validation
 - **Provider Registration**: All language features implemented as separate VS Code providers in `src/vs*provider.ts` files
 - **Source Abstraction**: Use `ISourceHandler` interface (`VSCodeSourceHandler` vs `FileSourceHandler`) for file access
 - **Extension Conflict**: Auto-detection of Rocket COBOL extension with dynamic language ID switching via `src/vscommon_commands.ts`
+
+### Testing and Validation
+- **Test Location**: `src/test/` directory with test framework in `test-framework/`
+- **Test Files**: Multiple COBOL test files in workspace root (e.g., `test-complete-nonstop-cobol.cbl`, `test-tandem-issue.cbl`)
+- **Test Documentation**: See [TEST-PLAN.md](TEST-PLAN.md) for comprehensive test scenarios
+- **NonStop Testing**: [NONSTOP-COBOL-TEST.md](NONSTOP-COBOL-TEST.md) for Tandem dialect validation
+
+### Package.json Scripts Reference
+Key npm scripts defined in package.json for development:
+- `vscode:prepublish`: Runs webpack in production mode before publishing
+- `compile`: TypeScript compilation only
+- `webpack`: Production build of main extension
+- `compile-web`: Web extension build
+- `watch`: File watching for development (main extension)
+- `watch-web`: File watching for web extension
+- `package`: Creates VSIX package using vsce
+- `lint`: ESLint validation with auto-fix
+- `test`: Runs test suite via `out/test/runTest.js`
 ### Enhanced Logging System with Precedence
+- **Implementation**: `src/vslogger.ts` with `VSLogger` class providing all logging methods
 - **Logging Levels**: `trace(5)`, `debug(10)`, `info(20)`, `warning(30)`, `error(40)`, `fatal(50)`
 - **Precedence Model**: TRACE < DEBUG < INFO < WARNING < ERROR < FATAL - each level includes all higher priority levels
-- **Configuration**: `coboleditor.logging_level` array setting with precedence-based filtering
-- **Caller Information**: Automatic `[filename:line]` tracking via stack trace analysis
+- **Configuration**: `coboleditor.logging_level` array setting with precedence-based filtering in package.json
+- **Caller Information**: Automatic `[filename:line]` tracking via stack trace analysis (frame 3 of call stack)
 - **Default Levels**: `["info", "warning", "error", "fatal"]` for production readiness
 - **Methods**: `VSLogger.logTrace/logDebug/logInfo/logWarning/logError/logFatal(settings, message, ...params)`
 - **Filtering Logic**: Configure one level (e.g., `["warning"]`) to see that level plus all higher priority levels
+- **Output Channel**: All logs written to "COBOL" output channel (`COBOLOutputChannel`)
+- **Documentation**: See [LOGGING_EXAMPLE.md](LOGGING_EXAMPLE.md) for detailed usage examples

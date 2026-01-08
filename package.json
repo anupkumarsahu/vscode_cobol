@@ -10,9 +10,6 @@
     "cobol-it",
     "cobol",
     "cobolit",
-    "ibmi",
-    "ilecobol",
-    "jcl",
     "ims",
     "multi-root ready",
     "ocds",
@@ -68,11 +65,6 @@
     "workspaceContains:**/*.wks",
     "workspaceContains:**/*.cblcpy",
     "workspaceContains:**/*.md",
-    "workspaceContains:**/*.jcl",
-    "workspaceContains:**/*.job",
-    "workspaceContains:**/*.cntl",
-    "workspaceContains:**/*.prc",
-    "workspaceContains:**/*.proc",
     "onSearch:file",
     "onEditSession:file",
     "onEditSession:untitled"
@@ -132,8 +124,7 @@
         "coboleditor.enable_semantic_token_provider",
         "coboleditor.enable_text_replacement",
         "coboleditor.enable_source_scanner",
-        "coboleditor.enable_data_provider",
-        "jcleditor.margin"
+        "coboleditor.enable_data_provider"
       ]
     }
   },
@@ -394,11 +385,12 @@
           "uniqueItems": true,
           "markdownDescription": "Select which logging levels to display. **Precedence**: TRACE(5) < DEBUG(10) < INFO(20) < WARNING(30) < ERROR(40) < FATAL(50). Each level includes all higher priority levels. Available levels: **trace**, **debug**, **info**, **warning**, **error**, **fatal**"
         },
-        "jcleditor.margin": {
+        "coboleditor.enable_rocket_cobol_lsp_when_active": {
           "type": "boolean",
-          "description": "When enabled, always apply margin shading for JCL source code",
-          "markdownDescription": "When enabled, *always* apply margin shading for JCL source code",
-          "default": true
+          "description": "Enable Rocket COBOL LSP when Rocket COBOL extension is active (default true)",
+          "markdownDescription": "When both this extension and the official Rocket COBOL extension are installed, control whether the Rocket LSP should be enabled. Set to `false` to disable Rocket LSP features when both extensions are active.",
+          "default": true,
+          "scope": "window"
         },
         "coboleditor.margin": {
           "type": "boolean",
@@ -544,11 +536,6 @@
         "coboleditor.feedbackview": {
           "type": "boolean",
           "description": "Enable experimental feedback panel view",
-          "default": true
-        },
-        "coboleditor.sourceview_include_jcl_files": {
-          "type": "boolean",
-          "description": "Include JCL Files in source view",
           "default": true
         },
         "coboleditor.sourceview_include_hlasm_files": {
@@ -1305,19 +1292,6 @@
         "editor.detectIndentation": false,
         "editor.wordSeparators": "`~!@#$%^&*()=[{]}\\|;:'\",<>/?"
       },
-      "[JCL]": {
-        "editor.semanticHighlighting.enabled": false,
-        "files.autoGuessEncoding": false,
-        "editor.guides.indentation": false,
-        "editor.detectIndentation": false,
-        "editor.formatOnType": false,
-        "editor.autoIndent": "full",
-        "editor.rulers": [
-          71,
-          72,
-          80
-        ]
-      },
       "[hlasm]": {
         "editor.semanticHighlighting.enabled": false,
         "editor.rulers": [
@@ -1408,31 +1382,6 @@
       },
       {
         "id": "markdown-cobol-injection"
-      },
-      {
-        "id": "JCL",
-        "extensions": [
-          ".jcl",
-          ".job",
-          ".cntl",
-          ".prc",
-          ".proc"
-        ],
-        "configuration": "./jcl.configuration.json"
-      },
-      {
-        "id": "jcl",
-        "extensions": [
-          ".jcl",
-          ".job",
-          ".cntl",
-          ".prc",
-          ".proc"
-        ],
-        "configuration": "./jcl.configuration.json"
-      },
-      {
-        "id": "markdown-jcl-injection"
       },
       {
         "id": "mfupp_dir",
@@ -1587,27 +1536,6 @@
         ],
         "embeddedLanguages": {
           "meta.embedded.block.cobol": "COBOL"
-        }
-      },
-      {
-        "language": "JCL",
-        "scopeName": "source.jcl",
-        "path": "./syntaxes/jcl.tmLanguage.json"
-      },
-      {
-        "language": "jcl",
-        "scopeName": "source.jcl",
-        "path": "./syntaxes/jcl.tmLanguage.json"
-      },
-      {
-        "language": "markdown-jcl-injection",
-        "scopeName": "markdown.jcl.codeblock",
-        "path": "./syntaxes/markdown/jcl.json",
-        "injectTo": [
-          "text.html.markdown"
-        ],
-        "embeddedLanguages": {
-          "meta.embedded.block.jcl": "jcl"
         }
       },
       {
@@ -2301,14 +2229,6 @@
       {
         "language": "dir",
         "path": "./snippets/dir.json"
-      },
-      {
-        "language": "JCL",
-        "path": "./snippets/jcl.json"
-      },
-      {
-        "language": "jcl",
-        "path": "./snippets/jcl.json"
       },
       {
         "language": "COBOL_TANDEM",
