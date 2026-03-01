@@ -75,12 +75,13 @@ suite("Black Box: Configuration Tests", () => {
         assert.ok(copybookExts !== undefined, "copybookexts setting should exist");
     });
 
-    test("BBT-CONFIG-008: LSP configuration for Rocket COBOL", () => {
+    test("BBT-CONFIG-008: Language IDs include ANSI and TANDEM", () => {
         const config = vscode.workspace.getConfiguration("coboleditor");
-        const lspEnabled = config.get("enable_rocket_cobol_lsp_when_active");
-        
-        console.log("Rocket COBOL LSP when active:", lspEnabled);
-        assert.ok(lspEnabled !== undefined, "LSP setting should exist");
+        const languageIds = config.get<string[]>("valid_cobol_language_ids");
+
+        console.log("Configured COBOL language IDs:", languageIds);
+        assert.ok(Array.isArray(languageIds), "valid_cobol_language_ids should be an array");
+        assert.deepStrictEqual(languageIds, ["COBOL", "COBOL_TANDEM"], "Only ANSI and TANDEM language IDs should be configured");
     });
 
     test("BBT-CONFIG-009: Linter configuration", () => {

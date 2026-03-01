@@ -298,9 +298,6 @@
 
 ### 11.1 File Display
 - [ ] COBOL files shown in tree
-- [ ] JCL files shown if `sourceview_include_jcl_files: true`
-- [ ] HLASM files shown if `sourceview_include_hlasm_files: true`
-- [ ] PLI files shown if `sourceview_include_pli_files: true`
 - [ ] Grouped by type
 
 ### 11.2 Context Menu

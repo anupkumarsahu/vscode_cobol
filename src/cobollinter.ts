@@ -114,9 +114,7 @@ export class CobolLinterActionFixer implements CodeActionProvider {
         [
             ["cblproto.cpy", "$COBCPY"],
             ["cbltypes.cpy", "$COBCPY"],
-            ["windows.cpy", "$COBCPY"],
-            ["mfunit.cpy", "$COBCPY"],
-            ["mfunit_prototypes.cpy", "$COBCPY"]
+            ["windows.cpy", "$COBCPY"]
         ],
     );
 

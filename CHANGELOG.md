@@ -507,7 +507,6 @@
 * 0eae770 use global if ws not present #334
 * e7ad5b0 Need to change active documents on previous lang id to the new one #334
 * 7cafc88 Add support for updating non-workspace flags #334
-* 44feec9 add extra config option to server control exec & checking is PLI lsp
 
 ## 10.6.11 
 * 7f0c9f7 fix bug in the setting updates for lsp
@@ -524,7 +523,6 @@
 
 ## 10.5.28 
 * 9ab859b add temp "windows/mac" exclusion
-* 901ff08 BMS: Missing items Fix #332
 * 7fd0f93 slight refactor
 * d158050 add some early support for my 'dotfiles' COBOL terminal
 * b4e50f6 remove warning
@@ -842,9 +840,7 @@
 * e1a03d1 handle duplicates better in flattened source view
 
 ## 8.10.3 
-* 9e32dbb add markdown/pli injection
 * e8716e3 add markdown/hlasm
-* 1527321 add markdown/jcl injection
 * 46498d0 move json files to a markdown subdir
 
 ## 8.10.2 
@@ -864,7 +860,6 @@
 ## 8.9.19 
 * faf70ea ensure we pickup all file.assoc
 * 4b6d408 tweak
-* 12c9361 bring back the old margin config option (like the jcl one)
 * 3bb8d60 handle rename and drop field not used
 * 0a440b3 remove unsed param rename file to be inline with others (gradual removal of this debt)
 
@@ -898,7 +893,6 @@
 * c51e777 add simple search for base copybook url directories  (not used)
 * e300ccd add some more verbose messages
 * 94fc49b start to prepare a place to put the non-file urls for the copybook search path
-* 5e4f65b ensure JCL is registered to all the known schemas
 * e807f50 add 'ftp' schema
 
 ## 8.8.25 
@@ -1024,7 +1018,6 @@
 * 2ed8785 start to add nx support add some extra lint's
 
 ## 8.4.13 
-* 73781cd simplify jcl keywords
 
 ## 8.4.11 
 * 08c6920 refactor previous change to make is more generic
@@ -1301,9 +1294,6 @@
 * f0d2197 put a bit more colour into the pp syntax/simplify
 * 768cbc6 version updates
 * c44ef4f don't need this in git
-* ea3894d fix some problems with regex's in bms and add color
-* 354098f tweak bms to fix some obvious errors
-* 21e579b add support for bmsmap files  - selected automatically when .map extension is used and it looks    like a listing file and has a bms definition in the first 10 lines
 * 80a544f upd
 
 ## 7.12.20 add support for suggest_variables_when_context_unknown
@@ -1896,7 +1886,6 @@
 
 ## 6.10.21 tweak casing util and fix some storage items missed
 * 8884af7 gnucobol related tidy up
-* d26b4b3 tweaks for more field types for bms  - fix unrequired , in package.json
 * a232fd7 start to think about web use of the extension  - can't do too much until I get codespace access
 * abf4378 add support for "exec java" used in some java based COBOL dialects fix "-" in first column that affected some comment lines
 * ef510bc ensure we don't change to a document type that does not exist

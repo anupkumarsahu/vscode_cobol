@@ -425,15 +425,6 @@ export class VSCOBOLUtils {
         return s;
     }
 
-    public static getMFUnitAnsiColorConfig(): boolean {
-        const editorConfig = VSCOBOLEditorConfiguration.getEditorConfig();
-        let expEnabled = editorConfig.get<boolean>("mfunit.diagnostic.color");
-        if (expEnabled === undefined || expEnabled === null) {
-            expEnabled = false;
-        }
-        return expEnabled;
-    }
-
     public static resequenceColumnNumbers(activeEditor: vscode.TextEditor | undefined, startValue: number, increment: number): void {
         if (activeEditor === undefined) {
             return;

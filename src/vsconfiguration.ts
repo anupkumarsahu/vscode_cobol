@@ -105,9 +105,6 @@ export class VSCOBOLConfiguration {
         settings.editor_maxTokenizationLineLength = workspace.getConfiguration("editor").get<number>("maxTokenizationLineLength", 20000);
 
         settings.sourceview = editorHelper.getBoolean("sourceview", false);
-        settings.sourceview_include_jcl_files = editorHelper.getBoolean("sourceview_include_jcl_files", true);
-        settings.sourceview_include_hlasm_files = editorHelper.getBoolean("sourceview_include_hlasm_files", true);
-        settings.sourceview_include_pli_files = editorHelper.getBoolean("sourceview_include_pli_files", true);
         settings.sourceview_include_doc_files = editorHelper.getBoolean("sourceview_include_doc_files", true);
         settings.sourceview_include_script_files = editorHelper.getBoolean("sourceview_include_script_files", true);
         settings.sourceview_include_object_files = editorHelper.getBoolean("sourceview_include_object_files", true);
@@ -201,10 +198,6 @@ export class VSCOBOLConfiguration {
         settings.anchor_tabstops = editorHelper.getIAnchorTabInfo();
 
         settings.enable_tabstops_anchors = editorHelper.getBoolean("enable_tabstops_anchors", settings.enable_tabstops_anchors);
-
-        settings.enable_rocket_cobol_lsp_when_active = editorHelper.getBoolean("enable_rocket_cobol_lsp_when_active", settings.enable_rocket_cobol_lsp_when_active);
-
-        settings.enable_rocket_cobol_lsp_lang_server_control = editorHelper.getBoolean("enable_rocket_cobol_lsp_lang_server_control", settings.enable_rocket_cobol_lsp_lang_server_control);
 
         settings.enable_exec_sql_cursors = editorHelper.getBoolean("enable_exec_sql_cursors", settings.enable_exec_sql_cursors);
 

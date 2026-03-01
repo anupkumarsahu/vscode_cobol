@@ -1,15 +1,14 @@
 "use strict";
 
-import { DecorationOptions, Range, TextEditor, Position, window, ThemeColor, TextDocument, workspace, TextEditorDecorationType } from "vscode";
+import { DecorationOptions, Range, TextEditor, Position, window, ThemeColor, TextDocument, TextEditorDecorationType } from "vscode";
 import { VSCOBOLConfiguration } from "./vsconfiguration";
 import { ESourceFormat } from "./externalfeatures";
 import { VSCOBOLSourceScanner } from "./vscobolscanner";
-import { VSWorkspaceFolders } from "./vscobolfolders";
 import { VSCodeSourceHandlerLite } from "./vscodesourcehandler";
 import { SourceFormat } from "./sourceformat";
 import { TextLanguage, VSExtensionUtils } from "./vsextutis";
 import { ColourTagHandler } from "./vscolourcomments";
-import { fileformatStrategy, ICOBOLSettings } from "./iconfiguration";
+import { fileformatStrategy } from "./iconfiguration";
 import { VSExternalFeatures } from "./vsexternalfeatures";
 
 const defaultTrailingSpacesDecoration: TextEditorDecorationType = window.createTextEditorDecorationType({
@@ -42,35 +41,6 @@ export class VSmargindecorations extends ColourTagHandler {
         super.setupTags("columns_tags", this.tags);
     }
 
-    private isEnabledViaWorkspace4jcl(settings: ICOBOLSettings): boolean {
-        if (VSWorkspaceFolders.get(settings) === undefined) {
-            return false;
-        }
-
-        const editorConfig = workspace.getConfiguration("jcleditor");
-        const marginOn = editorConfig.get<boolean>("margin");
-        if (marginOn !== undefined) {
-            return marginOn;
-        }
-        return true;
-    }
-
-    private async updateJCLDecorations(doc: TextDocument, activeTextEditor: TextEditor, defaultTrailingSpacesDecoration: TextEditorDecorationType) {
-        const defaultDecorationOptions: DecorationOptions[] = [];
-        for (let i = 0; i < doc.lineCount; i++) {
-            const lineText = doc.lineAt(i);
-            const line = lineText.text;
-
-            if (line.length > 72) {
-                const startPos = new Position(i, 72);
-                const endPos = new Position(i, line.length);
-                const decoration = { range: new Range(startPos, endPos) };
-                defaultDecorationOptions.push(decoration);
-            }
-        }
-        activeTextEditor.setDecorations(defaultTrailingSpacesDecoration, defaultDecorationOptions);
-    }
-
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public async updateDecorations(activeTextEditor: TextEditor | undefined) {
         if (!activeTextEditor) {
@@ -84,16 +54,6 @@ export class VSmargindecorations extends ColourTagHandler {
 
         if (textLanguage === TextLanguage.Unknown) {
             activeTextEditor.setDecorations(defaultTrailingSpacesDecoration, defaultDecorationOptions);
-            return;
-        }
-
-        /* is it enabled? */
-        if (textLanguage === TextLanguage.JCL) {
-            if (!this.isEnabledViaWorkspace4jcl(configHandler)) {
-                activeTextEditor.setDecorations(defaultTrailingSpacesDecoration, defaultDecorationOptions);
-            } else {
-                await this.updateJCLDecorations(doc, activeTextEditor, defaultTrailingSpacesDecoration);
-            }
             return;
         }
 

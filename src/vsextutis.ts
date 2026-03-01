@@ -3,8 +3,7 @@ import * as vscode from "vscode";
 
 export enum TextLanguage {
     Unknown = 0,
-    COBOL = 1,
-    JCL = 2
+    COBOL = 1
 }
 
 export class VSExtensionUtils {
@@ -14,8 +13,6 @@ export class VSExtensionUtils {
         switch (document.languageId.toLowerCase()) {
             case "cobol":
                 return TextLanguage.COBOL;
-            case "jcl":
-                return TextLanguage.JCL;
         }
 
         /* not a supported language? */
@@ -58,19 +55,6 @@ export class VSExtensionUtils {
         return ret;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public static getAllMFProvidersSelectors(config: ICOBOLSettings): vscode.DocumentSelector {
-        const ret = [];
-
-        for (const kscheme of VSExtensionUtils.knownSchemes) {
-            ret.push(
-                { scheme: kscheme, language: "directivesmf" },
-            )
-        }
-
-        return ret;
-    }
-
     public static getAllCobolSelector(langid: string): vscode.DocumentSelector {
         const ret = [];
 
@@ -93,29 +77,42 @@ export class VSExtensionUtils {
         return false;
     }
 
-    public static isKnownPLILanguageId(config: ICOBOLSettings, possibleLangid: string): boolean {
-        return (possibleLangid.toLowerCase() === "pli");
-    }
-
-    private static readonly bmsColumnNumber = /^([0-9][0-9][0-9][0-9][0-9][0-9]).*$/g;
-
     public static flip_plaintext(doc: vscode.TextDocument): void {
         if (doc === undefined) {
             return;
         }
 
+        const maxLines = Math.min(doc.lineCount, 200);
 
+        // Upgrade plain text documents to COBOL when strong ANSI/COBOL markers are present.
+        if (doc.languageId === "plaintext") {
+            for (let lcount = 0; lcount < maxLines; lcount++) {
+                const line = doc.lineAt(lcount).text;
 
-        if (doc.uri.fsPath.endsWith(".map") && !doc.languageId.startsWith("bms")) {
-            const maxLines = doc.lineCount < 10 ? doc.lineCount : 10;
-            for (let lcount = 1; lcount <= maxLines; lcount++) {
+                if (/^\s*\?ANSI\b/i.test(line)) {
+                    vscode.languages.setTextDocumentLanguage(doc, "COBOL");
+                    return;
+                }
+
+                if (/^\s*(IDENTIFICATION|ENVIRONMENT|DATA|PROCEDURE)\s+DIVISION\./i.test(line)) {
+                    vscode.languages.setTextDocumentLanguage(doc, "COBOL");
+                    return;
+                }
+
+                if (/^\s*\d{6}\s+(IDENTIFICATION|ENVIRONMENT|DATA|PROCEDURE)\s+DIVISION\./i.test(line)) {
+                    vscode.languages.setTextDocumentLanguage(doc, "COBOL");
+                    return;
+                }
+            }
+        }
+
+        // Check if document is COBOL_TANDEM with ?ANSI directive - should be COBOL instead
+        if (doc.languageId === "COBOL_TANDEM") {
+            for (let lcount = 0; lcount < maxLines; lcount++) {
                 const qline = doc.lineAt(lcount).text;
-                if (qline.indexOf("DFHMSD") !== -1) {
-                    if (qline.match(VSExtensionUtils.bmsColumnNumber)) {
-                        vscode.languages.setTextDocumentLanguage(doc, "bmsmap");
-                        return;
-                    }
-                    vscode.languages.setTextDocumentLanguage(doc, "bms");
+                // ?ANSI indicates ANSI standard COBOL format, not Tandem-specific
+                if (qline.match(/^\s*\?ANSI\b/)) {
+                    vscode.languages.setTextDocumentLanguage(doc, "COBOL");
                     return;
                 }
             }

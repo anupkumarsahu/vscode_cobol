@@ -51,8 +51,7 @@ suite("Black Box: Extension Lifecycle Tests", () => {
         
         // Check for specific language switching commands
         const langSwitchCommands = [
-            "cobolplugin.change_lang_to_bitlang_cobol",
-            "cobolplugin.change_lang_to_mfcobol"
+            "cobolplugin.change_lang_to_cobol"
         ];
         
         langSwitchCommands.forEach(cmd => {
@@ -91,23 +90,11 @@ suite("Black Box: Extension Lifecycle Tests", () => {
         diagCommands.forEach(cmd => console.log(`  - ${cmd}`));
     });
 
-    test("BBT-LIFECYCLE-007: Extension conflict detection", async () => {
-        // Test that extension checks for conflicts with Rocket COBOL
-        const rocketExtension = vscode.extensions.getExtension("RocketSoftware.rocket-cobol");
-        
-        if (rocketExtension) {
-            console.log("Rocket COBOL extension detected:", rocketExtension.isActive);
-            
-            // The extension should handle this conflict
-            const config = vscode.workspace.getConfiguration("coboleditor");
-            const lspConfig = config.get("enable_rocket_cobol_lsp_when_active");
-            
-            console.log("LSP handling configured:", lspConfig);
-        } else {
-            console.log("No Rocket COBOL extension installed - no conflict");
-        }
-        
-        assert.ok(true, "Conflict detection check completed");
+    test("BBT-LIFECYCLE-007: Extension command registry healthy", async () => {
+        const commands = await vscode.commands.getCommands(true);
+        const cobolCommands = commands.filter(cmd => cmd.startsWith("cobolplugin."));
+        console.log("Registered COBOL extension commands:", cobolCommands.length);
+        assert.ok(cobolCommands.length > 0, "COBOL extension commands should be registered");
     });
 
     test("BBT-LIFECYCLE-008: Output channel is created", () => {

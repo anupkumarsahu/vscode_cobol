@@ -59,7 +59,6 @@ export class SourceFormat {
             case fileformatStrategy.AlwaysFixed: return ESourceFormat.fixed;
             case fileformatStrategy.AlwaysVariable: return ESourceFormat.variable;
             case fileformatStrategy.AlwaysFree: return ESourceFormat.free;
-            case fileformatStrategy.AlwaysTerminal: return ESourceFormat.terminal;
             case fileformatStrategy.AlwaysTandem: return ESourceFormat.tandem;
         }
 

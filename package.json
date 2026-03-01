@@ -5,16 +5,11 @@
   "version": "25.10.27",
   "publisher": "bitlang",
   "keywords": [
-    "bms",
     "cics",
-    "cobol-it",
     "cobol",
-    "cobolit",
     "ims",
     "multi-root ready",
     "ocds",
-    "pl/i",
-    "pli",
     "copilot"
   ],
   "repository": {
@@ -50,7 +45,8 @@
     "onFileSystem:streamfile",
     "onFileSystem:zip",
     "onLanguage:plaintext",
-    "onLanguage:cobol",
+    "onLanguage:COBOL",
+    "onLanguage:COBOL_TANDEM",
     "view:flat-source-view",
     "workspaceContains:bld.bat",
     "workspaceContains:bld.sh",
@@ -92,9 +88,6 @@
         "coboleditor.linter_unused_paragraphs",
         "coboleditor.linter_port_helper",
         "coboleditor.sourceview",
-        "coboleditor.sourceview_include_jcl_files",
-        "coboleditor.sourceview_include_hlasm_files",
-        "coboleditor.sourceview_include_pli_files",
         "coboleditor.sourceview_include_doc_files",
         "coboleditor.sourceview_include_script_files",
         "coboleditor.sourceview_include_object_files",
@@ -385,13 +378,6 @@
           "uniqueItems": true,
           "markdownDescription": "Select which logging levels to display. **Precedence**: TRACE(5) < DEBUG(10) < INFO(20) < WARNING(30) < ERROR(40) < FATAL(50). Each level includes all higher priority levels. Available levels: **trace**, **debug**, **info**, **warning**, **error**, **fatal**"
         },
-        "coboleditor.enable_rocket_cobol_lsp_when_active": {
-          "type": "boolean",
-          "description": "Enable Rocket COBOL LSP when Rocket COBOL extension is active (default true)",
-          "markdownDescription": "When both this extension and the official Rocket COBOL extension are installed, control whether the Rocket LSP should be enabled. Set to `false` to disable Rocket LSP features when both extensions are active.",
-          "default": true,
-          "scope": "window"
-        },
         "coboleditor.margin": {
           "type": "boolean",
           "description": "When enabled, always apply margin shading for COBOL source code",
@@ -409,18 +395,16 @@
             "always_fixed",
             "always_variable",
             "always_free",
-            "always_terminal",
             "always_tandem",
             "normal"
           ],
           "default": "normal",
           "markdownDescription": "File format strategy",
-          "title": "always_fixed, always_variable, always_free, always_terminal, always_tandem or normal",
+          "title": "always_fixed, always_variable, always_free, always_tandem or normal",
           "enumDescriptions": [
             "Assume source code is fixed source format",
             "Assume source code is variable source format",
             "Assume source code is free source format",
-            "Assume source code is terminal source format",
             "Assume source code is Tandem reference format (NonStop COBOL)",
             "Determine source code format or configure it with fileformat"
           ]
@@ -442,14 +426,12 @@
                 "enum": [
                   "free",
                   "fixed",
-                  "variable",
-                  "terminal"
+                  "variable"
                 ],
                 "enumDescriptions": [
                   "source code format free (no margins",
                   "source code format fixed (classic COBOL margins)",
-                  "source code format variable (no right margin)",
-                  "source code format terminal (ACU COBOL/RM)"
+                  "source code format variable (no right margin)"
                 ]
               }
             }
@@ -536,16 +518,6 @@
         "coboleditor.feedbackview": {
           "type": "boolean",
           "description": "Enable experimental feedback panel view",
-          "default": true
-        },
-        "coboleditor.sourceview_include_hlasm_files": {
-          "type": "boolean",
-          "description": "Include HLASM Files in source view",
-          "default": true
-        },
-        "coboleditor.sourceview_include_pli_files": {
-          "type": "boolean",
-          "description": "Include PL/I Files in source view",
           "default": true
         },
         "coboleditor.sourceview_include_doc_files": {
@@ -1174,7 +1146,7 @@
         "language": "COBOL"
       },
       {
-        "language": "ACUCOBOL"
+        "language": "COBOL_TANDEM"
       }
     ],
     "views": {
@@ -1206,10 +1178,10 @@
         "*.tsx": "${capture}.ts",
         "tsconfig.json": "tsconfig.*.json",
         "package.json": "package-lock.json, yarn.lock",
-        "*.cbl": "MFU*$(basename).cpy,Test$(basename).cpy",
-        "*.CBL": "MFU*$(basename).cpy,Test$(basename).cpy",
-        "*.cob": "MFU*$(basename).cpy,Test$(basename).cpy",
-        "*.COB": "MFU*$(basename).cpy,Test$(basename).cpy"
+        "*.cbl": "Test$(basename).cpy",
+        "*.CBL": "Test$(basename).cpy",
+        "*.cob": "Test$(basename).cpy",
+        "*.COB": "Test$(basename).cpy"
       },
       "explorer.fileNesting.enabled": true,
       "github.copilot.inlineSuggest.enable": true,
@@ -1217,11 +1189,17 @@
       "github.copilot.enable": {
         "COBOL": true,
         "COBOL_TANDEM": true,
-        "mfu": false,
         "utreport": false
       },
       "editor.tokenColorCustomizations": {
         "textMateRules": [
+          {
+            "scope": "comment.line.cobol.fixed",
+            "settings": {
+              "foreground": "#6A9955",
+              "fontStyle": "italic"
+            }
+          },
           {
             "scope": "keyword.control.directive.nonstop.cobol",
             "settings": {
@@ -1280,41 +1258,37 @@
         "editor.useTabStops": false,
         "editor.wordSeparators": "`~!@$%^&*()=+[{]}\\|;:'\",.<>/?"
       },
-      "[dir]": {
-        "coboleditor.linter": true,
-        "editor.semanticHighlighting.enabled": false,
-        "editor.insertSpaces": true,
-        "editor.guides.indentation": false,
-        "files.autoGuessEncoding": false,
-        "editor.autoIndent": "keep",
-        "editor.formatOnType": false,
-        "editor.rulers": [],
-        "editor.detectIndentation": false,
-        "editor.wordSeparators": "`~!@#$%^&*()=[{]}\\|;:'\",<>/?"
-      },
-      "[hlasm]": {
-        "editor.semanticHighlighting.enabled": false,
-        "editor.rulers": [
-          0,
-          9,
-          15,
-          71,
-          72,
-          80
-        ],
-        "editor.guides.indentation": false
-      },
       "[sql]": {
         "editor.wordSeparators": "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?"
       }
     },
     "languages": [
       {
+        "id": "COBOL_TANDEM",
+        "aliases": [
+          "COBOL_TANDEM"
+        ],
+        "firstLine": ".*\\?(?!ANSI\\b)[A-Z]+.*",
+        "extensions": [
+          ".cob",
+          ".COB",
+          ".cbl",
+          ".CBL",
+          ".cpy",
+          ".CPY",
+          ".ecob",
+          ".ECOB",
+          ".tal",
+          ".tacl"
+        ],
+        "configuration": "./tandem.configuration.json"
+      },
+      {
         "id": "COBOL",
         "filenames": [
           "SQLCA"
         ],
-        "firstLine": ".*(\\?ANSI|\\$[sS][eE][tT]|[pP][rR][oO][gG][rR][aA][mM]\\-[iI][dD]|[iI][dD][eE][nN][tT][iI][fF][iI][cC][aA][tT][iI][oO][nN]|\\*.[mM][iI][cC][rR][oO]).*",
+        "firstLine": ".*(\\$[sS][eE][tT]|[pP][rR][oO][gG][rR][aA][mM]\\-[iI][dD]|[iI][dD][eE][nN][tT][iI][fF][iI][cC][aA][tT][iI][oO][nN]|\\*.[mM][iI][cC][rR][oO]).*",
         "extensions": [
           ".cobol",
           ".cblle",
@@ -1362,109 +1336,7 @@
         "configuration": "./cobol.configuration.json"
       },
       {
-        "id": "COBOL_TANDEM",
-        "aliases": [
-          "COBOL_TANDEM"
-        ],
-        "extensions": [
-          ".cob",
-          ".COB",
-          ".cbl",
-          ".CBL",
-          ".cpy",
-          ".CPY",
-          ".ecob",
-          ".ECOB",
-          ".tal",
-          ".tacl"
-        ],
-        "configuration": "./tandem.configuration.json"
-      },
-      {
         "id": "markdown-cobol-injection"
-      },
-      {
-        "id": "mfupp_dir",
-        "aliases": [
-          "MFUPP_DIR"
-        ],
-        "filenames": [
-          "mfupp.dir"
-        ],
-        "configuration": "./mfupp_dir-configuration.json"
-      },
-      {
-        "id": "xml",
-        "extensions": [
-          ".cblproj"
-        ]
-      },
-      {
-        "id": "dir",
-        "extensions": [
-          ".dir"
-        ],
-        "aliases": [
-          "dirfile",
-          "dir"
-        ],
-        "configuration": "./dir.configuration.json"
-      },
-      {
-        "id": "pli",
-        "extensions": [
-          ".pl1",
-          ".pli",
-          ".plinc",
-          ".pc",
-          ".pci",
-          ".pcx",
-          ".inc",
-          ".include"
-        ],
-        "configuration": "./pli.configuration.json"
-      },
-      {
-        "id": "markdown-pli-injection"
-      },
-      {
-        "id": "bms",
-        "extensions": [
-          ".bms"
-        ],
-        "aliases": []
-      },
-      {
-        "id": "bmsmap",
-        "extensions": [],
-        "aliases": []
-      },
-      {
-        "id": "hlasm",
-        "extensions": [
-          ".hlasm",
-          ".asm",
-          ".mac",
-          ".mlc",
-          ".mfs",
-          ".pcb",
-          ".assemble",
-          ".hla"
-        ],
-        "aliases": []
-      },
-      {
-        "id": "markdown-hlasm-injection"
-      },
-      {
-        "id": "mfu",
-        "aliases": [
-          "mfunit"
-        ],
-        "extensions": [
-          "mfu"
-        ],
-        "configuration": "./mfu-configuration.json"
       },
       {
         "id": "utreport",
@@ -1477,55 +1349,31 @@
         "configuration": "./utreport-configuration.json"
       },
       {
-        "id": "xml",
-        "extensions": [
-          ".cblproj"
-        ]
-      },
-      {
-        "id": "directivesmf",
-        "filenames": [
-          "directives.mf"
-        ],
-        "configuration": "./directivesmf.configuration.json"
-      },
-      {
         "id": "directivestandem",
         "filenames": [
           "directives.tandem"
         ],
         "configuration": "./directivestandem.configuration.json"
-      },
-      {
-        "id": "OpenESQL",
-        "configuration": "./openesql.configuration.json"
       }
     ],
     "grammars": [
       {
         "language": "COBOL",
         "scopeName": "source.cobol",
-        "path": "./syntaxes/COBOL.tmLanguage.json",
-        "embeddedLanguages": {
-          "meta.embedded.block.openesql": "openesql",
-          "meta.embedded.block.html": "html",
-          "meta.embedded.block.java": "java"
-        }
+        "path": "./syntaxes/COBOL.tmLanguage.json"
       },
       {
         "language": "COBOL_TANDEM",
         "scopeName": "source.cobol",
-        "path": "./syntaxes/COBOL.tmLanguage.json",
-        "embeddedLanguages": {
-          "meta.embedded.block.openesql": "openesql",
-          "meta.embedded.block.html": "html",
-          "meta.embedded.block.java": "java"
-        }
+        "path": "./syntaxes/COBOL.tmLanguage.json"
       },
       {
         "language": "directivestandem",
         "scopeName": "source.directivestandem",
-        "path": "./syntaxes/directives.tandem.json"
+        "path": "./syntaxes/directives.tandem.json",
+        "injectTo": [
+          "source.cobol"
+        ]
       },
       {
         "language": "markdown-cobol-injection",
@@ -1539,76 +1387,9 @@
         }
       },
       {
-        "language": "mfupp_dir",
-        "scopeName": "source.mfupp_dir",
-        "path": "./syntaxes/mfupp_dir.json"
-      },
-      {
-        "language": "dir",
-        "scopeName": "source.dir",
-        "path": "./syntaxes/dir.tmLanguage.json"
-      },
-      {
-        "language": "pli",
-        "scopeName": "source.pli",
-        "path": "./syntaxes/PLI.tmLanguage.json"
-      },
-      {
-        "language": "markdown-pli-injection",
-        "scopeName": "markdown.pli.codeblock",
-        "path": "./syntaxes/markdown/pli.json",
-        "injectTo": [
-          "text.html.markdown"
-        ],
-        "embeddedLanguages": {
-          "meta.embedded.block.pli": "pli"
-        }
-      },
-      {
-        "language": "bms",
-        "scopeName": "source.bms",
-        "path": "./syntaxes/bms.tmLanguage.json"
-      },
-      {
-        "language": "bmsmap",
-        "scopeName": "source.bmsmap",
-        "path": "./syntaxes/bmsmap.tmLanguage.json"
-      },
-      {
-        "language": "hlasm",
-        "scopeName": "source.hlasm",
-        "path": "./syntaxes/hlasm.tmLanguage.json"
-      },
-      {
-        "language": "markdown-hlasm-injection",
-        "scopeName": "markdown.hlasm.codeblock",
-        "path": "./syntaxes/markdown/hlasm.json",
-        "injectTo": [
-          "text.html.markdown"
-        ],
-        "embeddedLanguages": {
-          "meta.embedded.block.hlasm": "hlasm"
-        }
-      },
-      {
-        "language": "mfu",
-        "scopeName": "source.mfu",
-        "path": "./syntaxes/mfu.tmLanguage.json"
-      },
-      {
         "language": "utreport",
         "scopeName": "source.utreport",
         "path": "./syntaxes/utreport.tmLanguage.json"
-      },
-      {
-        "language": "directivesmf",
-        "scopeName": "source.directivesmf",
-        "path": "./syntaxes/directives.mf.json"
-      },
-      {
-        "language": "OpenESQL",
-        "scopeName": "source.openesql",
-        "path": "./syntaxes/openesql.tmLanguage.json"
       }
     ],
     "markdown.markdownItPlugins": false,
@@ -1681,7 +1462,7 @@
       {
         "command": "cobolplugin.explorerRun",
         "category": "COBOL",
-        "title": "Run UnitTest",
+        "title": "Run",
         "enablement": "!isWeb && filesExplorerFocus && isWorkspaceTrusted"
       },
       {
@@ -2026,11 +1807,6 @@
       ],
       "explorer/context": [
         {
-          "command": "cobolplugin.explorerRun",
-          "group": "navigation",
-          "when": "filesExplorerFocus && resourceExtname == .mfu"
-        },
-        {
           "command": "cobolplugin.explorerDebug",
           "group": "navigation",
           "when": "filesExplorerFocus && resourceExtname == .int"
@@ -2111,11 +1887,6 @@
         "key": "ctrl+/",
         "command": "cobolplugin.commentline",
         "when": "config.coboleditor.comment_line && editorTextFocus && editorLangId =~ /^COBOL$/ && !editorReadonly"
-      },
-      {
-        "key": "alt+shift+a",
-        "command": "cobolplugin.change_lang_to_acu",
-        "when": "editorLangId =~ /^cobol$|^COBOL$/ && !inSnippetMode"
       },
       {
         "key": "alt+shift+c",
@@ -2227,10 +1998,6 @@
         "path": "./snippets/markdown.json"
       },
       {
-        "language": "dir",
-        "path": "./snippets/dir.json"
-      },
-      {
         "language": "COBOL_TANDEM",
         "path": "./snippets/tandem.json"
       }
@@ -2302,7 +2069,7 @@
     "compile-web": "webpack",
     "test-compile": "tsc -p ./",
     "watch": "tsc -b -w",
-    "pretest": "npm run compile && npm run",
+    "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
     "find-deadcode": "./node_modules/.bin/ts-prune | grep -v \"used in module\"",
     "open-in-browser": "vscode-test-web -version=stable --browserType=chromium --extensionDevelopmentPath=. ."
@@ -2347,7 +2114,6 @@
     "path-browserify": "^1.0.1",
     "performance-now": "2.1.0",
     "promisify-child-process": "^4.1.2",
-    "properties-reader": "^2.3.0",
     "stream-browserify": "^3.0.0",
     "trie-search": "^2.2.0",
     "ts-prune": "^0.10.3",

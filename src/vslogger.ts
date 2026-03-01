@@ -51,7 +51,7 @@ export class VSLogger {
     private static logWithLevel(level: string, settings: ICOBOLSettings | null, message: string, ...parameters: any[]): void {
         const callerInfo = VSLogger.getCallerInfo();
         const formattedMessage = (parameters && parameters.length > 0) 
-            ? util.format(message, parameters) 
+            ? util.format(message, ...parameters) 
             : message;
         COBOLOutputChannel.appendLine(`${level}: ${callerInfo} ${formattedMessage}`);
     }
@@ -66,7 +66,7 @@ export class VSLogger {
 
         const callerInfo = VSLogger.getCallerInfo();
         if ((parameters !== undefined || parameters !== null) && parameters.length !== 0) {
-            const m: string = util.format(message, parameters);
+            const m: string = util.format(message, ...parameters);
             COBOLOutputChannel.appendLine(`${callerInfo} ${m.padEnd(60)}${fixedTimeTaken}`);
         } else {
             COBOLOutputChannel.appendLine(`${callerInfo} ${message.padEnd(60)}${fixedTimeTaken}`);
@@ -93,7 +93,7 @@ export class VSLogger {
 
         // TODO: Could this be colorized?
         if ((parameters !== undefined || parameters !== null) && parameters.length !== 0) {
-            COBOLOutputChannel.appendLine(`${spacesToLeft}WARNING: ${callerInfo} ${util.format(message, parameters)}`);
+            COBOLOutputChannel.appendLine(`${spacesToLeft}WARNING: ${callerInfo} ${util.format(message, ...parameters)}`);
         } else {
             COBOLOutputChannel.appendLine(`${spacesToLeft}WARNING: ${callerInfo} ${message}`);
         }
@@ -112,7 +112,7 @@ export class VSLogger {
     public static logMessage(message: string, ...parameters: any[]): void {
         const callerInfo = VSLogger.getCallerInfo();
         if ((parameters !== undefined || parameters !== null) && parameters.length !== 0) {
-            COBOLOutputChannel.appendLine(`${callerInfo} ${util.format(message, parameters)}`);
+            COBOLOutputChannel.appendLine(`${callerInfo} ${util.format(message, ...parameters)}`);
         } else {
             COBOLOutputChannel.appendLine(`${callerInfo} ${message}`);
         }

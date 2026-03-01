@@ -83,7 +83,7 @@ Tests extension settings and configuration:
 - **BBT-CONFIG-005**: Valid COBOL language IDs
 - **BBT-CONFIG-006**: Logging level configuration (with precedence)
 - **BBT-CONFIG-007**: Copybook extensions
-- **BBT-CONFIG-008**: LSP configuration for Rocket COBOL
+- **BBT-CONFIG-008**: ANSI/TANDEM language ID configuration
 - **BBT-CONFIG-009-015**: Linter, cache, margins, IntelliSense, problem matchers, updates, language contributions
 
 **Key Validation**: Settings schema, default values, configuration updates
@@ -97,7 +97,7 @@ Tests extension activation and management:
 - **BBT-LIFECYCLE-004**: Language-switching commands
 - **BBT-LIFECYCLE-005**: Copybook navigation commands
 - **BBT-LIFECYCLE-006**: Diagnostic commands
-- **BBT-LIFECYCLE-007**: Extension conflict detection (Rocket COBOL)
+- **BBT-LIFECYCLE-007**: Extension command registry health
 - **BBT-LIFECYCLE-008**: Output channel creation
 - **BBT-LIFECYCLE-009**: Web extension support (vscode.dev)
 - **BBT-LIFECYCLE-010-015**: Metadata, activation events, dependencies, task providers, configuration schema, cleanup
@@ -234,7 +234,7 @@ This black box suite complements existing tests:
 | ACU COBOL | ✅ | Configuration test |
 | RM COBOL | ✅ | Configuration test |
 | IBM i COBOL | ✅ | Configuration test |
-| COBOL-IT | ⚠️ | Indirect coverage |
+| Non-ANSI/Tandem dialects | ❌ | Out of scope |
 
 ## Maintenance Guidelines
 

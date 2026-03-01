@@ -35,7 +35,7 @@ export class VSHelpAndFeedViewHandler {
                     break;
 
                 case FeedBackItem.joinCommunity:
-                    VSHelpAndFeedViewHandler.openUrl("https://community.rocketsoftware.com/forums/forum-home?CommunityKey=fc99efc3-3189-48e3-860f-01928efec020");
+                    VSHelpAndFeedViewHandler.openUrl("https://github.com/spgennard/vscode_cobol/discussions");
                     break;
 
                 case FeedBackItem.review:
@@ -43,11 +43,11 @@ export class VSHelpAndFeedViewHandler {
                     break;
 
                 case FeedBackItem.courses:
-                    VSHelpAndFeedViewHandler.openUrl("https://www.rocketsoftware.com/learn-cobol");
+                    VSHelpAndFeedViewHandler.openUrl("https://github.com/spgennard/vscode_cobol#readme");
                     break;
 
                 case FeedBackItem.introToOO:
-                    VSHelpAndFeedViewHandler.openUrl("https://docs-be.rocketsoftware.com/bundle/enterprisedeveloper_dg5_100_pdf/raw/resource/enus/enterprise_developer_intro_to_oo_programming_for_cobol_developers_vvc70.pdf");
+                    VSHelpAndFeedViewHandler.openUrl("https://en.wikipedia.org/wiki/Object-oriented_programming");
                     break;
 
                     
@@ -64,8 +64,8 @@ enum FeedBackItem {
     review = "Review extension",
     reviewIssues = "Review Issues",
     reportIssue = "Report Issue",
-    joinCommunity = "Join the 'Rocket Software' Community",
-    courses = "'Rocket Software' On-Demand Courses",
+    joinCommunity = "Join the Community",
+    courses = "COBOL Learning Resources",
     introToOO = "Introduction to OO Programming"
 }
 

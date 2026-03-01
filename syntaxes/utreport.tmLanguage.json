@@ -14,19 +14,19 @@
             "name": "string.quoted"
         },
         {
-            "match" : "(^|\\s+)(JCL|CAS|JES)..[0-9][0-9][0-9][0-9]I.*$",
+            "match" : "(^|\\s+)(CAS|JES)..[0-9][0-9][0-9][0-9]I.*$",
             "name" : "token.info-token"
         },
         {
-            "match" : "(^|\\s+)(JCL|CAS|JES)..[0-9][0-9][0-9][0-9]W.*$",
+            "match" : "(^|\\s+)(CAS|JES)..[0-9][0-9][0-9][0-9]W.*$",
             "name" : "token.warn-token"
         },
         {
-            "match" : "(^|\\s+)(JCL|CAS|JES)..[0-9][0-9][0-9][0-9]S.*$",
+            "match" : "(^|\\s+)(CAS|JES)..[0-9][0-9][0-9][0-9]S.*$",
             "name" : "token.debug-token emphasis"
         },
         {
-            "match" : "(^|\\s+)(JCL|CAS|JES)..[0-9][0-9][0-9][0-9]E.*$",
+            "match" : "(^|\\s+)(CAS|JES)..[0-9][0-9][0-9][0-9]E.*$",
             "name" : "token.error-token"
         },
         {
@@ -48,6 +48,10 @@
                 }
             },
             "comment": " ::.. "
+        },
+        {
+            "match": "(\\/\\/\\*.*)$",
+            "name": "comment.line"
         },
         {
             "match": "([\\:|/])\\s+(?i:(errored|error))",
@@ -83,15 +87,11 @@
             "name": "comment.jsysmsg.line"
         },
         {
-            "match": "(\\/\\/\\*.*)$",
-            "name": "comment.jcl.line"
-        },
-        {
             "match" : "(--->)",
             "name" : "invalid"
         },
         {
-            "match" : "(?i:Micro Focus COBOL - mfurun Utility|Unit Testing Framework for.*)$",
+            "match" : "(?i:Unit Testing Framework for.*)$",
             "name" : "entity.name.section.markdown heading.1.markdown markup.heading.markdown"
         },
         {
@@ -120,13 +120,13 @@
                     "name" : "constant.numeric"
                 },
                 "2": {
-                    "name": "variable.other.jcl"
+                    "name": "variable.other"
                 },
                 "3": {
-                    "name": "keyword.control.jcl"
+                    "name": "keyword.control"
                 },
                 "4": {
-                    "name": "meta.symbol.jcl"
+                    "name": "meta.symbol"
                 }
             }
         },
@@ -139,7 +139,7 @@
             "name" : "emphasis"
         },
         {
-            "match" : "(?i:(MFUT[a-zA-Z0-9_-]*))",
+            "match" : "(?i:(TEST-[a-zA-Z0-9_-]*))",
             "name" : "entity.name.function"
         }
     ]

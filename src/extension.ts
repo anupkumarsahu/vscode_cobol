@@ -13,7 +13,7 @@ import * as opencopybook from "./opencopybook";
 
 // Language service providers for IntelliSense and code navigation
 import { KeywordAutocompleteCompletionItemProvider } from "./vskeywordprovider";
-import { CobolSymbolInformationProvider, MFDirectivesSymbolProvider } from "./vssymbolprovider";
+import { CobolSymbolInformationProvider } from "./vssymbolprovider";
 
 // Core COBOL source scanning and configuration
 import { VSCOBOLSourceScanner } from "./vscobolscanner";
@@ -28,10 +28,6 @@ import { CobolSourceCompletionItemProvider } from "./vscobolprovider";
 // Utility and helper classes
 import { VSCOBOLUtils } from "./vscobolutils";
 import { ICOBOLSettings } from "./iconfiguration";
-
-// Third-party library for reading properties files (MFU configuration)
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const propertiesReader = require("properties-reader");
 
 // Additional COBOL extension functionality
 import { VSWorkspaceFolders } from "./vscobolfolders";
@@ -92,8 +88,6 @@ export const progressStatusBarItem: StatusBarItem = window.createStatusBarItem(S
 let bldscriptTaskProvider: vscode.Disposable | undefined;  // Build script task provider for workspace tasks
 let shown_enable_semantic_token_provider = false;           // Flag to show semantic token notification only once
 let activeEditor: vscode.TextEditor;                        // Currently active text editor
-let unitTestTerminal: vscode.Terminal | undefined = undefined; // Terminal for running MFU unit tests
-const terminalName = "UnitTest";                            // Name for the unit test terminal
 let updateDecorationsOnTextEditorEnabled = false;           // Flag to enable/disable decoration updates
 let sharedContext: ExtensionContext;                        // Shared extension context for command handlers
 
@@ -307,41 +301,10 @@ function activateDesktop(context: ExtensionContext, settings: ICOBOLSettings): v
     }));
 
     // Register context menu command for running files from explorer
-    // Handles both COBOL programs (.cbl, etc.) and MFU unit test files (.mfu)
     context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.explorerRun", function (fileUri) {
 
         const fsPath = fileUri.fsPath
         VSLogger.logDebug(settings, "Explorer run command invoked for file: %s", fsPath);
-        
-        // Special handling for MFU (Micro Focus Unit test) files
-        if (fsPath.endsWith(".mfu")) {
-            VSLogger.logDebug(settings, "Processing MFU file: %s", fsPath);
-            
-            // Create or reuse unit test terminal
-            if (unitTestTerminal === undefined) {
-                unitTestTerminal = vscode.window.createTerminal(terminalName);
-                VSLogger.logDebug(settings, "Created new unit test terminal: %s", terminalName);
-            }
-
-            unitTestTerminal.show(true);
-            const enableAnsiColor = VSCOBOLUtils.getMFUnitAnsiColorConfig();
-            VSLogger.logDebug(settings, "ANSI color enabled for MFU: %s", enableAnsiColor);
-
-            // Read MFU configuration properties
-            const properties = propertiesReader(fileUri.fsPath);
-            const prefRunner = properties.get("global.preferred-runner");
-            VSLogger.logDebug(settings, "Preferred runner from properties: %s", prefRunner);
-            
-            // Build and execute MFU command
-            const command = prefRunner + " -show-progress " +
-                (enableAnsiColor ? " -dc:ansi " : " ") +
-                fileUri.fsPath;
-            VSLogger.logDebug(settings, "Executing MFU command: %s", command);
-            
-            unitTestTerminal.sendText(command);
-
-            return;
-        }
 
         // Handle regular COBOL program execution
         VSLogger.logDebug(settings, "Running or debugging COBOL file: %s", fsPath);
@@ -349,41 +312,10 @@ function activateDesktop(context: ExtensionContext, settings: ICOBOLSettings): v
     }));
 
     // Register context menu command for debugging files from explorer
-    // Similar to explorerRun but launches in debug mode
     context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.explorerDebug", function (fileUri) {
 
         const fsPath = fileUri.fsPath
         VSLogger.logDebug(settings, "Explorer debug command invoked for file: %s", fsPath);
-        
-        // Special handling for MFU files in debug mode
-        if (fsPath.endsWith(".mfu")) {
-            VSLogger.logDebug(settings, "Processing MFU file for debugging: %s", fsPath);
-            
-            // Create or reuse unit test terminal
-            if (unitTestTerminal === undefined) {
-                unitTestTerminal = vscode.window.createTerminal(terminalName);
-                VSLogger.logDebug(settings, "Created new unit test terminal for debug: %s", terminalName);
-            }
-
-            unitTestTerminal.show(true);
-            const enableAnsiColor = VSCOBOLUtils.getMFUnitAnsiColorConfig();
-            VSLogger.logDebug(settings, "ANSI color enabled for MFU debug: %s", enableAnsiColor);
-
-            // Read MFU configuration properties
-            const properties = propertiesReader(fileUri.fsPath);
-            const prefRunner = properties.get("global.preferred-runner");
-            VSLogger.logDebug(settings, "Preferred runner from properties (debug): %s", prefRunner);
-            
-            // Build and execute MFU debug command
-            const command = prefRunner + " -show-progress " +
-                (enableAnsiColor ? " -dc:ansi " : " ") +
-                fileUri.fsPath;
-            VSLogger.logDebug(settings, "Executing MFU debug command: %s", command);
-            
-            unitTestTerminal.sendText(command);
-
-            return;
-        }
 
         // Handle regular COBOL program debugging
         VSLogger.logDebug(settings, "Running or debugging COBOL file in debug mode: %s", fsPath);
@@ -869,11 +801,6 @@ export async function activate(context: ExtensionContext) {
         // COBOL document outline provider (shows programs, sections, paragraphs, etc.)
         const symbolInformationProvider = new CobolSymbolInformationProvider();
         context.subscriptions.push(languages.registerDocumentSymbolProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), symbolInformationProvider));
-
-        // Directives outline provider for .mf files
-        // TODO: Consider adding .DIR keywords for enhanced directive support
-        const mfDirectivesProvider = new MFDirectivesSymbolProvider();
-        context.subscriptions.push(languages.registerDocumentSymbolProvider(VSExtensionUtils.getAllMFProvidersSelectors(settings), mfDirectivesProvider));
     }
 
     // COBOL source completion provider for variables, fields, and copybook members

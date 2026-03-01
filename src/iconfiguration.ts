@@ -36,7 +36,6 @@ export enum fileformatStrategy {
     AlwaysFixed = "always_fixed",
     AlwaysVariable = "always_variable",
     AlwaysFree = "always_free",
-    AlwaysTerminal = "always_terminal",
     AlwaysTandem = "always_tandem",
     Normal = "normal"
 }
@@ -79,9 +78,6 @@ export interface ICOBOLSettings {
     logging_level: string[];
     scan_comment_copybook_token: string;
     sourceview: boolean;
-    sourceview_include_jcl_files: boolean;
-    sourceview_include_hlasm_files: boolean;
-    sourceview_include_pli_files: boolean;
     sourceview_include_doc_files: boolean;
     sourceview_include_script_files: boolean;
     sourceview_include_object_files: boolean;
@@ -159,10 +155,6 @@ export interface ICOBOLSettings {
 
     enable_tabstops_anchors:boolean;
 
-    enable_rocket_cobol_lsp_when_active: boolean;
-
-    enable_rocket_cobol_lsp_lang_server_control : boolean;
-
     enable_exec_sql_cursors: boolean;
 
     scan_comments_for_references: boolean;
@@ -224,9 +216,6 @@ export class COBOLSettings implements ICOBOLSettings {
     logging_level: string[];
     scan_comment_copybook_token: string;
     sourceview: boolean;
-    sourceview_include_jcl_files: boolean;
-    sourceview_include_hlasm_files: boolean;
-    sourceview_include_pli_files: boolean;
     sourceview_include_doc_files: boolean;
     sourceview_include_script_files: boolean;
     sourceview_include_object_files: boolean;
@@ -304,10 +293,6 @@ export class COBOLSettings implements ICOBOLSettings {
 
     enable_tabstops_anchors: boolean;
     
-    enable_rocket_cobol_lsp_when_active:boolean;
-
-    enable_rocket_cobol_lsp_lang_server_control: boolean;
-    
     enable_exec_sql_cursors:boolean;
 
     scan_comments_for_references: boolean;
@@ -366,9 +351,6 @@ export class COBOLSettings implements ICOBOLSettings {
         this.scan_comment_copybook_token = "source-dependency";
         this.editor_maxTokenizationLineLength = 20000;
         this.sourceview = false;
-        this.sourceview_include_jcl_files = true;
-        this.sourceview_include_hlasm_files = true;
-        this.sourceview_include_pli_files = true;
         this.sourceview_include_doc_files = true;
         this.sourceview_include_script_files = true;
         this.sourceview_include_object_files = true;
@@ -421,8 +403,6 @@ export class COBOLSettings implements ICOBOLSettings {
         this.out_of_range_tabstop_size = 4;
         this.anchor_tabstops = [];
         this.enable_tabstops_anchors = true;
-        this.enable_rocket_cobol_lsp_when_active = true;
-        this.enable_rocket_cobol_lsp_lang_server_control = true;
         this.enable_exec_sql_cursors = true;
         this.scan_comments_for_references = false;
 

@@ -6,7 +6,7 @@ import { COBOLProgramCommands } from "./cobolprogram";
 import { TabUtils } from "./tabstopper";
 import { VSLogger } from "./vslogger";
 import { AlignStyle, VSCOBOLUtils, FoldAction } from "./vscobolutils";
-import { commands, ExtensionContext, languages } from "vscode";
+import { commands, ExtensionContext } from "vscode";
 import { VSPPCodeLens } from "./vsppcodelens";
 import { ExtensionDefaults } from "./extensionDefaults";
 import { COBOLSourceScanner } from "./cobolsourcescanner";
@@ -81,7 +81,7 @@ const known_problem_extensions: [string, string, boolean][] = [
     ["A control flow extension that is not compatible with this dialect of COBOL", "BroadcomMFD.ccf", true],             // control flow extension
     ["COBOL debugger for different dialect of COBOL", "COBOLworx.cbl-gdb", true],
     ["Inline completion provider causes problems with this extension", "bloop.bloop-write", false],
-    ["Language provider of COBOL/PLI that is not supported with extension", "heirloomcomputinginc", true]
+    ["Language provider of COBOL that is not supported with extension", "heirloomcomputinginc", true]
 ];
 
 
@@ -235,10 +235,6 @@ function checkExtensions(): [string, boolean, boolean] {
                                     reason.push("contributes conflicting grammar (COBOL)");
                                     fatalEditorConflict = true;
                                 }
-                                if (l === ExtensionDefaults.defaultPLIanguage) {
-                                    reason.push("contributes conflicting grammar (PLI)");
-                                    fatalEditorConflict = true;
-                                }
                             }
                         } catch {
                             // just incase
@@ -256,10 +252,6 @@ function checkExtensions(): [string, boolean, boolean] {
                                 const l = `${languageElement.id}`.toUpperCase();
                                 if (l === ExtensionDefaults.defaultCOBOLLanguage) {
                                     reason.push("contributes language id (COBOL)");
-                                    fatalEditorConflict = true;
-                                }
-                                if (l === ExtensionDefaults.defaultPLIanguage) {
-                                    reason.push("contributes language id (PLI)");
                                     fatalEditorConflict = true;
                                 }
                             }
@@ -355,20 +347,11 @@ export function checkForExtensionConflicts(settings: ICOBOLSettings, context: Ex
                     VSLogger.logMessage(`Document ${doc.fileName} changed to plaintext to avoid errors, as the COBOL extension is inactive`);
                     vscode.languages.setTextDocumentLanguage(doc, "plaintext");
                 }
-
-                if (VSExtensionUtils.isKnownPLILanguageId(settings, doc.languageId)) {
-                    VSLogger.logMessage(`Document ${doc.fileName} changed to plaintext to avoid errors, as the COBOL extension is inactive`);
-                    languages.setTextDocumentLanguage(doc, "plaintext");
-                }
             }
 
             const onDidOpenTextDocumentHandler = vscode.workspace.onDidOpenTextDocument(async (doc: vscode.TextDocument) => {
                 if (VSExtensionUtils.isKnownCOBOLLanguageId(settings, doc.languageId)) {
                     VSLogger.logMessage(`Document ${doc.fileName} changed to plaintext to avoid errors, as the COBOL extension is inactive`);
-                    vscode.languages.setTextDocumentLanguage(doc, "plaintext");
-                }
-                if (VSExtensionUtils.isKnownPLILanguageId(settings, doc.languageId)) {
-                    VSLogger.logMessage(`Document ${doc.fileName} changed to plaintext to avoid errors, as the PLI extension is inactive`);
                     vscode.languages.setTextDocumentLanguage(doc, "plaintext");
                 }
             });

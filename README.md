@@ -2,20 +2,14 @@
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/bitlang.cobol)](https://marketplace.visualstudio.com/items?itemName=bitlang.cobol)[![Downloads](https://img.shields.io/visual-studio-marketplace/i/bitlang.cobol)](https://marketplace.visualstudio.com/items?itemName=bitlang.cobol) [![Rating](https://img.shields.io/visual-studio-marketplace/r/bitlang.cobol)](https://marketplace.visualstudio.com/items?itemName=bitlang.cobol)
 
-This unofficial extension provides syntax highlighting for `Rocket ® COBOL` based COBOL languages (previously `Micro Focus COBOL`), with some support for other COBOL dialects such as ACUCOBOL, RMCOBOL, COBOL-IT, ILECOBOL and NonStop COBOL.
+This unofficial extension provides syntax highlighting for ANSI COBOL and NonStop COBOL (Tandem).
 
-Plus related syntax highlighting for other related languages/file formats such JCL, PL/I and directive files and [Unit Test Reports](https://www.microfocus.com/documentation/visual-cobol/vc70/VS2017/index.html?t=GUID-F0EE10E3-2C57-4322-BC82-4AD5A5EDA0CB.html).
+Plus related syntax highlighting for directive files and [Unit Test Reports](https://www.microfocus.com/documentation/visual-cobol/vc70/VS2017/index.html?t=GUID-F0EE10E3-2C57-4322-BC82-4AD5A5EDA0CB.html).
 
 Some of the features this extension provides are:
 
-- Colourisation and problem matchers for the following Rocket COBOL dialects:
-  - [Visual COBOL](https://www.microfocus.com/en-us/products/visual-cobol/)
-  - [ACUCOBOL-GT](https://www.microfocus.com/en-us/products/acucobol-gt/overview)
-  - [COBOL-IT](https://www.cobol-it.com/)
-
 - Colourisation for:
-    - [RMCOBOL](https://www.rocketsoftware.com/en-us/products/cobol/rm-cobol)
-    - ILECOBOL support to help fellow IBMi COBOL developers
+        - ANSI COBOL source
     - NonStop COBOL with comprehensive support for question mark directives including:
       - Listing Control: `?HEADING`, `?PAGE`, `?LIST`, `?FMAP`, `?WARN`, `?DIAGNOSE-85`, etc.
       - Source Text Manipulation: `?SECTION`, `?SOURCE`, `?SETTOG`, `?RESETTOG`, `?IF`, `?ENDIF`
@@ -58,9 +52,9 @@ While also being able to use it with the official `Rocket COBOL extension` (for 
 
 ## Examples of features provided
 
-### Code colorization for COBOL, PL/I and JCL
+### Code colorization for COBOL
 
- ![sieve_jcl](https://raw.githubusercontent.com/spgennard/vscode_cobol/main/images/screenshot_three.png)
+ ![cobol_screenshot](https://raw.githubusercontent.com/spgennard/vscode_cobol/main/images/screenshot_three.png)
 
 ### Intellisense example
 
@@ -194,11 +188,11 @@ Only active when `coboleditor.xedit_keymap` is set to true.
 
 ## New File
 
-New file creation support is provided for COBOL and ACUCOBOL programs with additional support for Micro Focus Unit Test programs.
+New file creation support is provided for COBOL programs.
 
 ## Changing the default file associations
 
-The command "Enforce extension via file.assocations" allows the default to be change from the "COBOL" language to "ACUCOBOL" or "COBOLIT".
+The command "Enforce extension via file.assocations" allows the default to be changed to "COBOL".
 
 ## Tasks
 
@@ -306,67 +300,10 @@ The example below shows you how you can create a single task to compile one prog
 }
 ```
 
-### Task: Single file compile using COBOL-IT
-
-The example below shows you how you can create a single task to compile one program using the `cobc` command.
-
-```json
-{
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Compile: cobc (single file)",
-            "type": "shell",
-            "command": "cobc",
-            "args": [
-                "-fsyntax-only",
-                "-I${workspaceFolder}\\CopyBooks",
-                "-I${workspaceFolder}\\CopyBooks\\Public",
-                "${file}"
-            ],
-            "problemMatcher" : "$cobolit-cobc"
-        }
-    ]
-}
-```
-
-### Task: Single file compile using ACUCOBOL-GT
-
-The example below shows you how you can create a single task to compile one program using the `ccbl32` command.
-
-```json
-{
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Compile: using ccbl32 (single file)",
-            "type": "shell",
-            "command": "%ACUCOBOL%\\bin\\ccbl32",
-            "args": [
-                "-Sp", "${workspaceFolder}\\CopyBooks",
-                "-Sp", "${workspaceFolder}\\CopyBooks\\Public",
-                "${file}"
-            ],
-            "windows": {
-                "options": {
-                    "env": {
-                        "ACUCOBOL" : "C:\\extend10.1.1\\AcuGT"
-                    }
-                }
-            },
-            "problemMatcher" : [ "$acucobol-warning-ccbl", "$acucobol-ccbl" ]
-        }
-    ]
-}
-```
-
 ### Task: Breakdown of problem matchers
 
 | Product and Version                           | Tools                                                            | Problem matcher(s)                       |
 | --------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------- |
-| COBOL-IT                                      | *cobc*                                                           | $cobolit-cobc                            |
-| COBOL-IT                                      | *cobc* for errors/notes                                          | $cobolit-error-cobc + $cobolit-note-cobc |
-| ACUCOBOL-GT                                   | *ccbl* for errors/warnings                                       | $acucobol-ccbl + $acucobol-warning-ccbl  |
 |                                               | *cob* or *cobol.exe* + ERRFORMAT"3" for information              | +mfcobol-errformat3-info                 |
 | Micro Focus Visual COBOL/Enterprise Developer | *msbuild*                                                        | $mfcobol-msbuild                         |
 |                                               | *cob* or *cobol.exe* + ERRFORMAT"3"                              | $mfcobol-errformat3                      |
@@ -690,7 +627,7 @@ Or you can use the *COBOL: Enforce extension via file.associations* command.
 
 The language *COBOL* is this extension and lower-case *cobol* is the *Rocket COBOL* extension.
 
-If this behavior is not desired, then the setting ```coboleditor.enable_rocket_cobol_lsp_when_active``` can be set to false or alternatively you can disable one of the extensions on a per-workspace basis or you have a scenario then the use of [profiles](https://code.visualstudio.com/docs/editor/profiles) is another mechanism that can isolate extensions from each other.
+If this behavior is not desired, disable one of the extensions on a per-workspace basis. Using [profiles](https://code.visualstudio.com/docs/editor/profiles) is another way to isolate extensions.
 
 
 ### Settings defaults for Rocket COBOL extension
@@ -706,11 +643,7 @@ If this behavior is not desired, then the setting ```coboleditor.enable_rocket_c
       "github.copilot.editor.enableAutoCompletions": true,
       "github.copilot.enable": {
         "COBOL": true,
-        "BITLANG-COBOL": true,
-        "COBOLIT": true,
-        "ACUCOBOL": true,
-        "RMCOBOL": true,
-        "mfu": false,
+                "COBOL_TANDEM": true,
         "utreport": false
       }
 ```
@@ -731,7 +664,7 @@ When files.defaultLanguage is set to COBOL any file without an extension is not 
     "files.defaultLanguage": "",
 ```
 
-Or use an file extension, which will ensure you have the right document language for editing.
+Or use a file extension, which will ensure you have the right document language for editing.
 
 
 ## Online resources
@@ -742,8 +675,7 @@ Or use an file extension, which will ensure you have the right document language
   - [Open Mainframe Project - COBOL Forum](https://community.openmainframeproject.org/c/cobol-technical-questions)
   - [Tek-Tips - COBOL General discussion](https://www.tek-tips.com/threadminder.cfm?pid=209)
 - Stack Overflow topics/tags:
-  - [Micro Focus COBOL, PL/I, REXX, JCL and CICS](https://stackoverflow.com/questions/tagged/microfocus)
-  - [ACUCOBOL-GT](https://stackoverflow.com/questions/tagged/acucobol-gt)
+    - [Micro Focus COBOL, REXX and CICS](https://stackoverflow.com/questions/tagged/microfocus)
   - [COBOL](https://stackoverflow.com/questions/tagged/cobol)
   - [COBOL.NET](https://stackoverflow.com/questions/tagged/cobol.net)
   - [CICS](https://stackoverflow.com/questions/tagged/cics)
@@ -758,7 +690,6 @@ Or use an file extension, which will ensure you have the right document language
 ## Shortcuts
 
 - [ALT] + [SHIFT] + [C]: Change to COBOL Syntax (default)
-- [ALT] + [SHIFT] + [A]: Change to ACUCOBOL-GT Syntax
 - [ALT] + [SHIFT] + [M]: Toggle margins (overrides user/workspace settings)
 
 ## Contributors

@@ -160,12 +160,8 @@ suite("Black Box: Master Test Suite", () => {
         
         console.log("Dialect Coverage:");
         const dialects = [
-            "Standard COBOL (Rocket/Micro Focus)",
-            "NonStop/Tandem COBOL (HPE)",
-            "ACU COBOL-GT",
-            "RM COBOL",
-            "IBM i COBOL (ILE)",
-            "COBOL-IT"
+            "ANSI COBOL",
+            "NonStop/Tandem COBOL"
         ];
         dialects.forEach(dialect => {
             console.log(`  ✓ ${dialect}`);

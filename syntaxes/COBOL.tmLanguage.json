@@ -31,21 +31,6 @@
   "name": "COBOL",
   "patterns": [
     {
-      "comment": "COBOL fixed-format identification area (columns 73-80)",
-      "begin": "^(.{72})",
-      "end": "$",
-      "beginCaptures": {
-        "1": {
-          "patterns": [
-            {
-              "include": "$self"
-            }
-          ]
-        }
-      },
-      "contentName": "comment.line.cobol.sequence"
-    },
-    {
       "match": "^\\*.*$",
       "name": "comment.line.cobol.fixed"
     },
@@ -54,35 +39,44 @@
       "name": "token.info-token.cobol"
     },
     {
-      "match": "(^[ \\*][ \\*][ \\*][ \\*][ \\*][ \\*])(\\/.*$)",
+      "match": "(^[ \\*][ \\*][ \\*][ \\*][ \\*][ \\*])(\\/.{0,65})(.{1,8})?$",
       "captures": {
         "1": {
           "name": "constant.numeric.cobol"
         },
         "2": {
           "name": "comment.line.cobol.newpage"
+        },
+        "3": {
+          "name": "constant.numeric.sequence.cobol"
         }
       }
     },
     {
-      "match": "(^[ \\*][ \\*][ \\*][ \\*][ \\*][ \\*])(\\*.*$)",
+      "match": "(^[ \\*][ \\*][ \\*][ \\*][ \\*][ \\*])(\\*.{0,65})(.{1,8})?$",
       "captures": {
         "1": {
           "name": "constant.numeric.cobol"
         },
         "2": {
           "name": "comment.line.cobol.fixed"
+        },
+        "3": {
+          "name": "constant.numeric.sequence.cobol"
         }
       }
     },
     {
-      "match": "(^[0-9\\s][0-9\\s][0-9\\s][0-9\\s][0-9\\s][0-9\\s])(\\/.*$)",
+      "match": "(^[0-9\\s][0-9\\s][0-9\\s][0-9\\s][0-9\\s][0-9\\s])(\\/.{0,65})(.{1,8})?$",
       "captures": {
         "1": {
           "name": "constant.numeric.cobol"
         },
         "2": {
           "name": "comment.line.cobol.newpage"
+        },
+        "3": {
+          "name": "constant.numeric.sequence.cobol"
         }
       }
     },
@@ -91,24 +85,48 @@
       "name": "constant.numeric.cobol"
     },
     {
-      "match": "(^[0-9\\s][0-9\\s][0-9\\s][0-9\\s][0-9\\s][0-9\\s])(\\*.*$)",
+      "match": "(^[0-9\\s][0-9\\s][0-9\\s][0-9\\s][0-9\\s][0-9\\s])(\\*.{0,65})(.{1,8})?$",
       "captures": {
         "1": {
           "name": "constant.numeric.cobol"
         },
         "2": {
           "name": "comment.line.cobol.fixed"
+        },
+        "3": {
+          "name": "constant.numeric.sequence.cobol"
         }
       }
     },
     {
-      "match": "(^[0-9a-zA-Z\\s\\$#%\\.@\\- +][0-9a-zA-Z\\s\\$#%\\.@\\- +][0-9a-zA-Z\\s\\$#%\\.@\\- +][0-9a-zA-Z\\s\\$#%\\.@\\- +][0-9a-zA-Z\\s\\$#%\\.@\\- +][0-9a-zA-Z\\s\\$#%\\.@\\- +])(\\*.*$)",
+      "match": "(^[0-9a-zA-Z\\s\\$#%\\.@\\- +][0-9a-zA-Z\\s\\$#%\\.@\\- +][0-9a-zA-Z\\s\\$#%\\.@\\- +][0-9a-zA-Z\\s\\$#%\\.@\\- +][0-9a-zA-Z\\s\\$#%\\.@\\- +][0-9a-zA-Z\\s\\$#%\\.@\\- +])(\\*.{0,65})(.{1,8})?$",
       "captures": {
         "1": {
           "name": "constant.numeric.cobol"
         },
         "2": {
           "name": "comment.line.cobol.fixed"
+        },
+        "3": {
+          "name": "constant.numeric.sequence.cobol"
+        }
+      }
+    },
+    {
+      "comment": "ANSI fixed format sequence area (columns 1-6)",
+      "match": "^([ 0-9]{6})(?=.)",
+      "captures": {
+        "1": {
+          "name": "constant.numeric.sequence.cobol"
+        }
+      }
+    },
+    {
+      "comment": "ANSI fixed format identification area (columns 73-80)",
+      "match": "(?<=^.{72})(.{1,8})$",
+      "captures": {
+        "1": {
+          "name": "constant.numeric.sequence.cobol"
         }
       }
     },
@@ -138,13 +156,16 @@
       }
     },
     {
-      "match": "(^[0-9a-zA-Z\\s\\$#%\\.@][0-9a-zA-Z\\s\\$#%\\.@][0-9a-zA-Z\\s\\$#%\\.@][0-9a-zA-Z\\s\\$#%\\.@][0-9a-zA-Z\\s\\$#%\\.@][0-9a-zA-Z\\s\\$#%\\.@])(\\/.*$)",
+      "match": "(^[0-9a-zA-Z\\s\\$#%\\.@][0-9a-zA-Z\\s\\$#%\\.@][0-9a-zA-Z\\s\\$#%\\.@][0-9a-zA-Z\\s\\$#%\\.@][0-9a-zA-Z\\s\\$#%\\.@][0-9a-zA-Z\\s\\$#%\\.@])(\\/.{0,65})(.{1,8})?$",
       "captures": {
         "1": {
           "name": "constant.cobol"
         },
         "2": {
           "name": "comment.line.cobol.newpage"
+        },
+        "3": {
+          "name": "constant.numeric.sequence.cobol"
         }
       }
     },
@@ -420,8 +441,12 @@
           "name": "constant.numeric.cobol"
         },
         {
-          "match": "([A-Za-z][A-Za-z0-9\\-_]*(?:\\s+[A-Za-z0-9\\-_]+)*)",
-          "name": "entity.name.type.computer.cobol"
+          "match": "^(?:[ 0-9]{6})?[ \\t]*([A-Za-z][A-Za-z0-9\\-_]*(?:\\s+[A-Za-z0-9\\-_]+)*)(?=\\s*\\.)",
+          "captures": {
+            "1": {
+              "name": "entity.name.type.computer.cobol"
+            }
+          }
         }
       ],
       "end": "(?=((?<![-_])(?i:remarks|author|date-written|source-computer|object-computer|installation|date-compiled|special-names|security|environment\\s+division|data\\s+division|working-storage\\s+section|input-output\\s+section|linkage\\s+section|procedure\\s+division|local-storage\\s+section)|^[ \\*][ \\*][ \\*][ \\*][ \\*][ \\*]\\*.*$|^\\+$))"
@@ -647,7 +672,7 @@
           "name": "punctuation.definition.string.begin.cobol"
         }
       },
-      "end": "(\"|$)",
+      "end": "(\"|(?<=^[ 0-9]{6}.{66})(?=.{1,8}$)|$)",
       "endCaptures": {
         "0": {
           "name": "punctuation.definition.string.end.cobol"
@@ -705,7 +730,7 @@
           "name": "punctuation.definition.string.begin.cobol"
         }
       },
-      "end": "(\"|$)",
+      "end": "(\"|(?<=^[ 0-9]{6}.{66})(?=.{1,8}$)|$)",
       "endCaptures": {
         "0": {
           "name": "punctuation.definition.string.end.cobol"
@@ -735,7 +760,7 @@
           "name": "punctuation.definition.string.begin.cobol"
         }
       },
-      "end": "(\"|$)",
+      "end": "(\"|(?<=^[ 0-9]{6}.{66})(?=.{1,8}$)|$)",
       "endCaptures": {
         "0": {
           "name": "punctuation.definition.string.end.cobol"
@@ -765,7 +790,7 @@
           "name": "punctuation.definition.string.begin.cobol"
         }
       },
-      "end": "(\"|$)",
+      "end": "(\"|(?<=^[ 0-9]{6}.{66})(?=.{1,8}$)|$)",
       "endCaptures": {
         "0": {
           "name": "punctuation.definition.string.end.cobol"
@@ -1202,7 +1227,7 @@
           "name": "punctuation.definition.string.begin.cobol"
         }
       },
-      "end": "(\"|$)",
+      "end": "(\"|(?<=^[ 0-9]{6}.{66})(?=.{1,8}$)|$)",
       "endCaptures": {
         "0": {
           "name": "punctuation.definition.string.end.cobol"

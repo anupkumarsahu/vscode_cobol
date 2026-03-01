@@ -1,6 +1,4 @@
 // import { VSExternalFeatures } from "../vsexternalfeatures";
-import { CBL_APIs } from "./mf_cbl_apis";
-import { MFUNIT_APIs } from "./mf_mfunit";
 
 export interface IKnownApis {
 	url: string;
@@ -33,28 +31,6 @@ export class CallTarget {
 
 const emptyMap = new Map<string, CallTarget>();
 const callTargets_cobol = new Map<string, CallTarget>();
-
-function addApis(calltarget: Map<string, CallTarget>, a: IKnownApis) {
-	for (const [key, description] of a.apis) {
-		const possibleExample = a.examples.get(key);
-		const possibleSnippet = a.snippets.get(key);
-		calltarget.set(key, new CallTarget(a.name, a.url, key, description,
-			(possibleExample === undefined ? [] : possibleExample),
-			(possibleSnippet === undefined ? [] : possibleSnippet)
-		));
-	}
-
-	// for (const [api, ] of a.snippets) {
-	// 	if (a.apis.get(api) === undefined) {
-	// 		// eslint-disable-next-line no-console
-	// 		console.log(`${api} has no description`);
-	// 	}
-	// }
-
-}
-
-addApis(callTargets_cobol, new CBL_APIs());
-addApis(callTargets_cobol, new MFUNIT_APIs());
 
 export class KnownAPIs {
 	// /* inline decl */

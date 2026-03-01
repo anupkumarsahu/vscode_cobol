@@ -33,7 +33,6 @@
         "typescriptreact",
         "yaml",
         "yml",
-        "COBOL",
-        "ACUCOBOL"
+        "COBOL"
     ]
 }

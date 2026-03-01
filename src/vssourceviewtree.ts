@@ -57,9 +57,6 @@ export class SourceViewTree implements vscode.TreeDataProvider<SourceOrFolderTre
 
     private cobolItems = new Map<string, SourceOrFolderTreeItem>();
     private copyBookItems = new Map<string, SourceOrFolderTreeItem>();
-    private jclItems = new Map<string, SourceOrFolderTreeItem>();
-    private pliItems = new Map<string, SourceOrFolderTreeItem>();
-    private hlasmItems = new Map<string, SourceOrFolderTreeItem>();
     private documentItems = new Map<string, SourceOrFolderTreeItem>();
     private scriptItems = new Map<string, SourceOrFolderTreeItem>();
     private objectItems = new Map<string, SourceOrFolderTreeItem>();
@@ -67,9 +64,6 @@ export class SourceViewTree implements vscode.TreeDataProvider<SourceOrFolderTre
 
     private cobolItem: SourceOrFolderTreeItem;
     private copyBookItem: SourceOrFolderTreeItem;
-    private jclItem: SourceOrFolderTreeItem;
-    private pliItem: SourceOrFolderTreeItem;
-    private hlasmItem: SourceOrFolderTreeItem;
     private documentItem: SourceOrFolderTreeItem;
     private scriptItem: SourceOrFolderTreeItem;
     private objectItem: SourceOrFolderTreeItem;
@@ -84,9 +78,6 @@ export class SourceViewTree implements vscode.TreeDataProvider<SourceOrFolderTre
         this.settings = config;
         this.cobolItem = new SourceOrFolderTreeItem(false, "COBOL");
         this.copyBookItem = new SourceOrFolderTreeItem(false, "Copybooks");
-        this.jclItem = new SourceOrFolderTreeItem(false, "JCL");
-        this.hlasmItem = new SourceOrFolderTreeItem(false, "HLASM");
-        this.pliItem = new SourceOrFolderTreeItem(false, "PL/I");
         this.documentItem = new SourceOrFolderTreeItem(false, "Documents");
         this.scriptItem = new SourceOrFolderTreeItem(false, "Scripts");
         this.objectItem = new SourceOrFolderTreeItem(false, "Objects");
@@ -94,9 +85,6 @@ export class SourceViewTree implements vscode.TreeDataProvider<SourceOrFolderTre
 
         this.cobolItems = this.cobolItem.children;
         this.copyBookItems = this.copyBookItem.children;
-        this.jclItems = this.jclItem.children;
-        this.pliItems = this.pliItem.children;
-        this.hlasmItems = this.hlasmItem.children;
         this.documentItems = this.documentItem.children;
         this.scriptItems = this.scriptItem.children;
         this.objectItems = this.objectItem.children;
@@ -104,18 +92,6 @@ export class SourceViewTree implements vscode.TreeDataProvider<SourceOrFolderTre
 
         this.topLevelItems.set(this.cobolItem.label, this.cobolItem);
         this.topLevelItems.set(this.copyBookItem.label, this.copyBookItem);
-
-        if (config.sourceview_include_jcl_files) {
-            this.topLevelItems.set(this.jclItem.label, this.jclItem);
-        }
-
-        if (config.sourceview_include_hlasm_files) {
-            this.topLevelItems.set(this.hlasmItem.label, this.hlasmItem);
-        }
-
-        if (config.sourceview_include_pli_files) {
-            this.topLevelItems.set(this.pliItem.label, this.pliItem);
-        }
 
         if (config.sourceview_include_doc_files) {
             this.topLevelItems.set(this.documentItem.label, this.documentItem);
@@ -131,18 +107,6 @@ export class SourceViewTree implements vscode.TreeDataProvider<SourceOrFolderTre
 
         if (config.sourceview_include_test_files) {
             this.topLevelItems.set(this.testCaseItem.label, this.testCaseItem);
-        }
-
-        if (config.sourceview_include_jcl_files) {
-            this.topLevelItems.set(this.jclItem.label, this.jclItem);
-        }
-
-        if (config.sourceview_include_hlasm_files) {
-            this.topLevelItems.set(this.hlasmItem.label, this.hlasmItem);
-        }
-
-        if (config.sourceview_include_pli_files) {
-            this.topLevelItems.set(this.pliItem.label, this.pliItem);
         }
 
         if (config.sourceview_include_doc_files) {
@@ -295,45 +259,12 @@ export class SourceViewTree implements vscode.TreeDataProvider<SourceOrFolderTre
             const fsp = file.fsPath;
             const extLower = ext.toLowerCase();
 
-            if (base.startsWith("Test") || base.startsWith("MFU")) {
+            if (base.startsWith("Test")) {
                 this.addExtensionIfInList(ext.toLowerCase(), file, this.settings.program_extensions, this.testCaseItem.contextValue, base, this.testCaseItems);
                 this.addExtensionIfInList(ext.toLowerCase(), file, this.settings.copybookexts, this.testCaseItem.contextValue, base, this.testCaseItems);
             }
 
             switch (extLower) {
-                case "jcl":
-                case "job":
-                case "cntl":
-                case "prc":
-                case "proc":
-                    if (this.jclItems.has(fsp) === false) {
-                        this.jclItems.set(fsp, this.newSourceItem("jcl", base, file, 0, extLower));
-                    }
-                    break;
-                case "hlasm":
-                case "asm":
-                case "s":
-                case "asmpgm":
-                case "mac":
-                case "mlc":
-                case "asmmac":
-                    if (this.hlasmItems.has(fsp) === false) {
-                        this.hlasmItems.set(fsp, this.newSourceItem("hlasm", base, file, 0, extLower));
-                    }
-                    break;
-
-                case "pl1":
-                case "pli":
-                case "plinc":
-                case "pc":
-                case "pci":
-                case "pcx":
-                case "inc":
-                    if (this.pliItems.has(fsp) === false) {
-                        this.pliItems.set(fsp, this.newSourceItem("pli", base, file, 0, extLower));
-                    }
-                    break;
-
                 case "lst":
                 case "md":
                 case "txt":
