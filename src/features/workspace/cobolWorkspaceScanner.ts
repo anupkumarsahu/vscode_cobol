@@ -1,0 +1,359 @@
+import { COBOLSourceScanner, SharedSourceReferences } from "./cobolsourcescanner";
+import { COBOLSymbolTableEventHelper } from "./cobolsymboltableeventhelper";
+import { cobolWorkspaceScanner_STATUS, ScanData, ScanDataHelper, ScanStats } from "./cobolWorkspaceScannerData";
+import { consoleExternalFeatures } from "../runtime/consoleExternalFeatures";
+
+import * as crypto from "crypto";
+import * as fs from "fs";
+import * as os from "os";
+import { Hash } from "crypto";
+import path from "path";
+import { Worker } from "worker_threads";
+
+import { COBOLWorkspaceSymbolCacheHelper } from "./cobolworkspacecache";
+import { InMemoryGlobalSymbolCache } from "./globalcachehelper";
+import { fileSourceHandler } from "./fileSourceHandler";
+import { COBOLSettings, ICOBOLSettings } from "../../config/IConfiguration";
+import { IExternalFeatures } from "../runtime/IExternalFeatures";
+import { cobolSourceScannerInterfacesEventer } from "./ICobolSourceScannerInterfaces";
+
+const args = process.argv.slice(2);
+const settings: ICOBOLSettings = new COBOLSettings();
+
+const progressPercentage = 5;
+
+class Utils {
+    private static msleep(n: number) {
+        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
+    }
+
+    public static sleep(n: number) {
+        Utils.msleep(n * 1000);
+    }
+
+    public static getHashForFilename(filename: string) {
+        const hash: Hash = crypto.createHash("sha256");
+        hash.update(filename);
+        return hash.digest("hex");
+    }
+
+    public static cacheUpdateRequired(nfilename: string, features: IExternalFeatures): boolean {
+        const filename = path.normalize(nfilename);
+
+        const cachedMtimeWS = InMemoryGlobalSymbolCache.sourceFilenameModified.get(filename);
+        const cachedMtime = cachedMtimeWS?.lastModifiedTime;
+        if (cachedMtime !== undefined) {
+            const stat4srcMs =features.getFileModTimeStamp(filename);
+            if (cachedMtime < stat4srcMs) {
+                features.logMessage(`cacheUpdateRequired : ${nfilename}, cachedMtime=${cachedMtime} < ${stat4srcMs}`);
+                return true;
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    public static performance_now(): number {
+        if (!process.env.BROWSER) {
+            try {
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
+                return require("performance-now").performance.now;
+            }
+            catch {
+                return Date.now();
+            }
+        }
+
+        return Date.now();
+    }
+}
+
+class ProcessSender implements cobolSourceScannerInterfacesEventer {
+    public static Default = new ProcessSender();
+
+    sendMessage(message: string): void {
+        if (process.send) {
+            process.send(message);
+        }
+    }
+}
+
+export class Scanner {
+    public static transferScanDataToGlobals(scanData: ScanData, features: IExternalFeatures): void {
+        features.setWorkspaceFolders(scanData.workspaceFolders);
+
+        // may need more..
+        settings.parse_copybooks_for_references = scanData.parse_copybooks_for_references;
+        settings.cache_metadata_verbose_messages = scanData.cache_metadata_verbose_messages;
+        settings.file_search_directory = scanData.md_file_search_directory;
+        settings.copybookdirs = scanData.md_copybookdirs;
+        settings.copybookexts = scanData.md_copybookexts;
+        settings.makefile_dependancy_fullpath = scanData.md_makefile_dependancy_fullpath;
+
+        // TODO: add in other metadata items
+        COBOLWorkspaceSymbolCacheHelper.loadGlobalCacheFromArray(settings, scanData.md_symbols, true);
+        COBOLWorkspaceSymbolCacheHelper.loadGlobalEntryCacheFromArray(settings, scanData.md_entrypoints, true);
+        COBOLWorkspaceSymbolCacheHelper.loadGlobalTypesCacheFromArray(settings, scanData.md_types, true);
+        COBOLWorkspaceSymbolCacheHelper.loadFileCacheFromArray(settings, features, scanData.md_metadata_files, true);
+        COBOLWorkspaceSymbolCacheHelper.loadGlobalKnownCopybooksFromArray(settings, scanData.md_metadata_knowncopybooks, true);
+    }
+
+    public static processFileShowHeader(stats: ScanStats, features: IExternalFeatures): void {
+        if (stats.directoriesScanned !== 0) {
+            features.logMessage(` Directories scanned   : ${stats.directoriesScanned}`);
+        }
+        if (stats.maxDirectoryDepth !== 0) {
+            features.logMessage(` Directory Depth       : ${stats.maxDirectoryDepth}`);
+        }
+
+        if (stats.fileCount) {
+            features.logMessage(` Files found           : ${stats.fileCount}`);
+        }
+    }
+
+    public static processFileShowFooter(stats: ScanStats, features: IExternalFeatures, aborted: boolean): void {
+        if (stats.filesScanned !== 0) {
+            features.logMessage(` Files scanned         : ${stats.filesScanned}`);
+        }
+
+        if (stats.filesUptodate !== 0) {
+            features.logMessage(` Files up to date      : ${stats.filesUptodate}`);
+        }
+
+        if (stats.programsDefined !== 0) {
+            features.logMessage(` Program Count         : ${stats.programsDefined}`);
+        }
+
+        if (stats.entryPointsDefined !== 0) {
+            features.logMessage(` Entry-Point Count     : ${stats.entryPointsDefined}`);
+        }
+        const completedMessage = (aborted ? `Scan aborted (elapsed time ${stats.endTime})` : "Scan completed");
+        if (features.logTimedMessage(stats.endTime, completedMessage) === false) {
+            features.logMessage(completedMessage);
+        }
+
+    }
+
+    public static processFiles(scanData: ScanData, features: IExternalFeatures, sender: cobolSourceScannerInterfacesEventer, stats: ScanStats): void {
+        let aborted = false;
+        stats.start = Utils.performance_now();
+        stats.directoriesScanned = scanData.directoriesScanned;
+        stats.maxDirectoryDepth = scanData.maxDirectoryDepth;
+        stats.fileCount = scanData.fileCount;
+
+        if (scanData.showStats) {
+            Scanner.processFileShowHeader(stats, features);
+        }
+
+        try {
+            let fSendCount = 0;
+            for (const file of scanData.Files) {
+                if (Utils.cacheUpdateRequired(file, features)) {
+                    const filesHandler = new fileSourceHandler(settings, undefined, file, features);
+                    const config = new COBOLSettings();
+                    config.parse_copybooks_for_references = scanData.parse_copybooks_for_references;
+                    config.cache_metadata_verbose_messages = scanData.cache_metadata_verbose_messages;
+                    config.file_search_directory = scanData.md_file_search_directory;
+                    config.copybookdirs = scanData.md_copybookdirs;
+                    config.copybookexts = scanData.md_copybookexts;
+                    config.makefile_dependancy_fullpath = scanData.md_makefile_dependancy_fullpath;
+                    
+                    const symbolCatcher = new COBOLSymbolTableEventHelper(config, sender);
+                    const startTime = features.performance_now();
+                    const qcp = new COBOLSourceScanner(
+                        startTime,
+                        filesHandler, 
+                        config, 
+                        new SharedSourceReferences(config, true, startTime), 
+                        config.parse_copybooks_for_references, 
+                        symbolCatcher, 
+                        features,
+                        false);
+                    if (qcp.callTargets.size > 0) {
+                        stats.programsDefined++;
+                        if (qcp.callTargets !== undefined) {
+                            stats.entryPointsDefined += (qcp.callTargets.size - 1);
+                        }
+                    }
+
+                    if (scanData.cache_metadata_verbose_messages) {
+                        features.logMessage(`  Parse completed: ${file}`);
+                    }
+                    stats.filesScanned++;
+                } else {
+                    stats.filesUptodate++;
+                }
+
+                fSendCount++;
+                if (fSendCount === scanData.sendOnCount) {
+                    sender.sendMessage(`${cobolWorkspaceScanner_STATUS} ${scanData.sendPercent}`);
+                    fSendCount = 0;
+                }
+            }
+        } catch (e) {
+            features.logException("cobolWorkspaceScanner", e as Error);
+            aborted = true;
+        } finally {
+            stats.endTime = Utils.performance_now() - stats.start;
+            if (scanData.showStats) {
+                this.processFileShowFooter(stats, features, aborted);
+            }
+        }
+    }
+}
+
+let lastJsonFile = "";
+
+export class WorkerThreadData {
+    public scanData: ScanData;
+
+    constructor(scanData: ScanData) {
+        this.scanData = scanData;
+    }
+}
+
+for (const arg of args) {
+
+    const argLower = arg.toLowerCase();
+
+    if (argLower.endsWith(".json")) {
+        const features = consoleExternalFeatures.Default;
+        try {
+            lastJsonFile = arg;
+            const scanData: ScanData = ScanDataHelper.load(arg);
+            const scanStats = new ScanStats();
+            ScanDataHelper.setupPercent(scanData, scanData.Files.length,progressPercentage);
+            Scanner.transferScanDataToGlobals(scanData, features);
+            Scanner.processFiles(scanData, features, ProcessSender.Default, scanStats);
+        }
+        catch (e) {
+            if (e instanceof SyntaxError) {
+                features.logMessage(`Unable to load ${arg}`);
+            } else {
+                features.logException("cobolWorkspaceScanner", e as Error);
+            }
+        }
+    }
+    else {
+        switch (argLower) {
+            case "useenv": {
+                const features = consoleExternalFeatures.Default;
+                try {
+                    const SCANDATA_ENV = process.env.SCANDATA;
+                    if (SCANDATA_ENV !== undefined) {
+                        const scanData: ScanData = ScanDataHelper.parseScanData(SCANDATA_ENV);
+                        ScanDataHelper.setupPercent(scanData, scanData.Files.length,progressPercentage);
+                        Scanner.transferScanDataToGlobals(scanData, features);
+                        const scanStats = new ScanStats();
+                        Scanner.processFiles(scanData, features, ProcessSender.Default, scanStats);
+                        features.logMessage(`${cobolWorkspaceScanner_STATUS} 100`);
+                    } else {
+                        features.logMessage("SCANDATA not found in environment");
+                    }
+                }
+                catch (e) {
+                    if (e instanceof SyntaxError) {
+                        features.logMessage(`Unable to load ${arg}`);
+                    } else {
+                        features.logException("cobolWorkspaceScanner", e as Error);
+                    }
+                }
+            }
+                break;
+            case "useenv_threaded": {
+                const features = consoleExternalFeatures.Default;
+                try {
+                    const SCANDATA_ENV = process.env.SCANDATA;
+                    if (SCANDATA_ENV !== undefined) {
+                        const baseScanData: ScanData = ScanDataHelper.parseScanData(SCANDATA_ENV);
+                        ScanDataHelper.setupPercent(baseScanData, baseScanData.Files.length,progressPercentage);
+                        Scanner.transferScanDataToGlobals(baseScanData, features);
+
+                        let _numCpus = os.cpus().length *0.75;    // only use 75% of CPUs
+                        const _numCpuEnv = process.env.SCANDATA_TCOUNT;
+                        if (_numCpuEnv !== undefined) {
+                            _numCpus = Number.parseInt(_numCpuEnv,10);
+                        }
+                        let i, j;
+                        const files = baseScanData.Files;
+                        const threadCount = _numCpus - 1;
+                        const chunkSize = files.length / threadCount;
+
+                        const threadStats: ScanStats[] = [];
+                        const jsFile = path.join(baseScanData.scannerBinDir, "cobolWorkspaceScannerWorker.js");
+                        const startTime = Utils.performance_now();
+                        const combinedStats = new ScanStats();
+
+                        combinedStats.start = startTime;
+                        combinedStats.directoriesScanned = baseScanData.directoriesScanned;
+                        combinedStats.maxDirectoryDepth = baseScanData.maxDirectoryDepth;
+                        combinedStats.fileCount = baseScanData.fileCount;
+
+                        Scanner.processFileShowHeader(combinedStats, features);
+                        for (i = 0, j = files.length; i < j; i += chunkSize) {
+                            const sfFileChunk = files.slice(i, i + chunkSize);
+                            const scanData: ScanData = { ...baseScanData };
+                            scanData.Files = sfFileChunk;
+                            scanData.fileCount = sfFileChunk.length;
+                            const wtd = new WorkerThreadData(scanData);
+                            const worker = new Worker(jsFile, { workerData: wtd });
+
+                            //Listen for a message from worker
+                            worker.on("message", result => {
+                                const resStr = result as string;
+                                if (resStr.startsWith("++")) {
+                                    const s = JSON.parse(resStr.substring(2)) as ScanStats;
+                                    threadStats.push(s);
+                                } else {
+                                    features.logMessage(resStr);
+                                }
+                            });
+
+                            worker.on("error", error => {
+                                features.logException("usethreads", error);
+                            });
+
+                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                            worker.on("exit", exitCode => {
+                                if (threadStats.length === threadCount) {
+                                    for (const tstat of threadStats) {
+                                        combinedStats.filesScanned += tstat.filesScanned;
+                                        combinedStats.filesUptodate += tstat.filesUptodate;
+                                        combinedStats.programsDefined += tstat.programsDefined;
+                                        combinedStats.entryPointsDefined += tstat.entryPointsDefined;
+                                    }
+                                    threadStats.length = 0;
+                                    combinedStats.endTime = Utils.performance_now() - startTime;
+                                    features.logMessage(`${cobolWorkspaceScanner_STATUS} 100`);
+                                    Scanner.processFileShowFooter(combinedStats, features, false);
+                                }
+                            });
+                        }
+                    }
+                } catch (e) {
+                    features.logException("cobolWorkspaceScanner", e as Error);
+                } finally {
+                    //
+                }
+            }
+                break;
+            default:
+                // features.logMessage(`INFO: arg passed is ${arg}`);
+                break;
+        }
+    }
+}
+
+if (lastJsonFile.length !== 0) {
+    try {
+        // delete the json file
+        fs.unlinkSync(lastJsonFile);
+    }
+    catch {
+        //continue
+    }
+}
+
+
+

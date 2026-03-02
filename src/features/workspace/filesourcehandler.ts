@@ -1,15 +1,15 @@
 import fs from "fs";
 
-import { ISourceHandler, ICommentCallback, ISourceHandlerLite, commentRange } from "./isourcehandler";
-import { ESourceFormat, IExternalFeatures } from "../runtime/externalfeatures";
+import { sourceHandlerInterfaces, ICommentCallback, sourceHandlerInterfacesLite, CommentRange } from "./ISourceHandlerInterfaces";
+import { ESourceFormat, IExternalFeatures } from "../runtime/IExternalFeatures";
 import { pathToFileURL } from "url";
 import path from "path";
 import { getCOBOLKeywordDictionary } from "../../keywords/cobolKeywords";
 import { ExtensionDefaults } from "../../config/extensionDefaults";
-import { SimpleStringBuilder } from "../../utils/stringutils";
-import { ICOBOLSettings } from "../../config/iconfiguration";
+import { SimpleStringBuilder } from "../../utils/stringUtils";
+import { ICOBOLSettings } from "../../config/IConfiguration";
 
-export class FileSourceHandler implements ISourceHandler, ISourceHandlerLite {
+export class fileSourceHandler implements sourceHandlerInterfaces, sourceHandlerInterfacesLite {
     document: string;
     dumpNumbersInAreaA: boolean;
     dumpAreaBOnwards: boolean;
@@ -23,7 +23,7 @@ export class FileSourceHandler implements ISourceHandler, ISourceHandlerLite {
     shortFilename: string;
     languageId: string;
     format: ESourceFormat;
-    notedCommentRanges: commentRange[];
+    notedCommentRanges: CommentRange[];
 
     commentsIndex: Map<number, string>;
     commentsIndexInline: Map<number, boolean>;
@@ -173,7 +173,7 @@ export class FileSourceHandler implements ISourceHandler, ISourceHandlerLite {
 
             // todo - this is a bit messy and should be revised
             if (this.dumpNumbersInAreaA) {
-                if (line.match(FileSourceHandler.paraPrefixRegex1)) {
+                if (line.match(fileSourceHandler.paraPrefixRegex1)) {
                     line = "      " + line.substring(6);
                 } else {
                     if (line.length > 7 && line[6] === " ") {
@@ -300,7 +300,7 @@ export class FileSourceHandler implements ISourceHandler, ISourceHandlerLite {
         this.format = format;
     }
 
-    getNotedComments(): commentRange[] {
+    getNotedComments(): CommentRange[] {
         return this.notedCommentRanges;
     }
 
@@ -374,4 +374,7 @@ export class FileSourceHandler implements ISourceHandler, ISourceHandlerLite {
         return fl;
     }
 }
+
+export { fileSourceHandler as FileSourceHandler };
+
 

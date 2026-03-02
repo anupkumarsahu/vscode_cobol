@@ -51,6 +51,7 @@
     "workspaceContains:bld.bat",
     "workspaceContains:bld.sh",
     "workspaceContains:**/*.cobol",
+    "workspaceContains:**/*.ecob",
     "workspaceContains:**/*.cob",
     "workspaceContains:**/*.cbl",
     "workspaceContains:**/*.cpy",
@@ -295,6 +296,8 @@
             "SQLCBLLE",
             "cobol",
             "COBOL",
+            "ecob",
+            "ECOB",
             "scbl",
             "SCBL",
             "pco",
@@ -1276,10 +1279,10 @@
           ".CBL",
           ".cpy",
           ".CPY",
+          ".cobol",
+          ".COBOL",
           ".ecob",
-          ".ECOB",
-          ".tal",
-          ".tacl"
+          ".ECOB"
         ],
         "configuration": "./tandem.configuration.json"
       },
@@ -1365,7 +1368,7 @@
       {
         "language": "COBOL_TANDEM",
         "scopeName": "source.cobol",
-        "path": "./syntaxes/COBOL.tmLanguage.json"
+        "path": "./syntaxes/COBOL.TANDEM.tmLanguage.json"
       },
       {
         "language": "directivestandem",

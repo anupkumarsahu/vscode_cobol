@@ -1,4 +1,4 @@
-export { KeywordAutocompleteCompletionItemProvider } from "./intellisense/vskeywordprovider";
-export { SnippetCompletionItemProvider } from "./intellisense/vssnippetprovider";
-export { CobolSourceCompletionItemProvider } from "./intellisense/vscobolprovider";
-export { CobolSymbolInformationProvider } from "./intellisense/vssymbolprovider";
+export { KeywordAutocompleteCompletionItemProvider } from "./intellisense/keywordCompletionProvider";
+export { SnippetCompletionItemProvider } from "./intellisense/snippetCompletionProvider";
+export { COBOLSourceCompletionItemProvider } from "./intellisense/cobolCompletionProvider";
+export { COBOLSymbolInformationProvider } from "./intellisense/documentSymbolProvider";

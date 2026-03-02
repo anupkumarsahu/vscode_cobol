@@ -1,14 +1,14 @@
 import * as vscode from "vscode";
 import { ExtensionContext, window, workspace } from "vscode";
-import { CobolLinterProvider } from "../providers/language/cobollinter";
-import { ICOBOLSettings } from "../config/iconfiguration";
-import { VSCOBOLSourceScanner } from "../features/workspace/vscobolscanner";
+import { cobolLinterProvider } from "../providers/language/cobolLinter";
+import { ICOBOLSettings } from "../config/IConfiguration";
+import { VSCOBOLSourceScanner } from "../features/workspace/workspaceSymbolScanner";
 import { ConfigurationService } from "../config/configurationService";
-import { VSExtensionUtils } from "../utils/vsextutis";
-import { vsMarginHandler } from "../features/editor/vsmargindecorations";
-import { colourCommentHandler } from "../features/editor/vscolourcomments";
-import { VSWorkspaceFolders } from "../features/workspace/vscobolfolders";
-import { VSCOBOLUtils } from "../utils/vscobolutils";
+import { VSExtensionUtils } from "../utils/extensionUtils";
+import { vsMarginHandler } from "../features/editor/marginDecorations";
+import { colourCommentHandler } from "../features/editor/colorComments";
+import { VSWorkspaceFolders } from "../features/workspace/workspaceFolders";
+import { VSCOBOLUtils } from "../utils/cobolUtils";
 
 export class EditorLifecycleManager {
     private activeEditor: vscode.TextEditor | undefined;
@@ -17,7 +17,7 @@ export class EditorLifecycleManager {
 
     constructor(
         private readonly context: ExtensionContext,
-        private readonly linter: CobolLinterProvider,
+        private readonly linter: cobolLinterProvider,
         private readonly settings: ICOBOLSettings
     ) {
     }

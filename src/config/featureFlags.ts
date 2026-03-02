@@ -1,5 +1,5 @@
 import { workspace } from "vscode";
-import { ICOBOLSettings } from "./iconfiguration";
+import { ICOBOLSettings } from "./IConfiguration";
 
 export class FeatureFlags {
     public static useCobolLineComment(settings: ICOBOLSettings): boolean {

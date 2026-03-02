@@ -10,33 +10,33 @@ import { commands, workspace, StatusBarItem, StatusBarAlignment, ExtensionContex
 
 // Language service providers for IntelliSense and code navigation
 
-import { CobolLinterProvider, CobolLinterActionFixer } from "./providers/language/cobollinter";
-import { VSSourceTreeViewHandler } from "./features/tree/vssourceviewtree";
+import { cobolLinterProvider, cobolLinterActionFixer } from "./providers/language/cobolLinter";
+import { VSSourceTreeViewHandler } from "./features/tree/sourceViewTree";
 
 // Utility and helper classes
-import { VSCOBOLUtils } from "./utils/vscobolutils";
-import { ICOBOLSettings } from "./config/iconfiguration";
+import { VSCOBOLUtils } from "./utils/cobolUtils";
+import { ICOBOLSettings } from "./config/IConfiguration";
 
 // Additional COBOL extension functionality
-import { VSExternalFeatures } from "./features/runtime/vsexternalfeatures";
-import { BldScriptTaskProvider } from "./extension/bldTaskProvider";
-// import { COBOLCaseFormatter } from "./caseformatter"; // Currently disabled
+import { VSExternalFeatures } from "./features/runtime/externalFeatures";
+import { BldScriptTaskProvider } from "./extension/buildTaskProvider";
+// import { COBOLcaseFormatter } from "./caseFormatter"; // Currently disabled
 import { COBOLWorkspaceSymbolCacheHelper } from "./features/workspace/cobolworkspacecache";
 
 // File and utility management
-import { COBOLOutputChannel, VSLogger } from "./utils/vslogger";
-import { VSExtensionUtils } from "./utils/vsextutis";
+import { COBOLOutputChannel, VSLogger } from "./utils/logger";
+import { VSExtensionUtils } from "./utils/extensionUtils";
 
 // Editor decorations and UI enhancements
-import { commentUtils } from "./features/editor/commenter";
+import { CommentUtils } from "./features/editor/commentCommands";
 
 // Extension configuration and constants
 import { ExtensionDefaults } from "./config/extensionDefaults";
 
 // Additional language service providers
-import { activateCommonCommands, checkForExtensionConflicts } from "./extension/commands/vscommon_commands";
-import { VSHelpAndFeedViewHandler } from "./features/tree/vsfeedbacktree";
-import { VSTerminal } from "./features/runtime/vsterminals";
+import { activateCommonCommands, checkForExtensionConflicts } from "./extension/commands/commonCommands";
+import { VSHelpAndFeedViewHandler } from "./features/tree/feedbackTree";
+import { VSTerminal } from "./features/runtime/terminalProfiles";
 import { ConfigurationService } from "./config/configurationService";
 import { FeatureFlags } from "./config/featureFlags";
 import { LazyLanguageFeatures } from "./features/lazyLanguageFeatures";
@@ -275,7 +275,7 @@ async function setupLogChannel(hide: boolean, settings: ICOBOLSettings, quiet: b
  *
  * @see deactivate (companion lifecycle method)
  * @see VSCOBOLConfiguration for workspace/resource configuration logic.
- * @see VSCobScanner for asynchronous metadata scanning routines.
+ * @see VScobolWorkspaceScanner for asynchronous metadata scanning routines.
  * @see VSSemanticProvider for semantic token provisioning.
  */
 export async function activate(context: ExtensionContext) {
@@ -319,8 +319,8 @@ export async function activate(context: ExtensionContext) {
 
     // Initialize linting and diagnostic services
     const collection = languages.createDiagnosticCollection("cobolDiag");
-    const linter = new CobolLinterProvider(collection);
-    const cobolfixer = new CobolLinterActionFixer();
+    const linter = new cobolLinterProvider(collection);
+    const cobolfixer = new cobolLinterActionFixer();
 
     // Load cached metadata from workspace settings (symbols, entry points, types, etc.)
     // These caches improve performance by avoiding repeated file parsing
@@ -353,7 +353,7 @@ export async function activate(context: ExtensionContext) {
             if (VSExtensionUtils.isKnownCOBOLLanguageId(settings, langid)) {
                 if (FeatureFlags.useCobolLineComment(settings)) {
                     // Use COBOL-specific comment formatting
-                    commentUtils.processCommentLine(settings);
+                    CommentUtils.processCommentLine(settings);
                 } else {
                     // Fall back to VS Code's default comment behavior
                     commands.executeCommand("editor.action.commentLine");

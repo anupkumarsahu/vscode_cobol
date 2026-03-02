@@ -1,23 +1,23 @@
 import { InMemoryGlobalCacheHelper } from "./globalcachehelper";
 import { COBOLToken, COBOLTokenStyle } from "./cobolsourcescanner";
-import { ICOBOLSettings } from "../../config/iconfiguration";
+import { ICOBOLSettings } from "../../config/IConfiguration";
 import { COBOLSymbol, COBOLSymbolTable } from "./cobolglobalcache";
 import { COBOLWorkspaceSymbolCacheHelper } from "./cobolworkspacecache";
-import { COBSCANNER_ADDFILE, COBSCANNER_KNOWNCOPYBOOK, COBSCANNER_SENDCLASS, COBSCANNER_SENDENUM, COBSCANNER_SENDEP, COBSCANNER_SENDINTERFACE, COBSCANNER_SENDPRGID } from "./cobscannerdata";
-import { ICOBOLSourceScanner, ICOBOLSourceScannerEventer, ICOBOLSourceScannerEvents } from "./icobolsourcescanner";
+import { cobolWorkspaceScanner_ADDFILE, cobolWorkspaceScanner_KNOWNCOPYBOOK, cobolWorkspaceScanner_SENDCLASS, cobolWorkspaceScanner_SENDENUM, cobolWorkspaceScanner_SENDEP, cobolWorkspaceScanner_SENDINTERFACE, cobolWorkspaceScanner_SENDPRGID } from "./cobolWorkspaceScannerData";
+import { cobolSourceScannerInterfaces, cobolSourceScannerInterfacesEventer, cobolSourceScannerInterfacesEvents } from "./ICobolSourceScannerInterfaces";
 
 
-export class COBOLSymbolTableEventHelper implements ICOBOLSourceScannerEvents {
+export class COBOLSymbolTableEventHelper implements cobolSourceScannerInterfacesEvents {
     private st: COBOLSymbolTable | undefined;
     private parse_copybooks_for_references: boolean;
-    private sender: ICOBOLSourceScannerEventer;
+    private sender: cobolSourceScannerInterfacesEventer;
 
-    public constructor(config: ICOBOLSettings, sender: ICOBOLSourceScannerEventer) {
+    public constructor(config: ICOBOLSettings, sender: cobolSourceScannerInterfacesEventer) {
         this.sender = sender;
         this.parse_copybooks_for_references = config.parse_copybooks_for_references;
     }
 
-    public start(qp: ICOBOLSourceScanner): void {
+    public start(qp: cobolSourceScannerInterfaces): void {
         this.st = new COBOLSymbolTable();
         this.st.fileName = qp.filename;
         this.st.lastModifiedTime = qp.lastModifiedTime;
@@ -26,7 +26,7 @@ export class COBOLSymbolTableEventHelper implements ICOBOLSourceScannerEvents {
             InMemoryGlobalCacheHelper.addFilename(this.st?.fileName, qp.workspaceFile);
 
             if (this.sender !== undefined) {
-                this.sender.sendMessage(`${COBSCANNER_ADDFILE},${this.st?.lastModifiedTime},${this.st?.fileName}`);
+                this.sender.sendMessage(`${cobolWorkspaceScanner_ADDFILE},${this.st?.lastModifiedTime},${this.st?.fileName}`);
             }
         }
 
@@ -72,43 +72,43 @@ export class COBOLSymbolTableEventHelper implements ICOBOLSourceScannerEvents {
         switch (token.tokenType) {
             case COBOLTokenStyle.CopyBook:
                 if (this.sender) {
-                    this.sender.sendMessage(`${COBSCANNER_KNOWNCOPYBOOK},${token.tokenName},${this.st.fileName},${token.extraInformation1}`);
+                    this.sender.sendMessage(`${cobolWorkspaceScanner_KNOWNCOPYBOOK},${token.tokenName},${this.st.fileName},${token.extraInformation1}`);
                 }
                 break;
             case COBOLTokenStyle.CopyBookInOrOf:
                 if (this.sender) {
-                    this.sender.sendMessage(`${COBSCANNER_KNOWNCOPYBOOK},${token.tokenName},${this.st.fileName},${token.extraInformation1}`);
+                    this.sender.sendMessage(`${cobolWorkspaceScanner_KNOWNCOPYBOOK},${token.tokenName},${this.st.fileName},${token.extraInformation1}`);
                 }
                 break;
             case COBOLTokenStyle.ImplicitProgramId:
                 COBOLWorkspaceSymbolCacheHelper.addCalableSymbol(this.st.fileName, token.tokenNameLower, token.startLine);
                 if (this.sender) {
-                    this.sender.sendMessage(`${COBSCANNER_SENDPRGID},${token.tokenName},${token.startLine},${this.st.fileName}`);
+                    this.sender.sendMessage(`${cobolWorkspaceScanner_SENDPRGID},${token.tokenName},${token.startLine},${this.st.fileName}`);
                 }
                 break;
             case COBOLTokenStyle.ProgramId:
                 if (this.sender) {
-                    this.sender.sendMessage(`${COBSCANNER_SENDPRGID},${token.tokenName},${token.startLine},${this.st.fileName}`);
+                    this.sender.sendMessage(`${cobolWorkspaceScanner_SENDPRGID},${token.tokenName},${token.startLine},${this.st.fileName}`);
                 }
                 break;
             case COBOLTokenStyle.EntryPoint:
                 if (this.sender) {
-                    this.sender.sendMessage(`${COBSCANNER_SENDEP},${token.tokenName},${token.startLine},${this.st.fileName}`);
+                    this.sender.sendMessage(`${cobolWorkspaceScanner_SENDEP},${token.tokenName},${token.startLine},${this.st.fileName}`);
                 }
                 break;
             case COBOLTokenStyle.InterfaceId:
                 if (this.sender) {
-                    this.sender.sendMessage(`${COBSCANNER_SENDINTERFACE},${token.tokenName},${token.startLine},${this.st.fileName}`);
+                    this.sender.sendMessage(`${cobolWorkspaceScanner_SENDINTERFACE},${token.tokenName},${token.startLine},${this.st.fileName}`);
                 }
                 break;
             case COBOLTokenStyle.EnumId:
                 if (this.sender) {
-                    this.sender.sendMessage(`${COBSCANNER_SENDENUM},${token.tokenName},${token.startLine},${this.st.fileName}`);
+                    this.sender.sendMessage(`${cobolWorkspaceScanner_SENDENUM},${token.tokenName},${token.startLine},${this.st.fileName}`);
                 }
                 break;
             case COBOLTokenStyle.ClassId:
                 if (this.sender) {
-                    this.sender.sendMessage(`${COBSCANNER_SENDCLASS},${token.tokenName},${token.startLine},${this.st.fileName}`);
+                    this.sender.sendMessage(`${cobolWorkspaceScanner_SENDCLASS},${token.tokenName},${token.startLine},${this.st.fileName}`);
                 }
                 break;
             case COBOLTokenStyle.MethodId:

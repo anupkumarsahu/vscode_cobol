@@ -1,19 +1,19 @@
 import * as vscode from "vscode";
 import { ConfigurationChangeEvent } from "vscode";
-import { ICOBOLSettings } from "../config/iconfiguration";
+import { ICOBOLSettings } from "../config/IConfiguration";
 import { ExtensionDefaults } from "../config/extensionDefaults";
 import { ConfigurationService } from "../config/configurationService";
-import { VSCOBOLSourceScanner } from "../features/workspace/vscobolscanner";
-import { VSCOBOLUtils } from "../utils/vscobolutils";
+import { VSCOBOLSourceScanner } from "../features/workspace/workspaceSymbolScanner";
+import { VSCOBOLUtils } from "../utils/cobolUtils";
 import { COBOLWorkspaceSymbolCacheHelper } from "../features/workspace/cobolworkspacecache";
-import { VSExternalFeatures } from "../features/runtime/vsexternalfeatures";
-import { VSCustomIntelliseRules } from "../providers/intellisense/vscustomrules";
-import { colourCommentHandler } from "../features/editor/vscolourcomments";
-import { vsMarginHandler } from "../features/editor/vsmargindecorations";
-import { VSExtensionUtils, TextLanguage } from "../utils/vsextutis";
+import { VSExternalFeatures } from "../features/runtime/externalFeatures";
+import { VSCustomIntellisenseRules } from "../providers/intellisense/customRules";
+import { colourCommentHandler } from "../features/editor/colorComments";
+import { vsMarginHandler } from "../features/editor/marginDecorations";
+import { VSExtensionUtils, TextLanguage } from "../utils/extensionUtils";
 import { SnippetCompletionItemProvider, KeywordAutocompleteCompletionItemProvider } from "../providers/intellisense";
-import { TabUtils } from "../features/editor/tabstopper";
-import { checkForExtensionConflicts, install_call_hierarchy } from "../extension/commands/vscommon_commands";
+import { TabUtils } from "../features/editor/tabStopUtils";
+import { checkForExtensionConflicts, install_call_hierarchy } from "../extension/commands/commonCommands";
 
 let shownEnableSemanticTokenProvider = false;
 
@@ -109,7 +109,7 @@ export async function handleScopedConfigurationChange(
     }
 
     if (customIntellisenseRulesChanged) {
-        VSCustomIntelliseRules.Default.reFreshConfiguration(settings);
+        VSCustomIntellisenseRules.Default.reFreshConfiguration(settings);
     }
 
     if (enableCommentsTagsChanged || commentsTagsChanged) {

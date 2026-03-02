@@ -12,7 +12,7 @@ This is a comprehensive VS Code extension for COBOL development (`bitlang.cobol`
 ### Multi-Target Build System
 - **Main Extension**: `src/extension.ts` → `dist/extension.js` (Node.js target for desktop VS Code)  
 - **Web Extension**: `src/web/extension.ts` → `dist/web/extension-web.js` (WebWorker target for vscode.dev)
-- **Scanner Worker**: `src/features/workspace/cobscanner.ts` → `dist/cobscanner.js` (standalone COBOL source scanner)
+- **Scanner Worker**: `src/features/workspace/cobolWorkspaceScanner.ts` → `dist/cobolWorkspaceScanner.js` (standalone COBOL source scanner)
 - Build via webpack with 3 separate configurations in `webpack.config.js` (main, web, scanner)
 - **Development Commands**: `npm run compile` (TypeScript), `npm run webpack` (production), `npm run watch-web` (development)
 - **Critical**: Always run appropriate pre-launch tasks (`npm: webpack` for main, `npm: watch-web` for web) before debugging

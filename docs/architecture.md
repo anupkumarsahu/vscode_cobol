@@ -216,7 +216,7 @@ This extension is being refactored toward a layered, modular architecture that p
    - All core scanner files, extension/runtime modules, feature/provider/test consumers updated to reference `src/config` paths.
 
 54. **Scanner worker module relocated**
-   - `cobscanner_worker.ts` moved to `src/features/workspace/cobscanner_worker.ts` as part of workspace scanner execution features.
+   - `cobolWorkspaceScannerWorker.ts` moved to `src/features/workspace/cobolWorkspaceScannerWorker.ts` as part of workspace scanner execution features.
    - Worker-local imports were normalized to workspace/runtime/config/utils module boundaries with no behavior changes.
 
 55. **Core source scanner module relocated**
@@ -224,8 +224,8 @@ This extension is being refactored toward a layered, modular architecture that p
    - All scanner consumers across providers, extension commands, tests, utilities, and workspace helpers updated to reference the workspace feature path.
 
 56. **Scanner orchestration module relocated**
-   - `cobscanner.ts` moved to `src/features/workspace/cobscanner.ts` as part of workspace scanner orchestration/runtime execution.
-   - Worker scanner import and webpack scanner entry were updated to the new workspace module path while preserving `dist/cobscanner.js` output naming.
+   - `cobolWorkspaceScanner.ts` moved to `src/features/workspace/cobolWorkspaceScanner.ts` as part of workspace scanner orchestration/runtime execution.
+   - Worker scanner import and webpack scanner entry were updated to the new workspace module path while preserving `dist/cobolWorkspaceScanner.js` output naming.
 
 ## Why this improves performance
 

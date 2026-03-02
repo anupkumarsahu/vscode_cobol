@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-import { COBOLFileUtils } from "../../utils/fileutils";
+import { COBOLFileUtils } from "../../utils/fileUtils";
 
 export class COBOLWorkspaceFile {
     lastModifiedTime:BigInt;

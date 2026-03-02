@@ -123,7 +123,7 @@
     },
     {
       "comment": "ANSI fixed format identification area (columns 73-80)",
-      "match": "(?<=^.{72})(.{1,8})$",
+      "match": "(?<=^[ 0-9]{6}.{66})(.{1,8})$",
       "captures": {
         "1": {
           "name": "constant.numeric.sequence.cobol"
@@ -152,6 +152,21 @@
         },
         "3": {
           "name": "keyword.identifers.cobol"
+        }
+      }
+    },
+    {
+      "comment": "Data declaration lines (e.g. 01 field-name PIC S9(11)V9(07).)",
+      "match": "^\\s*(01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|66|77|88)\\s+([0-9a-zA-Z][a-zA-Z\\-0-9_]*)(\\s+)((?i:picture\\s+is|picture|pic\\s+is|pic))\\b",
+      "captures": {
+        "1": {
+          "name": "constant.numeric.cobol"
+        },
+        "2": {
+          "name": "variable.other.cobol"
+        },
+        "4": {
+          "name": "storage.type.picture.cobol"
         }
       }
     },
@@ -441,7 +456,23 @@
           "name": "constant.numeric.cobol"
         },
         {
-          "match": "^(?:[ 0-9]{6})?[ \\t]*([A-Za-z][A-Za-z0-9\\-_]*(?:\\s+[A-Za-z0-9\\-_]+)*)(?=\\s*\\.)",
+          "match": "^(?:[ 0-9]{6})?[ \\t]*(?i:(source-computer|object-computer))(?=\\s*\\.)",
+          "captures": {
+            "1": {
+              "name": "keyword.identifiers.cobol"
+            }
+          }
+        },
+        {
+          "match": "^(?:[ 0-9]{6})?[ \\t]*(?i:(?:source-computer|object-computer))\\.\\s*([A-Za-z][A-Za-z0-9\\-_]*(?:\\s+[A-Za-z0-9\\-_]+)*)(?=\\s*\\.)",
+          "captures": {
+            "1": {
+              "name": "entity.name.type.computer.cobol"
+            }
+          }
+        },
+        {
+          "match": "^(?:[ 0-9]{6})?[ \\t]*(?!(?i:source-computer|object-computer|input-output\\s+section|file-control|data\\s+division|working-storage\\s+section|extended-storage\\s+section|linkage\\s+section|procedure\\s+division|environment\\s+division|configuration\\s+section)\\b)([A-Za-z][A-Za-z0-9\\-_]*(?:\\s+[A-Za-z0-9\\-_]+)*)(?=\\s*\\.)",
           "captures": {
             "1": {
               "name": "entity.name.type.computer.cobol"

@@ -5,13 +5,13 @@ import fs from "fs";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { IExternalFeatures } from "./externalfeatures";
-import { ICOBOLSettings } from "../../config/iconfiguration";
-import { COBOLFileUtils } from "../../utils/fileutils";
-import { ISourceHandler } from "../workspace/isourcehandler";
+import { IExternalFeatures } from "./IExternalFeatures";
+import { ICOBOLSettings } from "../../config/IConfiguration";
+import { COBOLFileUtils } from "../../utils/fileUtils";
+import { sourceHandlerInterfaces } from "../workspace/ISourceHandlerInterfaces";
 
-export class ConsoleExternalFeatures implements IExternalFeatures {
-    public static readonly Default = new ConsoleExternalFeatures();
+export class consoleExternalFeatures implements IExternalFeatures {
+    public static readonly Default = new consoleExternalFeatures();
 
     public workspaceFolders: string[] = [];
 
@@ -61,7 +61,7 @@ export class ConsoleExternalFeatures implements IExternalFeatures {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public expandLogicalCopyBookToFilenameOrEmpty(filename: string, inDirectory: string, filesHandler: ISourceHandler,  config: ICOBOLSettings): string {
+    public expandLogicalCopyBookToFilenameOrEmpty(filename: string, inDirectory: string, filesHandler: sourceHandlerInterfaces,  config: ICOBOLSettings): string {
         return COBOLFileUtils.expandLogicalCopyBookOrEmpty(filename, inDirectory, config, filesHandler.getFilename(), this);
     }
 
@@ -158,3 +158,4 @@ export class ConsoleExternalFeatures implements IExternalFeatures {
         return false;
     }
 }
+

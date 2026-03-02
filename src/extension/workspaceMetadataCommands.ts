@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
 import os from "os";
 import { commands, window } from "vscode";
-import { ICOBOLSettings } from "../config/iconfiguration";
+import { ICOBOLSettings } from "../config/IConfiguration";
 import { ConfigurationService } from "../config/configurationService";
 import { InMemoryGlobalSymbolCache } from "../features/workspace/globalcachehelper";
-import { VSCobScanner } from "../features/workspace/vscobscanner";
-import { VSExternalFeatures } from "../features/runtime/vsexternalfeatures";
+import { VScobolWorkspaceScanner } from "../features/workspace/cobolScannerController";
+import { VSExternalFeatures } from "../features/runtime/externalFeatures";
 
 export function registerWorkspaceMetadataCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(commands.registerCommand("cobolplugin.processAllFilesInWorkspace", async () => {
@@ -17,7 +17,7 @@ export function registerWorkspaceMetadataCommands(context: vscode.ExtensionConte
         }
 
         if (InMemoryGlobalSymbolCache.defaultCallableSymbols.size < 500) {
-            VSCobScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures, settings, true, false, -1);
+            VScobolWorkspaceScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures, settings, true, false, -1);
             return;
         }
 
@@ -44,10 +44,10 @@ export function registerWorkspaceMetadataCommands(context: vscode.ExtensionConte
                     }
 
                     const threadCount: number = Number.parseInt(value, 10);
-                    VSCobScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures, settings, true, true, threadCount);
+                    VScobolWorkspaceScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures, settings, true, true, threadCount);
                 });
             } else {
-                VSCobScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures, settings, true, false, -1);
+                VScobolWorkspaceScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures, settings, true, false, -1);
             }
         });
     }));

@@ -2,16 +2,16 @@
 
 import * as vscode from "vscode";
 import { CancellationToken, FormattingOptions, TextDocument, TextEdit, Position } from "vscode";
-import { VSCOBOLUtils, FoldAction } from "../../utils/vscobolutils";
-import { ICOBOLSettings } from "../../config/iconfiguration";
-import { VSCOBOLSourceScanner } from "../../features/workspace/vscobolscanner";
-import { VSCOBOLConfiguration } from "../../config/vsconfiguration";
-import { VSExternalFeatures } from "../../features/runtime/vsexternalfeatures";
-import { ICOBOLSourceScanner } from "../../features/workspace/icobolsourcescanner";
+import { VSCOBOLUtils, FoldAction } from "../../utils/cobolUtils";
+import { ICOBOLSettings } from "../../config/IConfiguration";
+import { VSCOBOLSourceScanner } from "../../features/workspace/workspaceSymbolScanner";
+import { VSCOBOLConfiguration } from "../../config/workspaceConfiguration";
+import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
+import { cobolSourceScannerInterfaces } from "../../features/workspace/ICobolSourceScannerInterfaces";
 
-export class COBOLCaseFormatter {
+export class COBOLcaseFormatter {
 
-    private convertLine(settings: ICOBOLSettings, line: string, current: ICOBOLSourceScanner, foldConstantToUpper: boolean, langid: string) {
+    private convertLine(settings: ICOBOLSettings, line: string, current: cobolSourceScannerInterfaces, foldConstantToUpper: boolean, langid: string) {
         const oldText = line;
         const defaultStyle = settings.intellisense_style;
         let newText = VSCOBOLUtils.foldTokenLine(oldText, current, FoldAction.Keywords, foldConstantToUpper, langid, settings,defaultStyle);
@@ -35,7 +35,7 @@ export class COBOLCaseFormatter {
 
         const langid = document.languageId;
         const config = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
-        const current: ICOBOLSourceScanner | undefined = VSCOBOLSourceScanner.getCachedObject(document,config);
+        const current: cobolSourceScannerInterfaces | undefined = VSCOBOLSourceScanner.getCachedObject(document,config);
         if (current === undefined) {
             return;
         }
@@ -56,3 +56,4 @@ export class COBOLCaseFormatter {
         return [];
     }
 }
+

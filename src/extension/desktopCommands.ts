@@ -1,14 +1,14 @@
 import * as vscode from "vscode";
 import { commands, ExtensionContext, window } from "vscode";
-import { ICOBOLSettings } from "../config/iconfiguration";
-import { VSLogger } from "../utils/vslogger";
-import { VSCOBOLUtils } from "../utils/vscobolutils";
-import { VSExtensionUtils } from "../utils/vsextutis";
-import { VSCOBOLFileUtils } from "../features/workspace/vsfileutils";
-import { VSExternalFeatures } from "../features/runtime/vsexternalfeatures";
-import { VSCobScanner } from "../features/workspace/vscobscanner";
+import { ICOBOLSettings } from "../config/IConfiguration";
+import { VSLogger } from "../utils/logger";
+import { VSCOBOLUtils } from "../utils/cobolUtils";
+import { VSExtensionUtils } from "../utils/extensionUtils";
+import { VSCOBOLFileUtils } from "../features/workspace/workspaceFileUtils";
+import { VSExternalFeatures } from "../features/runtime/externalFeatures";
+import { VScobolWorkspaceScanner } from "../features/workspace/cobolScannerController";
 import { SourceOrFolderTreeItem } from "../features/tree/sourceItem";
-import { VSSourceTreeViewHandler } from "../features/tree/vssourceviewtree";
+import { VSSourceTreeViewHandler } from "../features/tree/sourceViewTree";
 
 export function registerDesktopCommands(context: ExtensionContext, settings: ICOBOLSettings): void {
     context.subscriptions.push(commands.registerCommand("cobolplugin.clearGlobalCache", function () {
@@ -69,7 +69,7 @@ export function registerDesktopCommands(context: ExtensionContext, settings: ICO
     }));
 
     context.subscriptions.push(commands.registerCommand("cobolplugin.processAllFilesInWorkspaceOnStartup", async () => {
-        await VSCobScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures, settings, false, false, -1);
+        await VScobolWorkspaceScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures, settings, false, false, -1);
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.runCommand", function (si: SourceOrFolderTreeItem) {

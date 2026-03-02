@@ -1,10 +1,10 @@
 import * as assert from "assert";
 import * as path from "path";
 import * as fs from "fs";
-import { FileSourceHandler } from "../../features/workspace/filesourcehandler";
+import { FileSourceHandler } from "../../features/workspace/fileSourceHandler";
 import { COBOLSourceScanner, EmptyCOBOLSourceScannerEventHandler } from "../../features/workspace/cobolsourcescanner";
-import { COBOLSettings } from "../../config/iconfiguration";
-import { VSExternalFeatures } from "../../features/runtime/vsexternalfeatures";
+import { COBOLSettings } from "../../config/IConfiguration";
+import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
 import { COBOLTokenStyle } from "../../features/workspace/cobolsourcescanner";
 
 suite("Library Navigation Test Suite", () => {

@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { ICOBOLSettings } from "./iconfiguration";
-import { VSCOBOLConfiguration } from "./vsconfiguration";
-import { VSExternalFeatures } from "../features/runtime/vsexternalfeatures";
+import { ICOBOLSettings } from "./IConfiguration";
+import { VSCOBOLConfiguration } from "./workspaceConfiguration";
+import { VSExternalFeatures } from "../features/runtime/externalFeatures";
 
 export class ConfigurationService {
     public static reinitializeWorkspace(): ICOBOLSettings {

@@ -1,7 +1,7 @@
 import * as fs from "fs";
-import { ICOBOLSettings } from "../config/iconfiguration";
+import { ICOBOLSettings } from "../config/IConfiguration";
 import path from "path";
-import { IExternalFeatures } from "../features/runtime/externalfeatures";
+import { IExternalFeatures } from "../features/runtime/IExternalFeatures";
 
 export class COBOLFileUtils {
     static readonly isWin32 = process.platform === "win32";
@@ -228,3 +228,4 @@ export class COBOLFileUtils {
         return COBOLFileUtils.findCopyBook(filename, config, features);
     }
 }
+

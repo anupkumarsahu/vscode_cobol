@@ -1,4 +1,4 @@
-export { COBOLTypeFormatter } from "./language/vsformatter";
-export { VSHoverProvider } from "./language/vshoverprovider";
-export { VSSemanticProvider } from "./language/vssemanticprovider";
-export { VSPPCodeLens } from "./language/vsppcodelens";
+export { COBOLTypeFormatter } from "./language/documentFormatter";
+export { VSHoverProvider } from "./language/hoverProvider";
+export { VSSemanticProvider } from "./language/semanticTokensProvider";
+export { VSPPCodeLens } from "./language/preprocessorCodeLensProvider";

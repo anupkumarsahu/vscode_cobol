@@ -2,21 +2,21 @@
 import * as vscode from "vscode";
 import { workspace } from "vscode";
 // import { colourCommentHandler } from "./extension";
-import { ESourceFormat, IExternalFeatures } from "../runtime/externalfeatures";
-import { ISourceHandler, ICommentCallback, ISourceHandlerLite, commentRange } from "./isourcehandler";
+import { ESourceFormat, IExternalFeatures } from "../runtime/IExternalFeatures";
+import { sourceHandlerInterfaces, ICommentCallback, sourceHandlerInterfacesLite, CommentRange } from "./ISourceHandlerInterfaces";
 import { getCOBOLKeywordDictionary } from "../../keywords/cobolKeywords";
-import { SimpleStringBuilder } from "../../utils/stringutils";
-import { colourCommentHandler } from "../editor/vscolourcomments";
-import { VSCOBOLConfiguration } from "../../config/vsconfiguration";
-import { VSExternalFeatures } from "../runtime/vsexternalfeatures";
-import { VSCOBOLFileUtils } from "./vsfileutils";
-import { ICOBOLSettings } from "../../config/iconfiguration";
+import { SimpleStringBuilder } from "../../utils/stringUtils";
+import { colourCommentHandler } from "../editor/colorComments";
+import { VSCOBOLConfiguration } from "../../config/workspaceConfiguration";
+import { VSExternalFeatures } from "../runtime/externalFeatures";
+import { VSCOBOLFileUtils } from "./workspaceFileUtils";
+import { ICOBOLSettings } from "../../config/IConfiguration";
 
-export class VSCodeSourceHandlerLite implements ISourceHandlerLite {
+export class VSCodeSourceHandlerLite implements sourceHandlerInterfacesLite {
     document: vscode.TextDocument | undefined;
     lineCount: number;
     languageId: string;
-    notedCommentRanges: commentRange[];
+    notedCommentRanges: CommentRange[];
     tabSize: number;
 
     public constructor(document: vscode.TextDocument) {
@@ -79,7 +79,7 @@ export class VSCodeSourceHandlerLite implements ISourceHandlerLite {
     }
 
 
-    getNotedComments(): commentRange[] {
+    getNotedComments(): CommentRange[] {
         return this.notedCommentRanges;
     }
 
@@ -88,7 +88,7 @@ export class VSCodeSourceHandlerLite implements ISourceHandlerLite {
     }
 }
 
-export class VSCodeSourceHandler implements ISourceHandler, ISourceHandlerLite {
+export class VSCodeSourceHandler implements sourceHandlerInterfaces, sourceHandlerInterfacesLite {
     commentCount: number;
     document: vscode.TextDocument | undefined;
     dumpNumbersInAreaA: boolean;
@@ -103,7 +103,7 @@ export class VSCodeSourceHandler implements ISourceHandler, ISourceHandlerLite {
     languageId: string;
     format: ESourceFormat;
     externalFeatures: IExternalFeatures
-    notedCommentRanges: commentRange[];
+    notedCommentRanges: CommentRange[];
 
     commentsIndex: Map<number, string>;
     commentsIndexInline: Map<number, boolean>;
@@ -372,7 +372,7 @@ export class VSCodeSourceHandler implements ISourceHandler, ISourceHandlerLite {
         this.format = format;
     }
 
-    getNotedComments(): commentRange[] {
+    getNotedComments(): CommentRange[] {
         return this.notedCommentRanges;
     }
 
@@ -428,3 +428,4 @@ export class VSCodeSourceHandler implements ISourceHandler, ISourceHandlerLite {
         return "";
     }
 }
+

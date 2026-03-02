@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ISourceHandler, ICommentCallback, ISourceHandlerLite } from "./isourcehandler";
+import { sourceHandlerInterfaces, ICommentCallback, sourceHandlerInterfacesLite } from "./ISourceHandlerInterfaces";
 import { cobolProcedureKeywordDictionary, cobolStorageKeywordDictionary, getCOBOLKeywordDictionary } from "../../keywords/cobolKeywords";
 
-import { FileSourceHandler } from "./filesourcehandler";
+import { fileSourceHandler } from "./fileSourceHandler";
 import { COBOLFileAndColumnSymbol, COBOLFileSymbol, COBOLWorkspaceFile } from "./cobolglobalcache";
 
-import { ICOBOLSettings } from "../../config/iconfiguration";
-import { CobolLinterProviderSymbols, ESourceFormat, IExternalFeatures } from "../runtime/externalfeatures";
+import { ICOBOLSettings } from "../../config/IConfiguration";
+import { cobolLinterProviderSymbols, ESourceFormat, IExternalFeatures } from "../runtime/IExternalFeatures";
 
 import * as path from "path";
 import { SourceFormat } from "./sourceformat";
 import { ExtensionDefaults } from "../../config/extensionDefaults";
-import { SplitTokenizer } from "../../utils/splittoken";
-import { SourcePorter, portResult } from "./vsdirectivesconv";
-import { ICOBOLSourceScanner, ICOBOLSourceScannerEvents } from "./icobolsourcescanner";
-import { COBSCANNER_END_OF_FILE, COBSCANNER_START_OF_FILE } from "./cobscannerdata";
+import { SplitTokenizer } from "../../utils/splitToken";
+import { SourcePorter, PortResult } from "./directivesConverter";
+import { cobolSourceScannerInterfaces, cobolSourceScannerInterfacesEvents } from "./ICobolSourceScannerInterfaces";
+import { cobolWorkspaceScanner_END_OF_FILE, cobolWorkspaceScanner_START_OF_FILE } from "./cobolWorkspaceScannerData";
 
 export enum COBOLTokenStyle {
     CopyBook = "Copybook",
@@ -101,13 +101,13 @@ export class COBOLToken {
     public extraInformation1: string;
     public inSection: COBOLToken | undefined;
 
-    public readonly sourceHandler: ISourceHandler;
+    public readonly sourceHandler: sourceHandlerInterfaces;
     public readonly isFromScanCommentsForReferences: boolean;
 
     public readonly isImplicitToken;
 
     public constructor(
-        sourceHandler: ISourceHandler,
+        sourceHandler: sourceHandlerInterfaces,
         filenameAsURI: string, filename: string,
         tokenType: COBOLTokenStyle,
         startLine: number, startColumn: number, token:
@@ -392,7 +392,7 @@ class StreamTokens {
     }
 }
 
-export class replaceToken {
+export class ReplaceToken {
     private readonly replaceToken: string;
     public readonly rex4wordreplace: RegExp;
 
@@ -414,12 +414,12 @@ export interface IReplaceState {
     isPseudoTextDelimiter: boolean;
 }
 
-export class replaceState implements IReplaceState {
+export class ReplaceState implements IReplaceState {
     public isPseudoTextDelimiter = false;
 }
 
-export class copybookState implements IReplaceState {
-    public sourceHandler: ISourceHandler | undefined = undefined;
+export class CopybookState implements IReplaceState {
+    public sourceHandler: sourceHandlerInterfaces | undefined = undefined;
     public copyBook = "";
     public trimmedCopyBook = "";
     public isIn = false;
@@ -435,14 +435,14 @@ export class copybookState implements IReplaceState {
     public literal2 = "";
     public library_name = "";
     public replaceLeft = "";
-    public copyReplaceMap = new Map<string, replaceToken>();
+    public copyReplaceMap = new Map<string, ReplaceToken>();
     public isTrailing = false;
     public isLeading = false;
     public fileName = "";
     public fileNameMod: BigInt = BigInt(0);
     public isPseudoTextDelimiter = false;
     public saved01Group: COBOLToken | undefined;
-    public copybookDepths: copybookState[] = [];
+    public copybookDepths: CopybookState[] = [];
     constructor(current01Group: COBOLToken | undefined) {
         this.saved01Group = current01Group;
     }
@@ -451,11 +451,11 @@ export class copybookState implements IReplaceState {
 export class COBOLCopybookToken {
     public readonly token: COBOLToken | undefined;
     public scanComplete: boolean;
-    public statementInformation: copybookState | undefined;
+    public statementInformation: CopybookState | undefined;
 
     public static readonly Null = new COBOLCopybookToken(undefined, false, undefined);
 
-    constructor(token: COBOLToken | undefined, parsed: boolean, statementInformation: copybookState | undefined) {
+    constructor(token: COBOLToken | undefined, parsed: boolean, statementInformation: CopybookState | undefined) {
         this.token = token;
         this.scanComplete = parsed;
         this.statementInformation = statementInformation;
@@ -643,7 +643,7 @@ export class ParseState {
     inProcedureDivision: boolean;
     inDeclaratives: boolean;
     inReplace: boolean;
-    replace_state: replaceState;
+    replace_state: ReplaceState;
 
     inCopy: boolean;
     replaceLeft: string;
@@ -660,11 +660,11 @@ export class ParseState {
 
     entryPointCount: number;
 
-    replaceMap: Map<string, replaceToken>;
+    replaceMap: Map<string, ReplaceToken>;
 
     enable_text_replacement: boolean;
 
-    copybook_state: copybookState;
+    copybook_state: CopybookState;
 
     inCopyStartColumn: number;
 
@@ -702,14 +702,14 @@ export class ParseState {
         this.prevEndsWithDot = false;
         this.currentLineIsComment = false;
         this.inReplace = false;
-        this.replace_state = new replaceState();
+        this.replace_state = new ReplaceState();
         this.inCopy = false;
         this.captureReplaceLeft = true;
         this.replaceLeft = "";
         this.replaceRight = "";
-        this.replaceMap = new Map<string, replaceToken>();
+        this.replaceMap = new Map<string, ReplaceToken>();
         this.enable_text_replacement = configHandler.enable_text_replacement;
-        this.copybook_state = new copybookState(undefined);
+        this.copybook_state = new CopybookState(undefined);
         this.inCopyStartColumn = 0;
         this.skipNextToken = false;
         this.inValueClause = false;
@@ -753,11 +753,11 @@ export class CallTargetInformation {
 }
 
 
-export class EmptyCOBOLSourceScannerEventHandler implements ICOBOLSourceScannerEvents {
+export class EmptyCOBOLSourceScannerEventHandler implements cobolSourceScannerInterfacesEvents {
 
     static readonly Default = new EmptyCOBOLSourceScannerEventHandler();
 
-    start(qp: ICOBOLSourceScanner): void {
+    start(qp: cobolSourceScannerInterfaces): void {
         return;
     }
 
@@ -775,9 +775,9 @@ export class EmptyCOBOLSourceScannerEventHandler implements ICOBOLSourceScannerE
     }
 }
 
-export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner, ICOBOLSourceScanner {
+export class COBOLSourceScanner implements ICommentCallback, cobolSourceScannerInterfaces, cobolSourceScannerInterfaces {
     public id: string;
-    public readonly sourceHandler: ISourceHandler;
+    public readonly sourceHandler: sourceHandlerInterfaces;
     public filename: string;
     // eslint-disable-next-line @typescript-eslint/ban-types
     public lastModifiedTime: BigInt = BigInt(0);
@@ -798,7 +798,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
     public readonly copyBookLibraries: Map<string, COBOLToken[]>;
 
     public readonly diagMissingFileWarnings: Map<string, COBOLFileSymbol>;
-    public readonly portWarnings: portResult[];
+    public readonly portWarnings: PortResult[];
     public readonly generalWarnings: COBOLFileSymbol[];
 
     public readonly commentReferences: COBOLFileAndColumnSymbol[];
@@ -835,7 +835,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
     parseHint_LocalStorageFiles: string[] = [];
     parseHint_ScreenSectionFiles: string[] = [];
 
-    public eventHandler: ICOBOLSourceScannerEvents;
+    public eventHandler: cobolSourceScannerInterfacesEvents;
     public externalFeatures: IExternalFeatures;
 
     public scanAborted: boolean;
@@ -856,12 +856,12 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
 
     private implicitCount = 0;
 
-    public static ScanUncached(sourceHandler: ISourceHandler,
+    public static ScanUncached(sourceHandler: sourceHandlerInterfaces,
         configHandler: ICOBOLSettings,
         parse_copybooks_for_references: boolean,
-        eventHandler: ICOBOLSourceScannerEvents,
+        eventHandler: cobolSourceScannerInterfacesEvents,
         externalFeatures: IExternalFeatures
-    ): ICOBOLSourceScanner {
+    ): cobolSourceScannerInterfaces {
 
         const startTime = externalFeatures.performance_now();
         return new COBOLSourceScanner(
@@ -878,8 +878,8 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
 
 
     private ScanUncachedInlineCopybook(
-        sourceHandler: ISourceHandler,
-        parentSource: ICOBOLSourceScanner,
+        sourceHandler: sourceHandlerInterfaces,
+        parentSource: cobolSourceScannerInterfaces,
         isFromScanCommentsForReferences: boolean
     ): boolean {
         const configHandler = parentSource.configHandler;
@@ -935,10 +935,10 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
 
     public constructor(
         startTime: number,
-        sourceHandler: ISourceHandler, configHandler: ICOBOLSettings,
+        sourceHandler: sourceHandlerInterfaces, configHandler: ICOBOLSettings,
         sourceReferences: SharedSourceReferences = new SharedSourceReferences(configHandler, true, startTime),
         parse_copybooks_for_references: boolean,
-        sourceEventHandler: ICOBOLSourceScannerEvents,
+        sourceEventHandler: cobolSourceScannerInterfacesEvents,
         externalFeatures: IExternalFeatures,
         isFromScanCommentsForReferences: boolean) {
         const filename = sourceHandler.getFilename();
@@ -1173,7 +1173,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
         prevToken = StreamTokens.Blank;
         sourceHandler.resetCommentCount();
         
-        sourceEventHandler.processRawMessage(COBSCANNER_START_OF_FILE, filename);
+        sourceEventHandler.processRawMessage(cobolWorkspaceScanner_START_OF_FILE, filename);
 
         let sourceTimeout = externalFeatures.getSourceTimeout(this.configHandler);
         if (externalFeatures)
@@ -1215,9 +1215,9 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
 
                     // only do this for "COBOL" language
                     if (this.usePortationSourceScanner) {
-                        const portResult = this.sourcePorter.isDirectiveChangeRequired(this.filename, l, line);
-                        if (portResult !== undefined) {
-                            this.portWarnings.push(portResult);
+                        const portWarning = this.sourcePorter.isDirectiveChangeRequired(this.filename, l, line);
+                        if (portWarning !== undefined) {
+                            this.portWarnings.push(portWarning);
                         }
                     }
                 }
@@ -1313,7 +1313,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
                 }
             }
             this.sourceReferences.unknownReferences.clear();
-            sourceEventHandler.processRawMessage(COBSCANNER_END_OF_FILE, filename);
+            sourceEventHandler.processRawMessage(cobolWorkspaceScanner_END_OF_FILE, filename);
             this.eventHandler.finish();
         }
     }
@@ -2195,13 +2195,13 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
                                 if (!state.captureReplaceLeft && current.endsWith("==")) {
                                     let cleanedUpRight = this.cleanupReplaceToken("" + state.replaceRight);
                                     let cleanedUpLeft = this.cleanupReplaceToken("" + state.replaceLeft);
-                                    let rs = new replaceState();
+                                    let rs = new ReplaceState();
                                     if (cleanedUpLeft[1] || cleanedUpRight[1])
                                         rs.isPseudoTextDelimiter = true;
                                     else
                                         rs.isPseudoTextDelimiter = false;
 
-                                    state.replaceMap.set(cleanedUpRight[0], new replaceToken(cleanedUpLeft[0], rs));
+                                    state.replaceMap.set(cleanedUpRight[0], new ReplaceToken(cleanedUpLeft[0], rs));
                                     state.replaceLeft = state.replaceRight = "";
                                     state.captureReplaceLeft = true;
                                 }
@@ -2255,13 +2255,13 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
                                     if (this.configHandler.enable_text_replacement) {
                                         let cleanedUpRight = this.cleanupReplaceToken("" + current);
                                         let cleanedUpLeft = this.cleanupReplaceToken("" + cbState.replaceLeft);
-                                        let rs = new replaceState();
+                                        let rs = new ReplaceState();
                                         if (cleanedUpLeft[1] || cleanedUpRight[1])
                                             rs.isPseudoTextDelimiter = true;
                                         else
                                             rs.isPseudoTextDelimiter = false;
 
-                                        cbState.copyReplaceMap.set(cleanedUpRight[0], new replaceToken(cleanedUpLeft[0], rs));
+                                        cbState.copyReplaceMap.set(cleanedUpRight[0], new ReplaceToken(cleanedUpLeft[0], rs));
                                     }
                                     cbState.isReplacingBy = false;
                                     cbState.isReplacing = true;
@@ -2376,7 +2376,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
                         const copyToken = this.newCOBOLToken(COBOLTokenStyle.CopyBook, lineNumber, line, currentCol, trimmedCopyBook, "EXEC SQL INCLUDE " + sqlCopyBook, insertInSection, "", false);
                         if (this.copyBooksUsed.has(trimmedCopyBook) === false) {
                             const prevState = state.copybook_state;
-                            state.copybook_state = new copybookState(state.current01Group);
+                            state.copybook_state = new CopybookState(state.current01Group);
                             state.copybook_state.trimmedCopyBook = trimmedCopyBook;
                             state.copybook_state.copyBook = sqlCopyBook;
                             state.copybook_state.line = line;
@@ -2393,7 +2393,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
                             state.copybook_state.fileName = fileName;
                             const copybookToken = new COBOLCopybookToken(copyToken, false, state.copybook_state);
                             this.copyBooksUsed.set(trimmedCopyBook, [copybookToken]);
-                            const qfile = new FileSourceHandler(this.configHandler, undefined, fileName, this.externalFeatures);
+                            const qfile = new fileSourceHandler(this.configHandler, undefined, fileName, this.externalFeatures);
                             const prevIgnoreInOutlineView = state.ignoreInOutlineView;
                             state.ignoreInOutlineView = true;
                             const currentTopLevel = this.sourceReferences.topLevel;
@@ -2766,7 +2766,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
                 //remember copy
                 if (currentLower === "copy") {
                     const prevState = state.copybook_state;
-                    state.copybook_state = new copybookState(state.current01Group);
+                    state.copybook_state = new CopybookState(state.current01Group);
                     state.current01Group = undefined;
                     state.inCopy = true;
                     state.inCopyStartColumn = token.currentCol;
@@ -3126,7 +3126,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
         }
     }
 
-    private processCopyBook(cbInfo: copybookState): boolean {
+    private processCopyBook(cbInfo: CopybookState): boolean {
         if (cbInfo.copybookDepths.length > this.configHandler.copybook_scan_depth) {
             return false;
         }
@@ -3226,14 +3226,14 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
         if (this.sourceReferences !== undefined) {
             if (this.parse_copybooks_for_references && fileName.length > 0) {
                 cbInfo.fileName = fileName;
-                const qfile = new FileSourceHandler(this.configHandler, undefined, fileName, this.externalFeatures);
+                const qfile = new fileSourceHandler(this.configHandler, undefined, fileName, this.externalFeatures);
                 const currentTopLevel = this.sourceReferences.topLevel;
                 this.sourceReferences.topLevel = false;
 
                 const prevRepMap = state.replaceMap;
 
                 if (this.configHandler.enable_text_replacement) {
-                    state.replaceMap = new Map<string, replaceToken>([...cbInfo.copyReplaceMap, ...prevRepMap]);
+                    state.replaceMap = new Map<string, ReplaceToken>([...cbInfo.copyReplaceMap, ...prevRepMap]);
                 }
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 if (this.ScanUncachedInlineCopybook(qfile, this, false) == false) {
@@ -3280,7 +3280,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
                         if (this.copyBooksUsed.has(fileName) === false) {
                             this.copyBooksUsed.set(fileName, [COBOLCopybookToken.Null]);
 
-                            const qfile = new FileSourceHandler(this.configHandler, possRegExe, fileName, this.externalFeatures);
+                            const qfile = new fileSourceHandler(this.configHandler, possRegExe, fileName, this.externalFeatures);
                             const currentTopLevel = this.sourceReferences.topLevel;
                             this.sourceReferences.topLevel = false;
 
@@ -3313,8 +3313,8 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
         args = args.slice(1);
         const commandTrimmed = command !== undefined ? command.trim() : undefined;
         if (commandTrimmed !== undefined) {
-            if (commandTrimmed === CobolLinterProviderSymbols.NotReferencedMarker_external ||
-                commandTrimmed === CobolLinterProviderSymbols.OLD_NotReferencedMarker_external) {
+            if (commandTrimmed === cobolLinterProviderSymbols.NotReferencedMarker_external ||
+                commandTrimmed === cobolLinterProviderSymbols.OLD_NotReferencedMarker_external) {
                 for (const offset in args) {
                     this.sourceReferences.ignoreUnusedSymbol.set(args[offset].toLowerCase(), args[offset]);
                 }
@@ -3324,7 +3324,7 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
 
     private lastCOBOLLS: COBOLToken | undefined = undefined;
 
-    public processComment(configHandler: ICOBOLSettings, sourceHandler: ISourceHandlerLite, commentLine: string, sourceFilename: string, sourceLineNumber: number, startPos: number, format: ESourceFormat): void {
+    public processComment(configHandler: ICOBOLSettings, sourceHandler: sourceHandlerInterfacesLite, commentLine: string, sourceFilename: string, sourceLineNumber: number, startPos: number, format: ESourceFormat): void {
         this.sourceReferences.state.currentLineIsComment = true;
 
         // should consider other inline comments (aka terminal) and fixed position comments
@@ -3388,3 +3388,4 @@ export class COBOLSourceScanner implements ICommentCallback, ICOBOLSourceScanner
         return nearToken;
     }
 }
+

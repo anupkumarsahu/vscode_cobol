@@ -1,6 +1,6 @@
-import { ESourceFormat } from "../runtime/externalfeatures";
-import { fileformatStrategy, ICOBOLSettings, IEditorMarginFiles } from "../../config/iconfiguration";
-import { ISourceHandlerLite } from "./isourcehandler";
+import { ESourceFormat } from "../runtime/IExternalFeatures";
+import { fileformatStrategy, ICOBOLSettings, IEditorMarginFiles } from "../../config/IConfiguration";
+import { sourceHandlerInterfacesLite } from "./ISourceHandlerInterfaces";
 
 import globToRegExp = require("glob-to-regexp");
 import { getCOBOLKeywordDictionary } from "../../keywords/cobolKeywords";
@@ -30,7 +30,7 @@ export class SourceFormat {
         return !isNaN(Number(value.toString()));
     }
 
-    private static getFileFormat(doc: ISourceHandlerLite, config: ICOBOLSettings): ESourceFormat | undefined {
+    private static getFileFormat(doc: sourceHandlerInterfacesLite, config: ICOBOLSettings): ESourceFormat | undefined {
         const filesFilter = config.editor_margin_files;
         if (filesFilter.length >= 1) {
             const docFilename: string = doc.getFilename();
@@ -53,7 +53,7 @@ export class SourceFormat {
         return undefined;
     }
 
-    public static get(doc: ISourceHandlerLite, config: ICOBOLSettings): ESourceFormat {
+    public static get(doc: sourceHandlerInterfacesLite, config: ICOBOLSettings): ESourceFormat {
         // check overrides..
         switch (config.fileformat_strategy) {
             case fileformatStrategy.AlwaysFixed: return ESourceFormat.fixed;
@@ -215,3 +215,4 @@ export class SourceFormat {
         return defFormat;
     }
 }
+

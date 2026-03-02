@@ -1,24 +1,24 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { IVSCOBOLSettings, VSCOBOLConfiguration } from "../config/vsconfiguration";
-import { ICOBOLSettings } from "../config/iconfiguration";
-import { VSExtensionUtils } from "../utils/vsextutis";
-import { CobolSymbolInformationProvider, KeywordAutocompleteCompletionItemProvider, CobolSourceCompletionItemProvider } from "../providers/intellisense";
-import { VSExternalFeatures } from "../features/runtime/vsexternalfeatures";
-import { VSCOBOLSourceScanner } from "../features/workspace/vscobolscanner";
-import { vsMarginHandler } from "../features/editor/vsmargindecorations";
-import { commentUtils } from "../features/editor/commenter";
-import { VSLogger } from "../utils/vslogger";
-import { COBOLSourceDefinition, VSCobolRenameProvider, CobolReferenceProvider } from "../providers/navigation";
-import { VSCOBOLUtils } from "../utils/vscobolutils";
+import { IVSCOBOLSettings, VSCOBOLConfiguration } from "../config/workspaceConfiguration";
+import { ICOBOLSettings } from "../config/IConfiguration";
+import { VSExtensionUtils } from "../utils/extensionUtils";
+import { COBOLSymbolInformationProvider, KeywordAutocompleteCompletionItemProvider, COBOLSourceCompletionItemProvider } from "../providers/intellisense";
+import { VSExternalFeatures } from "../features/runtime/externalFeatures";
+import { VSCOBOLSourceScanner } from "../features/workspace/workspaceSymbolScanner";
+import { vsMarginHandler } from "../features/editor/marginDecorations";
+import { CommentUtils } from "../features/editor/commentCommands";
+import { VSLogger } from "../utils/logger";
+import { COBOLSourceDefinition, VSCOBOLRenameProvider, COBOLReferenceProvider } from "../providers/navigation";
+import { VSCOBOLUtils } from "../utils/cobolUtils";
 import { VSPPCodeLens, VSSemanticProvider } from "../providers/language";
 import { ExtensionDefaults } from "../config/extensionDefaults";
 import { commands, languages, ProviderResult } from "vscode";
-import { activateCommonCommands, checkForExtensionConflicts } from "../extension/commands/vscommon_commands";
-import { VSWorkspaceFolders } from "../features/workspace/vscobolfolders";
-import { VSSourceTreeViewHandler } from "../features/tree/vssourceviewtree";
-import { VSHelpAndFeedViewHandler } from "../features/tree/vsfeedbacktree";
+import { activateCommonCommands, checkForExtensionConflicts } from "../extension/commands/commonCommands";
+import { VSWorkspaceFolders } from "../features/workspace/workspaceFolders";
+import { VSSourceTreeViewHandler } from "../features/tree/sourceViewTree";
+import { VSHelpAndFeedViewHandler } from "../features/tree/feedbackTree";
 import { VSHoverProvider } from "../providers/language";
 
 const URLSearchDirectory: string[] = [];
@@ -171,7 +171,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const settings = VSCOBOLConfiguration.get_resource_settings(vscode.window.activeTextEditor.document, VSExternalFeatures);
 
         if (vscode.window.activeTextEditor !== undefined) {
-            commentUtils.processCommentLine(settings);
+            CommentUtils.processCommentLine(settings);
         }
     }));
 
@@ -179,7 +179,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     try {
         if (_settings.outline) {
-            context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(cobolSelectors, new CobolSymbolInformationProvider()));
+            context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(cobolSelectors, new COBOLSymbolInformationProvider()));
         }
     } catch (e) {
         VSExternalFeatures.logException("during registerDocumentSymbolProvider", e as Error);
@@ -240,13 +240,13 @@ export async function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(sourcedefProvider);
 
-    context.subscriptions.push(languages.registerReferenceProvider(VSExtensionUtils.getAllCobolSelectors(_settings, true), new CobolReferenceProvider()));
+    context.subscriptions.push(languages.registerReferenceProvider(VSExtensionUtils.getAllCobolSelectors(_settings, true), new COBOLReferenceProvider()));
 
     const keywordProvider = new KeywordAutocompleteCompletionItemProvider(true, _settings);
     const keywordProviderDisposible = vscode.languages.registerCompletionItemProvider(VSExtensionUtils.getAllCobolSelectors(_settings, true), keywordProvider);
     context.subscriptions.push(keywordProviderDisposible);
 
-    const cobolProvider = new CobolSourceCompletionItemProvider(VSExternalFeatures);
+    const cobolProvider = new COBOLSourceCompletionItemProvider(VSExternalFeatures);
     const cobolProviderDisposible = vscode.languages.registerCompletionItemProvider(VSExtensionUtils.getAllCobolSelectors(_settings, true), cobolProvider);
     context.subscriptions.push(cobolProviderDisposible);
 
@@ -292,7 +292,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     }));
 
-    const renameProvider = new VSCobolRenameProvider();
+    const renameProvider = new VSCOBOLRenameProvider();
     const renameProviderDisposable = languages.registerRenameProvider(VSExtensionUtils.getAllCobolSelectors(_settings, true), renameProvider);
     context.subscriptions.push(renameProviderDisposable);
 }

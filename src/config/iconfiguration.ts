@@ -1,4 +1,4 @@
-import { ESourceFormat } from "../features/runtime/externalfeatures";
+import { ESourceFormat } from "../features/runtime/IExternalFeatures";
 
 export enum outlineFlag {
     On = "on",

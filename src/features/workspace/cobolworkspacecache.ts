@@ -3,10 +3,10 @@
 
 import path from "path";
 import { COBOLFileSymbol, COBOLWorkspaceFile } from "./cobolglobalcache";
-import { IExternalFeatures } from "../runtime/externalfeatures";
+import { IExternalFeatures } from "../runtime/IExternalFeatures";
 import { InMemoryGlobalCacheHelper, InMemoryGlobalSymbolCache } from "./globalcachehelper";
-import { ICOBOLSettings } from "../../config/iconfiguration";
-import { COBOLFileUtils } from "../../utils/fileutils";
+import { ICOBOLSettings } from "../../config/IConfiguration";
+import { COBOLFileUtils } from "../../utils/fileUtils";
 
 export enum TypeCategory {
     ClassId = "T",
@@ -292,3 +292,4 @@ export class COBOLWorkspaceSymbolCacheHelper {
         }
     }
 }
+

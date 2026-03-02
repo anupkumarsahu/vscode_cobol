@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { ICOBOLSettings } from "../config/iconfiguration";
-import { VSExtensionUtils } from "../utils/vsextutis";
+import { ICOBOLSettings } from "../config/IConfiguration";
+import { VSExtensionUtils } from "../utils/extensionUtils";
 import { VSPPCodeLens, VSSemanticProvider } from "../providers/language";
 
 export class LazyLanguageFeatures {
