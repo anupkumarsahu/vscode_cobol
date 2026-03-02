@@ -1,8 +1,8 @@
 import * as assert from "assert";
 
 import * as vscode from "vscode";
-import { COBOLOutputChannel, VSLogger } from "../../vslogger";
-import { ICOBOLSettings } from "../../iconfiguration";
+import { COBOLOutputChannel, VSLogger } from "../../utils/vslogger";
+import { ICOBOLSettings } from "../../config/iconfiguration";
 
 suite("Issues Raised Test Suite", () => {
 	vscode.window.showInformationMessage("Start all tests.");

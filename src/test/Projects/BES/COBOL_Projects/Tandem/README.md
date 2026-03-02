@@ -447,8 +447,8 @@ npm test -- --grep "scalability"        # Test large file performance
 ### VS Code Extension
 - **Extension ID**: bitlang.cobol
 - **Test Suite**: Mocha test framework
-- **Source Scanner**: `src/cobolsourcescanner.ts`
-- **File Handler**: `src/filesourcehandler.ts`
+- **Source Scanner**: `src/features/workspace/cobolsourcescanner.ts`
+- **File Handler**: `src/features/workspace/filesourcehandler.ts`
 
 ---
 

@@ -2,11 +2,11 @@ import * as assert from "assert";
 
 import * as vscode from "vscode";
 
-import { FileSourceHandler } from "../../filesourcehandler";
-import { COBOLSourceScanner, EmptyCOBOLSourceScannerEventHandler } from "../../cobolsourcescanner";
-import { COBOLSettings } from "../../iconfiguration";
+import { FileSourceHandler } from "../../features/workspace/filesourcehandler";
+import { COBOLSourceScanner, EmptyCOBOLSourceScannerEventHandler } from "../../features/workspace/cobolsourcescanner";
+import { COBOLSettings } from "../../config/iconfiguration";
 import path from "path";
-import { VSExternalFeatures } from "../../vsexternalfeatures";
+import { VSExternalFeatures } from "../../features/runtime/vsexternalfeatures";
 
 suite("Core Extension Test Suite", () => {
 	vscode.window.showInformationMessage("Start all tests.");

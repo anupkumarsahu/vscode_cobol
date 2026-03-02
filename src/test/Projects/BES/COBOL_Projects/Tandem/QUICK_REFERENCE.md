@@ -345,8 +345,8 @@ npm test -- --grep "Test description"
 - Test Suite: `src/test/suite/tandem-cobol.test.ts`
 - Test Scenarios: `src/test/Projects/BES/COBOL_Projects/Tandem/TEST_SCENARIOS.md`
 - Test Results: `src/test/Projects/BES/COBOL_Projects/Tandem/TEST_RESULTS.md`
-- Source Scanner: `src/cobolsourcescanner.ts`
-- File Handler: `src/filesourcehandler.ts`
+- Source Scanner: `src/features/workspace/cobolsourcescanner.ts`
+- File Handler: `src/features/workspace/filesourcehandler.ts`
 
 ---
 

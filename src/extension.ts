@@ -6,68 +6,46 @@ import * as vscode from "vscode";
 import os from "os";
 
 // VS Code API imports for extension functionality
-import { commands, workspace, StatusBarItem, StatusBarAlignment, ExtensionContext, languages, TextDocument, Position, CancellationToken, ProviderResult, Definition, window, extensions, ViewColumn, ConfigurationChangeEvent } from "vscode";
-
-// COBOL-specific functionality imports
-import * as opencopybook from "./opencopybook";
+import { commands, workspace, StatusBarItem, StatusBarAlignment, ExtensionContext, languages, window, extensions, ViewColumn, ConfigurationChangeEvent } from "vscode";
 
 // Language service providers for IntelliSense and code navigation
-import { KeywordAutocompleteCompletionItemProvider } from "./vskeywordprovider";
-import { CobolSymbolInformationProvider } from "./vssymbolprovider";
 
-// Core COBOL source scanning and configuration
-import { VSCOBOLSourceScanner } from "./vscobolscanner";
-import { VSCOBOLConfiguration } from "./vsconfiguration";
-
-// Language feature providers
-import { CobolReferenceProvider } from "./vsreferenceprovider";
-import { CobolLinterProvider, CobolLinterActionFixer } from "./cobollinter";
-import { VSSourceTreeViewHandler } from "./vssourceviewtree";
-import { CobolSourceCompletionItemProvider } from "./vscobolprovider";
+import { CobolLinterProvider, CobolLinterActionFixer } from "./providers/language/cobollinter";
+import { VSSourceTreeViewHandler } from "./features/tree/vssourceviewtree";
 
 // Utility and helper classes
-import { VSCOBOLUtils } from "./vscobolutils";
-import { ICOBOLSettings } from "./iconfiguration";
+import { VSCOBOLUtils } from "./utils/vscobolutils";
+import { ICOBOLSettings } from "./config/iconfiguration";
 
 // Additional COBOL extension functionality
-import { VSWorkspaceFolders } from "./vscobolfolders";
-import { COBOLSourceDefinition } from "./vssourcedefinitionprovider";
-import { VSExternalFeatures } from "./vsexternalfeatures";
-import { VSCobScanner } from "./vscobscanner";
-import { BldScriptTaskProvider } from "./bldTaskProvider";
+import { VSExternalFeatures } from "./features/runtime/vsexternalfeatures";
+import { BldScriptTaskProvider } from "./extension/bldTaskProvider";
 // import { COBOLCaseFormatter } from "./caseformatter"; // Currently disabled
-import { COBOLCallTargetProvider } from "./vscobolcalltargetprovider";
-import { COBOLWorkspaceSymbolCacheHelper } from "./cobolworkspacecache";
-import { SourceOrFolderTreeItem } from "./sourceItem";
-
-// Advanced language features
-import { VSSemanticProvider } from "./vssemanticprovider";
-import { VSPPCodeLens } from "./vsppcodelens";
-import { InMemoryGlobalSymbolCache } from "./globalcachehelper";
+import { COBOLWorkspaceSymbolCacheHelper } from "./features/workspace/cobolworkspacecache";
 
 // File and utility management
-import { VSCOBOLFileUtils } from "./vsfileutils";
-import { COBOLOutputChannel, VSLogger } from "./vslogger";
-import { VSExtensionUtils, TextLanguage } from "./vsextutis";
+import { COBOLOutputChannel, VSLogger } from "./utils/vslogger";
+import { VSExtensionUtils } from "./utils/vsextutis";
 
 // Editor decorations and UI enhancements
-import { vsMarginHandler } from "./vsmargindecorations";
-import { commentUtils } from "./commenter";
-import { colourCommentHandler } from "./vscolourcomments";
-import { SnippetCompletionItemProvider } from "./vssnippetprovider";
+import { commentUtils } from "./features/editor/commenter";
 
 // Extension configuration and constants
-import { ExtensionDefaults } from "./extensionDefaults";
+import { ExtensionDefaults } from "./config/extensionDefaults";
 
 // Additional language service providers
-import { VSCobolRenameProvider } from "./vsrenameprovider";
-import { activateCommonCommands, checkForExtensionConflicts, install_call_hierarchy } from "./vscommon_commands";
-import { VSHelpAndFeedViewHandler } from "./feedbacktree";
-import { VSCustomIntelliseRules } from "./vscustomrules";
-import { VSHoverProvider } from "./vshoverprovider";
-import { COBOLTypeFormatter } from "./vsformatter";
-import { TabUtils } from "./tabstopper";
-import { VSTerminal } from "./vsterminals";
+import { activateCommonCommands, checkForExtensionConflicts } from "./extension/commands/vscommon_commands";
+import { VSHelpAndFeedViewHandler } from "./features/tree/vsfeedbacktree";
+import { VSTerminal } from "./features/runtime/vsterminals";
+import { ConfigurationService } from "./config/configurationService";
+import { FeatureFlags } from "./config/featureFlags";
+import { LazyLanguageFeatures } from "./features/lazyLanguageFeatures";
+import { COBOL_LANGUAGE_ID } from "./language/languageConstants";
+import { registerDesktopCommands } from "./extension/desktopCommands";
+import { handleScopedConfigurationChange } from "./extension/configurationChangeHandler";
+import { registerLanguageProviders } from "./extension/providerRegistry";
+import { EditorLifecycleManager } from "./extension/editorLifecycle";
+import { registerWorkspaceMetadataCommands } from "./extension/workspaceMetadataCommands";
 
 // Commented out: Future markdown/syntax highlighting integration
 // import type MarkdownIt from 'markdown-it';
@@ -86,9 +64,6 @@ export const progressStatusBarItem: StatusBarItem = window.createStatusBarItem(S
 
 // Extension lifecycle and state management variables
 let bldscriptTaskProvider: vscode.Disposable | undefined;  // Build script task provider for workspace tasks
-let shown_enable_semantic_token_provider = false;           // Flag to show semantic token notification only once
-let activeEditor: vscode.TextEditor;                        // Currently active text editor
-let updateDecorationsOnTextEditorEnabled = false;           // Flag to enable/disable decoration updates
 let sharedContext: ExtensionContext;                        // Shared extension context for command handlers
 
 /**
@@ -211,7 +186,7 @@ async function setupLogChannel(hide: boolean, settings: ICOBOLSettings, quiet: b
 
             try {
                 const editor_semanticHighlighting_enabled = workspace.getConfiguration("editor.semanticHighlighting",
-                    { languageId: ExtensionDefaults.defaultCOBOLLanguage }).get<number>("enabled");
+                    { languageId: COBOL_LANGUAGE_ID }).get<number>("enabled");
                 VSLogger.logMessage(` [COBOL]editor.semanticHighlighting.enabled : ${editor_semanticHighlighting_enabled}`);
             } catch {
                 // Ignore configuration read errors
@@ -241,246 +216,6 @@ async function setupLogChannel(hide: boolean, settings: ICOBOLSettings, quiet: b
 }
 
 
-/**
- * Activates desktop-specific functionality for the COBOL extension.
- * 
- * This function registers commands that are only available in the desktop
- * version of VS Code (not in web/browser environments). It includes commands
- * for cache management, code extraction, and file operations.
- * 
- * @param context - VS Code extension context for registering disposables
- * @param settings - COBOL extension settings
- */
-function activateDesktop(context: ExtensionContext, settings: ICOBOLSettings): void {
-
-    // Register command to clear the global metadata cache
-    context.subscriptions.push(commands.registerCommand("cobolplugin.clearGlobalCache", function () {
-        VSLogger.logDebug(settings, "Clear global cache command invoked");
-        window.showQuickPick(["Yes", "No"], { placeHolder: "Are you sure you want to clear the metadata?" }).then(function (data) {
-            VSLogger.logDebug(settings, "User selected option for cache clearing: %s", data);
-            if (data === "Yes") {
-                VSCOBOLUtils.clearGlobalCache(settings);
-                VSLogger.logInfo(settings, "Metadata cache cleared");
-            } else {
-                VSLogger.logDebug(settings, "Cache clearing cancelled by user");
-            }
-        });
-    }));
-
-    // Register command to extract selected COBOL code to a copybook
-    context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.extractSelectionToCopybook", async ()  => {
-        if (vscode.window.activeTextEditor) {
-            const langid = vscode.window.activeTextEditor.document.languageId;
-
-            if (VSExtensionUtils.isKnownCOBOLLanguageId(settings, langid)) {
-                await VSCOBOLFileUtils.extractSelectionToCopybook(vscode.window.activeTextEditor, VSExternalFeatures);
-            }
-        }
-    }));
-
-    // Register command to extract selected code to a new paragraph
-    context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.extractSelectionToParagraph", () => {
-        if (vscode.window.activeTextEditor) {
-            const langid = vscode.window.activeTextEditor.document.languageId;
-
-            if (VSExtensionUtils.isKnownCOBOLLanguageId(settings, langid)) {
-                VSCOBOLUtils.extractSelectionTo(vscode.window.activeTextEditor, true);
-            }
-        }
-    }));
-
-    // Register command to extract selected code to a new section
-    context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.extractSelectionToSection", () => {
-        if (vscode.window.activeTextEditor) {
-            const langid = vscode.window.activeTextEditor.document.languageId;
-
-            if (VSExtensionUtils.isKnownCOBOLLanguageId(settings, langid)) {
-                VSCOBOLUtils.extractSelectionTo(vscode.window.activeTextEditor, false);
-            }
-        }
-    }));
-
-    // Register context menu command for running files from explorer
-    context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.explorerRun", function (fileUri) {
-
-        const fsPath = fileUri.fsPath
-        VSLogger.logDebug(settings, "Explorer run command invoked for file: %s", fsPath);
-
-        // Handle regular COBOL program execution
-        VSLogger.logDebug(settings, "Running or debugging COBOL file: %s", fsPath);
-        VSCOBOLUtils.runOrDebug(fsPath, false);
-    }));
-
-    // Register context menu command for debugging files from explorer
-    context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.explorerDebug", function (fileUri) {
-
-        const fsPath = fileUri.fsPath
-        VSLogger.logDebug(settings, "Explorer debug command invoked for file: %s", fsPath);
-
-        // Handle regular COBOL program debugging
-        VSLogger.logDebug(settings, "Running or debugging COBOL file in debug mode: %s", fsPath);
-        VSCOBOLUtils.runOrDebug(fsPath, true);
-    }));
-
-    // Register command for processing all workspace files (startup version)
-    context.subscriptions.push(commands.registerCommand("cobolplugin.processAllFilesInWorkspaceOnStartup", async () => {
-        await VSCobScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures, settings, false, false, -1);
-    }));
-
-    // Register commands for source tree view actions
-    context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.runCommand", function (si: SourceOrFolderTreeItem) {
-        if (si !== undefined) {
-            VSSourceTreeViewHandler.actionSourceViewItemFunction(si, false);
-        }
-    }));
-
-    context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.runDebugCommand", function (si: SourceOrFolderTreeItem) {
-        if (si !== undefined) {
-            VSSourceTreeViewHandler.actionSourceViewItemFunction(si, true);
-        }
-    }));
-
-}
-
-/**
- * Handles configuration changes with proper scoping.
- * 
- * This function responds to configuration changes and updates the extension
- * accordingly. It handles both global and scoped configuration changes,
- * refreshing caches, updating providers, and notifying users as needed.
- * 
- * @param event - VS Code configuration change event
- * @param scope - Optional configuration scope (workspace, folder, etc.)
- */
-async function handleScopedChange(event:ConfigurationChangeEvent, scope?: vscode.ConfigurationScope) {
-    // Check which configuration settings have changed
-    const updated = event.affectsConfiguration(ExtensionDefaults.defaultEditorConfig, scope);
-    const outline_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig, scope}.outline`, scope);
-    const md_syms = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.metadata_symbols`, scope);
-    const md_eps = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.metadata_entrypoints`, scope);
-    const md_types = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.metadata_types`, scope);
-    const md_metadata_files = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.metadata_files`, scope);
-    const md_metadata_knowncopybooks = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.metadata_knowncopybooks`, scope);
-    const md_copybookdirs = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.copybookdirs`, scope);
-    const enable_semantic_token_provider = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.enable_semantic_token_provider`, scope);
-    const maintain_metadata_recursive_search = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.maintain_metadata_recursive_search`, scope);
-    const enable_comments_tags_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.enable_comments_tags`, scope);
-    const comments_tags_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.comments_tags`, scope);
-    const intellisense_style_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.intellisense_style`, scope);
-    const enable_columns_tags_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.enable_columns_tags`, scope);
-    const columns_tags_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.columns_tags`, scope);
-    const margin_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.margin`, scope);
-    const margin_identification_area_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.margin_identification_area`, scope);
-    const intellisense_add_space_keywords_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.intellisense_add_space_keywords`, scope);
-    const custom_intellisense_rules_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.custom_intellisense_rules`, scope);
-    const tabstops_anchors_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.tabstops_anchors`, scope);
-    const enable_program_information_changed = event.affectsConfiguration(`${ExtensionDefaults.defaultEditorConfig}.enable_program_information`, scope);
-
-    // Handle general configuration updates
-    if (updated) {
-        VSCOBOLConfiguration.reinitWorkspaceSettingsScoped(VSExternalFeatures);
-        const settings = VSCOBOLConfiguration.get_workspace_settings();
-        
-        // Only clear cache and reinitialize if metadata settings haven't changed
-        if (!md_syms && !md_eps && !md_types && !md_metadata_files && !md_metadata_knowncopybooks && !enable_semantic_token_provider) {
-            VSCOBOLSourceScanner.clearCOBOLCache();
-            setupLogChannel(true, settings, true);
-            VSCOBOLUtils.setupFilePaths(settings);
-            async () => {
-                await VSCOBOLUtils.setupUrlPaths(settings);
-                await VSSourceTreeViewHandler.setupSourceViewTree(settings, true);
-            }
-        }
-
-        // Handle specific metadata setting changes
-        if (md_syms) {
-            COBOLWorkspaceSymbolCacheHelper.loadGlobalCacheFromArray(settings, settings.metadata_symbols, true);
-        }
-
-        if (md_eps) {
-            COBOLWorkspaceSymbolCacheHelper.loadGlobalEntryCacheFromArray(settings, settings.metadata_entrypoints, true);
-        }
-
-        if (md_types) {
-            COBOLWorkspaceSymbolCacheHelper.loadGlobalTypesCacheFromArray(settings, settings.metadata_types, true);
-        }
-
-        if (md_metadata_files) {
-            COBOLWorkspaceSymbolCacheHelper.loadFileCacheFromArray(settings, VSExternalFeatures, settings.metadata_files, true);
-        }
-
-        // Show notification for semantic token provider changes (only once)
-        if (enable_semantic_token_provider && !shown_enable_semantic_token_provider) {
-            shown_enable_semantic_token_provider = true;
-            vscode.window.showInformationMessage(`The configuration setting '${ExtensionDefaults.defaultEditorConfig}.enable_semantic_token_provider' has changed but you may not see the affects until you have either close/reload your documents or restarted this session`);
-        }
-
-        if (md_metadata_knowncopybooks) {
-            COBOLWorkspaceSymbolCacheHelper.loadGlobalKnownCopybooksFromArray(settings, settings.metadata_knowncopybooks, true);
-        }
-
-        // Handle copybook directory changes (requires full refresh)
-        if (md_copybookdirs) {
-            VSCOBOLSourceScanner.clearCOBOLCache();
-            setupLogChannel(true, settings, true);
-            VSCOBOLUtils.setupFilePaths(settings);
-            await VSCOBOLUtils.setupUrlPaths(settings);
-
-            VSCOBOLUtils.populateDefaultCallableSymbolsSync(settings, true);
-            VSCOBOLUtils.populateDefaultCopyBooksSync(settings, true);
-        }
-
-        if (maintain_metadata_recursive_search) {
-            VSCOBOLUtils.populateDefaultCallableSymbolsSync(settings, true);
-            VSCOBOLUtils.populateDefaultCopyBooksSync(settings, true);
-        }
-
-        // Show notification for outline changes
-        if (outline_changed) {
-            vscode.window.showInformationMessage(`The configuration setting '${ExtensionDefaults.defaultEditorConfig}.outline' has changed but you may not see the affects until you have either reloaded your window or restarted this session`);
-        }
-
-        // Handle IntelliSense and UI-related setting changes
-        if (custom_intellisense_rules_changed) {
-            VSCustomIntelliseRules.Default.reFreshConfiguration(settings);
-        }
-
-        if (enable_comments_tags_changed || comments_tags_changed) {
-            colourCommentHandler.setupTags();
-        }
-
-        if (enable_columns_tags_changed || columns_tags_changed || margin_changed || margin_identification_area_changed) {
-            vsMarginHandler.setupTags();
-            // Refresh decorations for all visible editors
-            for (const editor of vscode.window.visibleTextEditors) {
-                if (VSExtensionUtils.isSupportedLanguage(editor.document) !== TextLanguage.Unknown) {
-                    await vsMarginHandler.updateDecorations(editor);
-                }
-            }
-        }
-
-        // Update IntelliSense completion providers
-        if (intellisense_style_changed) {
-            SnippetCompletionItemProvider.Default.reInitCallMap(settings);
-        }
-
-        if (intellisense_add_space_keywords_changed) {
-            KeywordAutocompleteCompletionItemProvider.Default4COBOL.reFreshConfiguration(settings);
-        }
-
-        if (tabstops_anchors_changed) {
-            TabUtils.clearTabstopCache();
-        }
-
-        // Handle call hierarchy changes
-        if (enable_program_information_changed && settings.enable_program_information) {
-            install_call_hierarchy(settings, sharedContext)
-        }
-        
-        // Always check for extension conflicts after configuration changes
-        checkForExtensionConflicts(settings, sharedContext);
-    }
-}
 /**
  * Activates the COBOL extension and initializes the full desktop feature set.
  *
@@ -548,7 +283,7 @@ export async function activate(context: ExtensionContext) {
     sharedContext = context;
     
     // Initialize workspace settings and configuration
-    const settings: ICOBOLSettings = VSCOBOLConfiguration.reinitWorkspaceSettings(VSExternalFeatures);
+    const settings: ICOBOLSettings = ConfigurationService.reinitializeWorkspace();
 
     // Set up logging channel and display environment information
     await setupLogChannel(true, settings, true);
@@ -565,7 +300,7 @@ export async function activate(context: ExtensionContext) {
     VSLogger.logDebug(settings, "Activating desktop environment");
     
     // Register desktop-specific commands and functionality
-    activateDesktop(context, settings);
+    registerDesktopCommands(context, settings);
     
     // Register common commands shared between desktop and web versions
     activateCommonCommands(context);
@@ -578,7 +313,7 @@ export async function activate(context: ExtensionContext) {
 
     // Set up configuration change monitoring with scoped handling
     const onDidChangeConfiguration = workspace.onDidChangeConfiguration(async (event: ConfigurationChangeEvent) => {
-        await handleScopedChange(event,undefined);
+        await handleScopedConfigurationChange(event, undefined, sharedContext, setupLogChannel);
     });
     context.subscriptions.push(onDidChangeConfiguration);
 
@@ -616,7 +351,7 @@ export async function activate(context: ExtensionContext) {
             const langid = window.activeTextEditor.document.languageId;
 
             if (VSExtensionUtils.isKnownCOBOLLanguageId(settings, langid)) {
-                if (settings.line_comment) {
+                if (FeatureFlags.useCobolLineComment(settings)) {
                     // Use COBOL-specific comment formatting
                     commentUtils.processCommentLine(settings);
                 } else {
@@ -631,274 +366,31 @@ export async function activate(context: ExtensionContext) {
         commands.executeCommand("editor.action.commentLine");
     }));
 
-    // Register workspace metadata processing command with threading support
-    // This command scans all COBOL files in the workspace to build symbol cache
-    context.subscriptions.push(commands.registerCommand("cobolplugin.processAllFilesInWorkspace", async () => {
-        // Get appropriate settings (document-specific or workspace-wide)
-        let settings: ICOBOLSettings;
-        if (window.activeTextEditor !== undefined) {
-            settings = VSCOBOLConfiguration.get_resource_settings(window.activeTextEditor.document, VSExternalFeatures);
-        } else {
-            settings = VSCOBOLConfiguration.get_workspace_settings();
-        }
-        
-        // For small workspaces, process without asking about threading
-        if (InMemoryGlobalSymbolCache.defaultCallableSymbols.size < 500) {
-            VSCobScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures, settings, true, false, -1);
-            return;
-        }
-
-        // For large workspaces, offer multi-threading option for better performance
-        window.showQuickPick(["Yes", "No"], { placeHolder: "Your workspace is large, do you want to extra threads for your metadata scan?" }).then(function (data) {
-            if (data === "Yes") {
-                // Calculate optimal thread count based on CPU cores
-                const cpuCount = os.cpus().length;
-                const defCpuCount = cpuCount >= 4 ? Math.trunc(cpuCount / 2) : cpuCount;
-                
-                // Prompt user for custom thread count with validation
-                vscode.window.showInputBox({
-                    prompt: "How many threads do you want to use?",
-                    value: "" + defCpuCount,
-                    validateInput: (threadString: string): string | undefined => {
-                        const threadCount: number = Number.parseInt(threadString, 10);
-
-                        if (threadCount < 2 || threadCount > (defCpuCount * 3)) {
-                            return `Thread count must be between 2 and ${defCpuCount * 3}`;
-                        } else {
-                            return undefined;
-                        }
-                    }
-                }).then(value => {
-                    // Exit early if user cancels input
-                    if (value === undefined) {
-                        return;
-                    }
-
-                    const threadCount: number = Number.parseInt(value, 10);
-                    VSCobScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures,settings, true, true, threadCount);
-                });
-
-            } else {
-                // User declined threading, process with single thread
-                VSCobScanner.processAllFilesInWorkspaceOutOfProcess(VSExternalFeatures,settings, true, false, -1);
-            }
-        });
-    }));
+    registerWorkspaceMetadataCommands(context);
 
 
     // Monitor workspace folder changes and reinitialize settings
     context.subscriptions.push(workspace.onDidChangeWorkspaceFolders(async () => {
-        const settings: ICOBOLSettings = VSCOBOLConfiguration.reinitWorkspaceSettings(VSExternalFeatures);
+        const settings: ICOBOLSettings = ConfigurationService.reinitializeWorkspace();
 
         await setupLogChannel(false, settings, true);
         VSCOBOLUtils.setupFilePaths(settings);
         await VSCOBOLUtils.setupUrlPaths(settings);
     }));
 
-    // Monitor document open events for language detection and metadata seeding
-    context.subscriptions.push(workspace.onDidOpenTextDocument(async (doc: vscode.TextDocument) => {
-        // Convert plain text files to COBOL language if they match COBOL patterns
-        VSExtensionUtils.flip_plaintext(doc);
-
-        // Update decorations for supported COBOL documents
-        if (VSExtensionUtils.isSupportedLanguage(doc)) {
-            if (window.activeTextEditor) {
-                activeEditor = window.activeTextEditor;
-                await triggerUpdateDecorations();
-            }
-        }
-
-        // Seed metadata cache if workspace lacks symbol information
-        // This helps provide IntelliSense for workspaces without pre-built metadata
-        const ws = VSWorkspaceFolders.get(settings);
-        if (ws !== undefined) {
-            await vscode.commands.executeCommand<vscode.SymbolInformation[]>("vscode.executeDocumentSymbolProvider", doc.uri);
-            await VSCOBOLUtils.populateDefaultCallableSymbols(settings, false);
-        }
-    }));
-
-    // Monitor visible text editor changes for decoration updates
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    context.subscriptions.push(vscode.window.onDidChangeVisibleTextEditors(async (viewEditors) => {
-        if (updateDecorationsOnTextEditorEnabled) {
-            for (const textEditor of viewEditors) {
-                await updateDecorationsOnTextEditor(textEditor);
-            }
-        }
-    }));
-
-    // Commented out: Alternative approach for visible range changes
-    // Can be useful for performance optimization in large files
-    // const onDidChangeTextEditorVisibleRanges = vscode.window.onDidChangeTextEditorVisibleRanges(async (tevr) => {
-    //     activeEditor = tevr.textEditor;
-    //     await triggerUpdateDecorations();
-    // });
-    // context.subscriptions.push(onDidChangeTextEditorVisibleRanges);
-
-    // Monitor document close events for cache cleanup
-    context.subscriptions.push(workspace.onDidCloseTextDocument(async (doc: vscode.TextDocument) => {
-        if (VSExtensionUtils.isSupportedLanguage(doc)) {
-            // Remove cached parsing results to free memory
-            const config = VSCOBOLConfiguration.get_resource_settings(doc, VSExternalFeatures);
-            VSCOBOLSourceScanner.removeCachedObject(doc, config);
-            VSCOBOLConfiguration.clearResourceCache(doc);
-        }
-    }));
-
-    // Process already opened documents for language detection
-    // This handles documents that were open before the extension activated
-    for (let docid = 0; docid < workspace.textDocuments.length; docid++) {
-        VSExtensionUtils.flip_plaintext(workspace.textDocuments[docid]);
-    }
-
     // Initialize UI components and tree views
     await VSSourceTreeViewHandler.setupSourceViewTree(settings, false);
     VSHelpAndFeedViewHandler.setupSourceViewTree(settings, false);
     
-    // Register COBOL-specific formatting provider
-    context.subscriptions.push(COBOLTypeFormatter.register(settings));
+    registerLanguageProviders(context, settings, cobolfixer);
 
-    // Register multiple definition providers for comprehensive "Go to Definition" support
-    // Each provider handles different aspects of COBOL navigation
-    
-    // Copybook definition provider - handles COPY statements
-    context.subscriptions.push(languages.registerDefinitionProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), {
-        provideDefinition(doc: TextDocument, pos: Position, ct: CancellationToken): ProviderResult<Definition> {
-            const ccbp = new opencopybook.COBOLCopyBookProvider(VSExternalFeatures);
-            return ccbp.provideDefinition(doc, pos, ct);
-        }
-    }));
+    const editorLifecycleManager = new EditorLifecycleManager(context, linter, settings);
+    editorLifecycleManager.normalizeAlreadyOpenDocuments();
+    editorLifecycleManager.registerEventHandlers();
 
-    // Source definition provider - handles program-id, section, paragraph navigation
-    context.subscriptions.push(languages.registerDefinitionProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), {
-        provideDefinition(doc: TextDocument, pos: Position, ct: CancellationToken): ProviderResult<Definition> {
-            const csd = new COBOLSourceDefinition();
-            return csd.provideDefinition(doc, pos, ct);
-        }
-    }));
-
-    // Call target definition provider - handles CALL statement navigation
-    context.subscriptions.push(languages.registerDefinitionProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), {
-        provideDefinition(doc: TextDocument, pos: Position, ct: CancellationToken): ProviderResult<Definition> {
-            const csdp = new COBOLCallTargetProvider(VSExternalFeatures);
-            return csdp.provideDefinition(doc, pos, ct);
-        }
-    }));
-
-    // Register language service providers for IntelliSense and navigation
-    context.subscriptions.push(languages.registerReferenceProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), new CobolReferenceProvider()));
-    context.subscriptions.push(languages.registerCodeActionsProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), cobolfixer));
-
-    // Register completion item providers for IntelliSense
-    // COBOL keyword completion
-    context.subscriptions.push(languages.registerCompletionItemProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), new KeywordAutocompleteCompletionItemProvider(true, settings)));
-
-    // COBOL snippet completion for common code patterns
-    context.subscriptions.push(languages.registerCompletionItemProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), SnippetCompletionItemProvider.Default.reInitCallMap(settings)));
-
-    // Register document symbol providers for outline view (conditional on user settings)
-    if (settings.outline) {
-        // COBOL document outline provider (shows programs, sections, paragraphs, etc.)
-        const symbolInformationProvider = new CobolSymbolInformationProvider();
-        context.subscriptions.push(languages.registerDocumentSymbolProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), symbolInformationProvider));
-    }
-
-    // COBOL source completion provider for variables, fields, and copybook members
-    context.subscriptions.push(languages.registerCompletionItemProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), new CobolSourceCompletionItemProvider(VSExternalFeatures)));
-
-    // Commented out: Alternative comment completion provider
-    // Can be enabled for specialized comment-based IntelliSense
-    // const cobolCommentProvider = new CobolCommentProvider(VSCOBOLConfiguration.get());
-    // const cobolCommentProviderDisposible = languages.registerCompletionItemProvider(allCobolSelectors, cobolCommentProvider);
-    // context.subscriptions.push(cobolCommentProviderDisposible);
-
-    // Register hover provider for showing information on hover
-    context.subscriptions.push(languages.registerHoverProvider(VSExtensionUtils.getAllCobolSelectors(settings, false), {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): ProviderResult<vscode.Hover> {
-            return VSHoverProvider.provideHover(settings, document, position);
-        }
-    }));
-    
-    // Register rename provider for symbol renaming across files
-    context.subscriptions.push(languages.registerRenameProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), new VSCobolRenameProvider()));
-
-    // Define decoration update functions for performance and modularity
-    
-    /**
-     * Updates decorations for a specific text editor.
-     * Handles margin decorations, linting, and comment highlighting.
-     * @param editor - The text editor to update decorations for
-     */
-    const updateDecorationsOnTextEditor = async (editor: vscode.TextEditor) => {
-        await vsMarginHandler.updateDecorations(editor);
-        if (editor && editor.document) {
-            await linter.updateLinter(editor.document);
-        }
-        await colourCommentHandler.updateDecorations(editor);
-    };
-
-    /**
-     * Updates decorations for the currently active editor.
-     * Used as the callback for debounced decoration updates.
-     */
-    const activeEditorupdateDecorations = async () => {
-        await updateDecorationsOnTextEditor(activeEditor);
-    };
-
-    // Debouncing mechanism to prevent excessive decoration updates during rapid changes
-    let timeout: NodeJS.Timeout | undefined = undefined;
-
-    /**
-     * Triggers a debounced decoration update.
-     * Cancels previous pending updates and schedules a new one after 200ms.
-     * This improves performance during rapid typing or selection changes.
-     */
-    const triggerUpdateDecorations = async () => {
-        if (timeout) {
-            clearTimeout(timeout);
-        }
-        timeout = setTimeout(activeEditorupdateDecorations, 200);
-    }
-
-    // Register editor event handlers for real-time updates
-    
-    // Monitor active text editor changes
-    window.onDidChangeActiveTextEditor(async (editor) => {
-        if (!editor) {
-            return;
-        }
-        activeEditor = editor;
-        triggerUpdateDecorations();
-    }, null, context.subscriptions);
-
-    // Monitor text editor selection changes (cursor movement, text selection)
-    window.onDidChangeTextEditorSelection(async (event) => {
-        if (!event.textEditor) {
-            return;
-        }
-        triggerUpdateDecorations();
-    }, null, context.subscriptions);
-
-    // Monitor document content changes (typing, editing)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    workspace.onDidChangeTextDocument(async (event) => {
-        if (!window.activeTextEditor) {
-            return;
-        }
-
-        // Only update decorations if the changed document is the active one
-        if (event.document === activeEditor.document) {
-            activeEditor = window.activeTextEditor;
-            triggerUpdateDecorations();
-        }
-    }, null, context.subscriptions);
-
-    // Initialize decorations for the currently active editor (if any)
-    if (window.activeTextEditor !== undefined) {
-        activeEditor = window.activeTextEditor;
-        triggerUpdateDecorations();
-    }
+    await editorLifecycleManager.initializeActiveEditor();
+    await editorLifecycleManager.refreshVisibleEditors();
+    editorLifecycleManager.enableDecorationUpdates();
 
     // Configure status bar and progress indicators
     progressStatusBarItem.command = "cobolplugin.showCOBOLChannel";
@@ -906,46 +398,16 @@ export async function activate(context: ExtensionContext) {
     context.subscriptions.push(progressStatusBarItem);
 
     // Register build script task provider (only in trusted workspaces for security)
-    if (workspace.isTrusted) {
+    if (FeatureFlags.enableBuildTaskProvider()) {
         bldscriptTaskProvider = vscode.tasks.registerTaskProvider(BldScriptTaskProvider.BldScriptType, new BldScriptTaskProvider());
         context.subscriptions.push(bldscriptTaskProvider);
     }
 
-    // Register semantic token provider for syntax highlighting enhancement
-    const provider = VSSemanticProvider.provider();
-    vscode.languages.registerDocumentSemanticTokensProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), provider, VSSemanticProvider.getLegend());
+    // Lazy-load heavyweight language features to reduce startup cost
+    const lazyLanguageFeatures = new LazyLanguageFeatures(context);
+    lazyLanguageFeatures.bindDocumentActivation(settings);
 
-    // Register code lens provider for inline actionable information
-    const codelensProvider = new VSPPCodeLens();
-    languages.registerCodeLensProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), codelensProvider);
-
-    // Initialize storage alignment context for COBOL data structures
-    vscode.commands.executeCommand("setContext", "cobolplugin.enableStorageAlign", true);
-
-    // Monitor text selection changes for storage alignment features
-    // This enables/disables storage alignment commands based on cursor position
-    window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
-        if (!VSExtensionUtils.isSupportedLanguage(e.textEditor.document)) {
-            return;
-        }
-
-        // Check if any selection contains storage items (COBOL data definitions)
-        for (const sel of e.selections) {
-            for (let startLine = sel.start.line; startLine <= sel.end.line; startLine++) {
-                const textSelection = e.textEditor.document.lineAt(startLine).text;
-                const line = textSelection.trimEnd();
-                const sipos = VSCOBOLUtils.getStorageItemPosition(line);
-                if (sipos !== -1) {
-                    // Found storage item, enable alignment commands
-                    vscode.commands.executeCommand("setContext", "cobolplugin.enableStorageAlign", true);
-                    return;
-                }
-            }
-        }
-
-        // No storage items found in selection, disable alignment commands
-        vscode.commands.executeCommand("setContext", "cobolplugin.enableStorageAlign", false);
-    })
+    editorLifecycleManager.registerStorageAlignmentContext();
 
     // Commented out: Future signature help provider implementation
     // This would provide parameter hints for COBOL statements and procedures
@@ -978,28 +440,17 @@ export async function activate(context: ExtensionContext) {
     //     retriggerCharacters: [","]
     // });
 
-    for (const vte of vscode.window.visibleTextEditors) {
-        // Update decorations for all visible editors
-        await updateDecorationsOnTextEditor(vte);
-    }
-
     // Register terminal profile provider (Linux only)
     // Provides custom terminal configurations for COBOL development
     if (process.platform === 'linux') {
         vscode.window.registerTerminalProfileProvider('bitlang.terminals', new VSTerminal(context));
     }
 
-    // Register additional reference provider (duplicate registration for redundancy)
-    // Note: This appears to be a duplicate registration - consider consolidating
-    context.subscriptions.push(languages.registerReferenceProvider(VSExtensionUtils.getAllCobolSelectors(settings, true), new CobolReferenceProvider()));
-
     // Optional startup metadata processing
     // Processes workspace files for metadata cache if enabled in settings
-    if (settings.process_metadata_cache_on_start) {
+    if (FeatureFlags.startMetadataCacheProcessing(settings)) {
         try {
-            if (settings.maintain_metadata_cache) {
-                commands.executeCommand("cobolplugin.processAllFilesInWorkspaceOnStartup");
-            }
+            commands.executeCommand("cobolplugin.processAllFilesInWorkspaceOnStartup");
         } catch {
             // Defensive error handling to prevent activation failure
             // If metadata processing fails, extension should still activate
@@ -1008,10 +459,6 @@ export async function activate(context: ExtensionContext) {
 
     // Display changelog for new versions
     openChangeLog(context);
-
-    // Enable decoration updates now that all providers are registered
-    // This flag prevents premature decoration updates during activation
-    updateDecorationsOnTextEditorEnabled = true;
 
     // Commented out: Future markdown integration for enhanced documentation
     // Would enable syntax highlighting in markdown documents containing COBOL
@@ -1031,7 +478,7 @@ export async function activate(context: ExtensionContext) {
  * @returns Promise that resolves when cleanup is complete
  */
 export async function deactivateAsync(): Promise<void> {
-    VSCOBOLUtils.saveGlobalCacheToWorkspace(VSCOBOLConfiguration.get_workspace_settings());
+    VSCOBOLUtils.saveGlobalCacheToWorkspace(ConfigurationService.getWorkspace());
 }
 
 /**

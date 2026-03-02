@@ -546,9 +546,9 @@ Open `.vscode/launch.json` and select "Extension Tests" configuration, then F5.
 
 - **Test Suite File**: `src/test/suite/tandem-cobol.test.ts`
 - **Test Data Location**: `src/test/Projects/BES/COBOL_Projects/Tandem/`
-- **Source Scanner**: `src/cobolsourcescanner.ts`
-- **File Handler**: `src/filesourcehandler.ts`
-- **Configuration**: `src/iconfiguration.ts`
+- **Source Scanner**: `src/features/workspace/cobolsourcescanner.ts`
+- **File Handler**: `src/features/workspace/filesourcehandler.ts`
+- **Configuration**: `src/config/iconfiguration.ts`
 
 ---
 

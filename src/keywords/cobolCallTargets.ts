@@ -1,4 +1,4 @@
-// import { VSExternalFeatures } from "../vsexternalfeatures";
+// import { VSExternalFeatures } from "../features/runtime/vsexternalfeatures";
 
 export interface IKnownApis {
 	url: string;

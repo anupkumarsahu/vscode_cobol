@@ -1,11 +1,11 @@
 import * as assert from "assert";
 import * as path from "path";
 import * as fs from "fs";
-import { FileSourceHandler } from "../../filesourcehandler";
-import { COBOLSourceScanner, EmptyCOBOLSourceScannerEventHandler } from "../../cobolsourcescanner";
-import { COBOLSettings } from "../../iconfiguration";
-import { VSExternalFeatures } from "../../vsexternalfeatures";
-import { COBOLTokenStyle } from "../../cobolsourcescanner";
+import { FileSourceHandler } from "../../features/workspace/filesourcehandler";
+import { COBOLSourceScanner, EmptyCOBOLSourceScannerEventHandler } from "../../features/workspace/cobolsourcescanner";
+import { COBOLSettings } from "../../config/iconfiguration";
+import { VSExternalFeatures } from "../../features/runtime/vsexternalfeatures";
+import { COBOLTokenStyle } from "../../features/workspace/cobolsourcescanner";
 
 suite("Library Navigation Test Suite", () => {
 	const baseForSource = path.join(__dirname, "../../../src/test/suite/");

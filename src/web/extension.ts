@@ -1,30 +1,25 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { IVSCOBOLSettings, VSCOBOLConfiguration } from "../vsconfiguration";
-import { ICOBOLSettings } from "../iconfiguration";
-import { VSExtensionUtils } from "../vsextutis";
-import { CobolSymbolInformationProvider } from "../vssymbolprovider";
-import { VSExternalFeatures } from "../vsexternalfeatures";
-import { VSCOBOLSourceScanner } from "../vscobolscanner";
-import { vsMarginHandler } from "../vsmargindecorations";
-import { commentUtils } from "../commenter";
-import { VSLogger } from "../vslogger";
-import { COBOLSourceDefinition } from "../vssourcedefinitionprovider";
-import { KeywordAutocompleteCompletionItemProvider } from "../vskeywordprovider";
-import { CobolSourceCompletionItemProvider } from "../vscobolprovider";
-import { VSCOBOLUtils } from "../vscobolutils";
-import { VSSemanticProvider } from "../vssemanticprovider";
-import { ExtensionDefaults } from "../extensionDefaults";
+import { IVSCOBOLSettings, VSCOBOLConfiguration } from "../config/vsconfiguration";
+import { ICOBOLSettings } from "../config/iconfiguration";
+import { VSExtensionUtils } from "../utils/vsextutis";
+import { CobolSymbolInformationProvider, KeywordAutocompleteCompletionItemProvider, CobolSourceCompletionItemProvider } from "../providers/intellisense";
+import { VSExternalFeatures } from "../features/runtime/vsexternalfeatures";
+import { VSCOBOLSourceScanner } from "../features/workspace/vscobolscanner";
+import { vsMarginHandler } from "../features/editor/vsmargindecorations";
+import { commentUtils } from "../features/editor/commenter";
+import { VSLogger } from "../utils/vslogger";
+import { COBOLSourceDefinition, VSCobolRenameProvider, CobolReferenceProvider } from "../providers/navigation";
+import { VSCOBOLUtils } from "../utils/vscobolutils";
+import { VSPPCodeLens, VSSemanticProvider } from "../providers/language";
+import { ExtensionDefaults } from "../config/extensionDefaults";
 import { commands, languages, ProviderResult } from "vscode";
-import { VSCobolRenameProvider } from "../vsrenameprovider";
-import { VSPPCodeLens } from "../vsppcodelens";
-import { activateCommonCommands, checkForExtensionConflicts } from "../vscommon_commands";
-import { VSWorkspaceFolders } from "../vscobolfolders";
-import { VSSourceTreeViewHandler } from "../vssourceviewtree";
-import { VSHelpAndFeedViewHandler } from "../feedbacktree";
-import { VSHoverProvider } from "../vshoverprovider";
-import { CobolReferenceProvider } from "../vsreferenceprovider";
+import { activateCommonCommands, checkForExtensionConflicts } from "../extension/commands/vscommon_commands";
+import { VSWorkspaceFolders } from "../features/workspace/vscobolfolders";
+import { VSSourceTreeViewHandler } from "../features/tree/vssourceviewtree";
+import { VSHelpAndFeedViewHandler } from "../features/tree/vsfeedbacktree";
+import { VSHoverProvider } from "../providers/language";
 
 const URLSearchDirectory: string[] = [];
 let invalidSearchDirectory: string[] = [];

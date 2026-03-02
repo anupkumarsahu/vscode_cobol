@@ -1,10 +1,10 @@
 import * as assert from "assert";
 import * as path from "path";
 import * as fs from "fs";
-import { FileSourceHandler } from "../../filesourcehandler";
-import { COBOLSourceScanner, EmptyCOBOLSourceScannerEventHandler } from "../../cobolsourcescanner";
-import { COBOLSettings } from "../../iconfiguration";
-import { VSExternalFeatures } from "../../vsexternalfeatures";
+import { FileSourceHandler } from "../../features/workspace/filesourcehandler";
+import { COBOLSourceScanner, EmptyCOBOLSourceScannerEventHandler } from "../../features/workspace/cobolsourcescanner";
+import { COBOLSettings } from "../../config/iconfiguration";
+import { VSExternalFeatures } from "../../features/runtime/vsexternalfeatures";
 
 suite("Tandem COBOL Test Suite", () => {
 	const baseForSource = path.join(__dirname, "../../../src/test/Projects/BES/COBOL_Projects/Tandem");
