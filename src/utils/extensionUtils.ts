@@ -6,6 +6,9 @@ export enum TextLanguage {
     COBOL = 1
 }
 
+/**
+ * Utility helpers for language/scheme checks and document selector creation.
+ */
 export class VSExtensionUtils {
 
     public static isSupportedLanguage(document: vscode.TextDocument): TextLanguage {

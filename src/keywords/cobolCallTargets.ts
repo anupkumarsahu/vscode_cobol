@@ -8,6 +8,9 @@ export interface IKnownApis {
 	snippets: Map<string, string[]>;
 }
 
+/**
+ * Describes a known call target and optional hover/snippet metadata.
+ */
 export class CallTarget {
 	public api: string;
 	public url: string;
@@ -32,6 +35,9 @@ export class CallTarget {
 const emptyMap = new Map<string, CallTarget>();
 const callTargets_cobol = new Map<string, CallTarget>();
 
+/**
+ * Language-specific lookup for known API call targets.
+ */
 export class KnownAPIs {
 	// /* inline decl */
 	public static getCallTarget(language: string, api: string): CallTarget | undefined {

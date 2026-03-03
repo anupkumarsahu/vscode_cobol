@@ -2,6 +2,9 @@ import { OutputChannel, window } from "vscode";
 import util from "util";
 import { ICOBOLSettings } from "../config/IConfiguration";
 
+/**
+ * Shared output channel used by COBOL extension logging.
+ */
 export const COBOLOutputChannel: OutputChannel = window.createOutputChannel("COBOL");
 
 export enum LogLevel {
@@ -22,6 +25,9 @@ export enum LogLevelPriority {
     Fatal = 50
 }
 
+/**
+ * Structured logger with level filtering and caller location decoration.
+ */
 export class VSLogger {
     public static readonly logTimeThreshold = 500;
 

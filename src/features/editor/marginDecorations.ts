@@ -28,6 +28,9 @@ const defaultTrailingSpacesDecoration: TextEditorDecorationType = window.createT
     }
 });
 
+/**
+ * Renders left/right margin decorations based on configured COBOL source format.
+ */
 export class VSMarginDecorations extends ColourTagHandler {
 
     private tags = new Map<string, TextEditorDecorationType>();
@@ -37,6 +40,9 @@ export class VSMarginDecorations extends ColourTagHandler {
         this.setupTags();
     }
 
+    /**
+     * Loads user-defined margin tags used for highlighting special columns.
+     */
     public setupTags(): void {
         super.setupTags("columns_tags", this.tags);
     }

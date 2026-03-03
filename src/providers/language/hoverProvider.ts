@@ -15,8 +15,14 @@ const hexRegEx = new RegExp("[xX][\"'][0-9A-Fa-f]*[\"']");
 const wordRegEx = new RegExp("[#0-9a-zA-Z][a-zA-Z0-9-_$]*");
 const variableRegEx = new RegExp("[$#0-9a-zA-Z_][a-zA-Z0-9-_]*");
 
+/**
+ * Provides context-aware hover content for COBOL symbols, APIs, literals, and COPY artifacts.
+ */
 export class VSHoverProvider {
 
+    /**
+     * Builds hover text for COPY ... IN/OF library names by probing nearby files.
+     */
     private static getLibraryHover(document: vscode.TextDocument, libraryName: string, settings: ICOBOLSettings): vscode.Hover | undefined {
         const sourceUri = vscode.Uri.parse(document.uri.toString());
         const sourceDir = path.dirname(sourceUri.fsPath);
@@ -55,6 +61,9 @@ export class VSHoverProvider {
         return new vscode.Hover(`**Library**: ${libraryName}\n\n⚠️ Library file not found in source directory`);
     }
 
+    /**
+     * Builds hover text for a resolved copybook reference, including path and statement context.
+     */
     private static getCopybookHover(document: vscode.TextDocument, copybookName: string, copybookToken: COBOLCopybookToken, settings: ICOBOLSettings): vscode.Hover | undefined {
         let hoverText = `**Copybook**: ${copybookName}\n\n`;
         
@@ -93,6 +102,9 @@ export class VSHoverProvider {
         return new vscode.Hover(hoverText);
     }
 
+    /**
+     * Wraps comment and code snippets into markdown blocks for hover rendering.
+     */
     private static wrapCommentAndCode(comment: string, code: string): string {
         let cleanCode = code;
         if (code.endsWith("\n")) {
@@ -119,6 +131,9 @@ ${cleanCode}
 `;
     }
 
+    /**
+     * Main hover resolver for COBOL documents.
+     */
     public static provideHover(settings: ICOBOLSettings, document: vscode.TextDocument, position: vscode.Position): ProviderResult<vscode.Hover> {
         // Check if hovering over a COPY statement with IN/OF clause
         const line = document.lineAt(position.line).text;
@@ -145,6 +160,7 @@ ${cleanCode}
         }
 
         if (settings.hover_show_known_api !== hoverApi.Off) {
+            // Known API hover can optionally include extended examples depending on mode.
             const txt = document.getText(document.getWordRangeAtPosition(position, wordRegEx));
             const txtTarget: CallTarget | undefined = KnownAPIs.getCallTarget(document.languageId, txt);
             if (txtTarget !== undefined) {

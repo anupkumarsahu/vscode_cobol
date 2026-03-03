@@ -8,6 +8,9 @@ import { ExtensionDefaults } from "./extensionDefaults";
 import { COBOLFileUtils } from "../utils/fileUtils";
 import { VSCOBOLUtils } from "../utils/cobolUtils";
 
+/**
+ * Holds per-workspace resolved settings plus lightweight resource cache metadata.
+ */
 export class WorkspaceSettings {
     public settings: IVSCOBOLSettings;
     public files = new Map<string, Uri>();
@@ -20,6 +23,9 @@ export class WorkspaceSettings {
 }
 const InMemoryCache_Settings: Map<string, WorkspaceSettings> = new Map<string, WorkspaceSettings>();
 
+/**
+ * Wraps access to the extension's root editor configuration section.
+ */
 export class VSCOBOLEditorConfiguration {
 
     public static getEditorConfig(): WorkspaceConfiguration {
@@ -46,6 +52,9 @@ export interface IVSCOBOLSettings extends ICOBOLSettings {
     create_from_document: boolean;
 }
 
+/**
+ * Runtime settings object that extends base defaults with workspace identity.
+ */
 export class VSCOBOLSettings extends COBOLSettings implements IVSCOBOLSettings {
 
     id: number;
@@ -60,6 +69,9 @@ export class VSCOBOLSettings extends COBOLSettings implements IVSCOBOLSettings {
     }
 }
 
+/**
+ * Resolves, caches, and refreshes workspace/resource settings.
+ */
 export class VSCOBOLConfiguration {
     private static _settings: IVSCOBOLSettings = new VSCOBOLSettings(0, false);
 

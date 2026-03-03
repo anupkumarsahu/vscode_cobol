@@ -7,7 +7,7 @@ import { TabUtils } from "../../features/editor/tabStopUtils";
 import { VSLogger } from "../../utils/logger";
 import { AlignStyle, VSCOBOLUtils, FoldAction } from "../../utils/cobolUtils";
 import { commands, ExtensionContext } from "vscode";
-import { VSPPCodeLens } from "../../providers/language";
+import { VSPPCodeLens } from "../../providers/language/preprocessorCodeLensProvider";
 import { ExtensionDefaults } from "../../config/extensionDefaults";
 import { COBOLSourceScanner } from "../../features/workspace/cobolsourcescanner";
 import path from "path";
@@ -16,10 +16,20 @@ import { VSWorkspaceFolders } from "../../features/workspace/workspaceFolders";
 import { VSDiagCommands } from "./diagnosticCommands";
 import { CopyBookDragDropProvider } from "./copybookDragDropProvider";
 import { VSCOBOLConfiguration } from "../../config/workspaceConfiguration";
-import { COBOLHierarchyProvider } from "../../providers/navigation";
+import { COBOLHierarchyProvider } from "../../providers/navigation/callHierarchyProvider";
 import { newFile_dot_callgraph, view_dot_callgraph } from "./dotMarkdownCommands";
 import { VSMakeDep } from "./makeDependencyCommand";
 
+/**
+ * Creates a new untitled COBOL file in the current workspace (or process cwd when no workspace exists).
+ *
+ * Flow:
+ * 1. Prompt for a valid program name.
+ * 2. Validate name using COBOL literal rules.
+ * 3. Prevent accidental overwrite when a matching .cbl file already exists.
+ * 4. Open as an untitled document so users can review/modify before first save.
+ * 5. Force language id to the requested COBOL dialect.
+ */
 async function emptyFile(title: string, doclang: string, config: ICOBOLSettings) {
     let fpath = "";
     let fdir = "";
@@ -66,6 +76,13 @@ async function emptyFile(title: string, doclang: string, config: ICOBOLSettings)
     });
 }
 
+/**
+ * Extensions that are intentionally ignored during conflict detection.
+ *
+ * Notes:
+ * - Prefixes (eg. "vscode.") are treated as trusted namespaces.
+ * - This extension namespace ("bitlang.") is ignored to avoid self-reporting.
+ */
 const blessed_extensions: string[] = [
     "HCLTechnologies.hclappscancodesweep",          // code scanner
     "bitlang.",                                     // mine
@@ -76,6 +93,12 @@ const blessed_extensions: string[] = [
     "redhat."                                       // redhat
 ];
 
+/**
+ * Curated list of known problematic extensions.
+ *
+ * Tuple schema:
+ * [humanReason, extensionIdOrNamespace, isFatalEditorConflict]
+ */
 const known_problem_extensions: [string, string, boolean][] = [
     ["bitlang.cobol already provides autocomplete and highlight for COBOL source code", "BroadcomMFD.cobol-language-support", true],
     ["A control flow extension that is not compatible with this dialect of COBOL", "BroadcomMFD.ccf", true],             // control flow extension
@@ -86,6 +109,12 @@ const known_problem_extensions: [string, string, boolean][] = [
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+/**
+ * Builds a human-readable conflict report section for one extension.
+ *
+ * The message includes actionable uninstall guidance plus optional metadata
+ * (description/version/repository/bug channels) when supplied by the extension.
+ */
 function getExtensionInformation(grab_info_for_ext: vscode.Extension<any>, reasons: string[]): string {
     let dupExtensionMessage = "";
 
@@ -143,6 +172,12 @@ function getExtensionInformation(grab_info_for_ext: vscode.Extension<any>, reaso
 }
 
 
+/**
+ * Scans all installed extensions for known or inferred COBOL conflicts.
+ *
+ * Returns tuple:
+ * [detailedConflictMessage, conflictingDebuggerFound, fatalEditorConflict]
+ */
 function checkExtensions(): [string, boolean, boolean] {
     let dupExtensionMessage = "";
     let conflictingDebuggerFound = false;
@@ -159,6 +194,7 @@ function checkExtensions(): [string, boolean, boolean] {
                     continue;
                 }
 
+                // Ignore trusted namespaces and explicit allow-list entries.
                 for (const blessed_extension of blessed_extensions) {
                     if (blessed_extensions.indexOf(".") !== -1) {
                         if (blessed_extension.toLowerCase() === idLower) {
@@ -175,6 +211,7 @@ function checkExtensions(): [string, boolean, boolean] {
                     continue;
                 }
 
+                // Apply exact/prefix matching against known problem extensions.
                 for (const [type_of_extension, known_problem_extension, editor_confict] of known_problem_extensions) {
                     if (known_problem_extension.indexOf(".") !== -1) {
                         // exact match
@@ -199,7 +236,7 @@ function checkExtensions(): [string, boolean, boolean] {
             }
 
             let extMarkedAsDebugger = false;
-            //categories
+            // Check category tags first, then inspect debugger/breakpoint contributions.
 
             if (ext.packageJSON.categories !== undefined) {
                 const categoriesBody = ext.packageJSON.categories;
@@ -224,7 +261,7 @@ function checkExtensions(): [string, boolean, boolean] {
                 const grammarsBody = ext.packageJSON.contributes.grammars;
                 const languagesBody = ext.packageJSON.contributes.languages;
 
-                // check for unexpected duplicate COBOL language
+                // Detect other extensions registering COBOL grammar ownership.
                 if (grammarsBody !== undefined && grammarsBody instanceof Object) {
                     for (const key in grammarsBody) {
                         try {
@@ -242,7 +279,7 @@ function checkExtensions(): [string, boolean, boolean] {
                     }
                 }
 
-                // check for language id
+                // Detect duplicate COBOL language id contributions.
                 if (languagesBody !== undefined && languagesBody instanceof Object) {
                     for (const key in languagesBody) {
                         const languageElement = languagesBody[key];
@@ -265,23 +302,12 @@ function checkExtensions(): [string, boolean, boolean] {
                 if (extMarkedAsDebugger) {
                     const debuggerBody = ext.packageJSON.contributes.debuggers;
                     const breakpointsBody = ext.packageJSON.contributes.breakpoints;
+                    // A debugger targeting our COBOL language id is treated as a hard conflict.
                     if (debuggerBody !== undefined && debuggerBody instanceof Object) {
                         for (const key in debuggerBody) {
                             try {
                                 const debuggerElement = debuggerBody[key];
                                 if (debuggerElement !== undefined) {
-                                    // if (debuggerElement.enableBreakpointsFor !== undefined) {
-                                    //     if (debuggerElement.enableBreakpointsFor.languageIds !== undefined) {
-                                    //         for (const bpLangidKey in debuggerElement.enableBreakpointsFor.languageIds) {
-                                    //             const languageElement = debuggerElement.enableBreakpointsFor.languageIds[bpLangidKey];
-                                    //             const l = `${languageElement}`;
-                                    //             if (l === ExtensionDefaults.defaultCOBOLLanguage) {
-                                    //                 reason.push("extension includes a debug breakpoint support for a different COBOL vendor");
-                                    //                 conflictingDebuggerFound = true;
-                                    //             }
-                                    //         }
-                                    //     }
-                                    // }
                                     const debuggerLanguages = debuggerElement.languages;
                                     if (debuggerLanguages !== undefined && debuggerLanguages instanceof Object) {
                                         for (const keyLanguage of debuggerLanguages) {
@@ -329,6 +355,15 @@ function checkExtensions(): [string, boolean, boolean] {
     return [dupExtensionMessage, conflictingDebuggerFound, fatalEditorConflict];
 }
 
+/**
+ * Performs conflict checks and applies guard rails when incompatibilities are found.
+ *
+ * Behavior:
+ * - Logs rich diagnostics to the COBOL output channel.
+ * - Optionally downgrades open/new COBOL documents to plaintext when editor conflicts are fatal.
+ * - Presents a modal notification to make the conflict explicit.
+ * - Throws when a conflicting COBOL debugger is detected, forcing this extension inactive.
+ */
 export function checkForExtensionConflicts(settings: ICOBOLSettings, context: ExtensionContext): boolean {
 
     const checkResults = checkExtensions()
@@ -341,6 +376,7 @@ export function checkForExtensionConflicts(settings: ICOBOLSettings, context: Ex
         VSLogger.logMessage(checkForExtensionConflictsMessage);
 
         if (fatalEditorConflict) {
+            // Convert already-open COBOL documents to plaintext to avoid dueling providers.
             for (const veditor of vscode.window.visibleTextEditors) {
                 const doc = veditor.document;
                 if (VSExtensionUtils.isKnownCOBOLLanguageId(settings, doc.languageId)) {
@@ -349,6 +385,7 @@ export function checkForExtensionConflicts(settings: ICOBOLSettings, context: Ex
                 }
             }
 
+            // Keep future opens safe until the conflicting extension is removed.
             const onDidOpenTextDocumentHandler = vscode.workspace.onDidOpenTextDocument(async (doc: vscode.TextDocument) => {
                 if (VSExtensionUtils.isKnownCOBOLLanguageId(settings, doc.languageId)) {
                     VSLogger.logMessage(`Document ${doc.fileName} changed to plaintext to avoid errors, as the COBOL extension is inactive`);
@@ -382,6 +419,7 @@ export function checkForExtensionConflicts(settings: ICOBOLSettings, context: Ex
 
 
 export function activateCommonCommands(context: vscode.ExtensionContext) {
+    // Core language-id normalization command.
     context.subscriptions.push(commands.registerCommand("cobolplugin.change_lang_to_cobol", async function () {
         const act = vscode.window.activeTextEditor;
         if (act === null || act === undefined) {
@@ -423,6 +461,7 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
         await TabUtils.processTabKey(false);
     }));
 
+    // Text transformation commands (comments/format/case) are guarded by language-id checks.
     context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.removeAllComments", () => {
         if (vscode.window.activeTextEditor) {
             const langid = vscode.window.activeTextEditor.document.languageId;
@@ -559,6 +598,7 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
         VSLogger.logChannelSetPreserveFocus(true);
     }));
 
+    // Column resequencing supports configurable start and increment values.
     context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.resequenceColumnNumbers", () => {
         if (vscode.window.activeTextEditor) {
             const langid = vscode.window.activeTextEditor.document.languageId;
@@ -631,6 +671,7 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
         VSCOBOLUtils.padTo72();
     }));
 
+    // Allows users to align VS Code file associations with a selected COBOL dialect.
     context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.enforceFileExtensions", () => {
         if (vscode.window.activeTextEditor) {
             const dialects = ["COBOL"];
@@ -676,6 +717,7 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
         emptyFile("Empty COBOL file", "COBOL", settings);
     }));
 
+    // Snapshot workspace settings once for commands that do not depend on active editor context.
     const _settings = VSCOBOLConfiguration.get_workspace_settings();
 
     context.subscriptions.push(vscode.commands.registerCommand("cobolplugin.dumpAllSymbols", async function () {
@@ -688,6 +730,7 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
 
     const langIds = _settings.valid_cobol_language_ids;
 
+    // Register status items and drag-drop handlers per enabled COBOL dialect.
     for (const langid of langIds) {
         context.subscriptions.push(getLangStatusItem("Output Window", "cobolplugin.showCOBOLChannel", "Show", _settings, langid + "_1", langid));
         context.subscriptions.push(vscode.languages.registerDocumentDropEditProvider(VSExtensionUtils.getAllCobolSelector(langid), new CopyBookDragDropProvider()));
@@ -710,7 +753,8 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
         await view_dot_callgraph(context,settings);
     }));
 
-    if (_settings.enable_program_information) {        
+    // Call hierarchy registration is optional and feature-flag controlled.
+    if (_settings.enable_program_information) {
         install_call_hierarchy(_settings, context)
     }
 }
@@ -718,6 +762,11 @@ export function activateCommonCommands(context: vscode.ExtensionContext) {
 
 let installed_call_hierarchy:boolean = false;
 
+/**
+ * Installs call hierarchy providers once per extension lifecycle.
+ *
+ * This function is idempotent and safe to call repeatedly.
+ */
 export function install_call_hierarchy(_settings:ICOBOLSettings,  context: ExtensionContext) {
     // already installed
     if (installed_call_hierarchy) {
@@ -731,6 +780,9 @@ export function install_call_hierarchy(_settings:ICOBOLSettings,  context: Exten
     installed_call_hierarchy=true;
 }
 
+/**
+ * Creates a language-scoped status item that routes users to a command.
+ */
 function getLangStatusItem(text: string, command: string, title: string, settings: ICOBOLSettings, id: string, langid: string): vscode.LanguageStatusItem {
     const langStatusItem = vscode.languages.createLanguageStatusItem(id, VSExtensionUtils.getAllCobolSelector(langid));
     langStatusItem.text = text;

@@ -5,6 +5,9 @@ import { VSCOBOLConfiguration } from "../../config/workspaceConfiguration";
 import { IAnchorTabInfo, ICOBOLSettings } from "../../config/IConfiguration";
 import { VSExternalFeatures } from "../runtime/externalFeatures";
 
+/**
+ * Implements smart tab/untab behavior using COBOL tabstop and anchor settings.
+ */
 export class TabUtils {
 
     // TODO: Look at move this into a workspace locale area
@@ -49,6 +52,9 @@ export class TabUtils {
         return { anchor: "", tabstops: settings.tabstops, out_of_range_tabstop_size: settings.out_of_range_tabstop_size };
     }
 
+    /**
+     * Applies tab or untab operations for single and multi-line selections.
+     */
     public async executeTab(editor: TextEditor, doc: TextDocument, sel: readonly Selection[], inserting: boolean): Promise<void> {
         const settings = VSCOBOLConfiguration.get_resource_settings(editor.document,VSExternalFeatures);
 
@@ -179,6 +185,9 @@ export class TabUtils {
         return 0;
     }
 
+    /**
+     * Entry point used by commands to process the active editor tab key behavior.
+     */
     public static async processTabKey(inserting: boolean): Promise<void> {
         const editor = window.activeTextEditor;
         if (editor) {

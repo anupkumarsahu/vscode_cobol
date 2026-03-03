@@ -1,6 +1,9 @@
 import { workspace, WorkspaceFolder } from "vscode";
 import { ICOBOLSettings } from "../../config/IConfiguration";
 
+/**
+ * Returns workspace folders in user-configured order and filtered by scheme.
+ */
 export class VSWorkspaceFolders {
     public static get(settings: ICOBOLSettings): ReadonlyArray<WorkspaceFolder> | undefined {
 

@@ -13,6 +13,9 @@ import { VSLogger } from "../../utils/logger";
 import { VSExternalFeatures } from "../runtime/externalFeatures";
 import { cobolSourceScannerInterfaces } from "./ICobolSourceScannerInterfaces";
 
+/**
+ * Resolves COPY/COPY ... IN|OF targets to source locations.
+ */
 export class COBOLCopyBookProvider implements vscode.DefinitionProvider {
 
     private features: IExternalFeatures;
@@ -191,6 +194,9 @@ export class COBOLCopyBookProvider implements vscode.DefinitionProvider {
 
     }
 
+    /**
+     * Expands a logical copybook name into a concrete file path, if available.
+     */
     public static expandLogicalCopyBookOrEmpty(filename: string, inDirectory: string, config: ICOBOLSettings, sourceFilename: string, features: IExternalFeatures): string {
 
         if (config.perfile_copybookdirs.length !== 0) {

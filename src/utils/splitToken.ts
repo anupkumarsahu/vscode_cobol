@@ -1,4 +1,7 @@
 
+/**
+ * Tokenizer for command-style argument strings with quote-aware splitting.
+ */
 export class SplitTokenizer {
 
     private static readonly wordSeperator = "~!@$%^&*()=+[{]}\\|;,<>/?";

@@ -5,11 +5,16 @@ import { ESourceFormat, IExternalFeatures } from "../runtime/IExternalFeatures";
 import { PortResult } from "./directivesConverter";
 import { CallTargetInformation, COBOLCopybookToken, COBOLToken, COBOLVariable, SharedSourceReferences, SQLDeclare } from "./cobolsourcescanner";
 
-
+/**
+ * Sends scanner messages to a host process/thread.
+ */
 export interface cobolSourceScannerInterfacesEventer {
     sendMessage(message: string): void;
 }
 
+/**
+ * Receives scanner lifecycle callbacks during tokenization.
+ */
 export interface cobolSourceScannerInterfacesEvents {
     start(qp: cobolSourceScannerInterfaces): void;
     processToken(token: COBOLToken): void;
@@ -17,6 +22,9 @@ export interface cobolSourceScannerInterfacesEvents {
     finish(): void;
 }
 
+/**
+ * Public shape of a parsed COBOL source document and its indexed symbols.
+ */
 export interface cobolSourceScannerInterfaces{
     id: string;
     readonly sourceHandler: sourceHandlerInterfaces;

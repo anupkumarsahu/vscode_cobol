@@ -10,6 +10,9 @@ import { ICOBOLSettings } from "../../config/IConfiguration";
 import { COBOLFileUtils } from "../../utils/fileUtils";
 import { sourceHandlerInterfaces } from "../workspace/ISourceHandlerInterfaces";
 
+/**
+ * Node-based implementation of extension external feature hooks.
+ */
 export class consoleExternalFeatures implements IExternalFeatures {
     public static readonly Default = new consoleExternalFeatures();
 

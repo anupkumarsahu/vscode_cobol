@@ -14,6 +14,9 @@ export enum TypeCategory {
     EnumId = "E"
 }
 
+/**
+ * Manages global workspace symbol caches for programs, entry points, and types.
+ */
 export class COBOLWorkspaceSymbolCacheHelper {
     private static removeAllProgramSymbols(srcfilename: string, symbolsCache: Map<string, COBOLFileSymbol[]>): void {
         for (const [key] of symbolsCache) {

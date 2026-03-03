@@ -9,6 +9,9 @@ import { ExtensionDefaults } from "../../config/extensionDefaults";
 import { SimpleStringBuilder } from "../../utils/stringUtils";
 import { ICOBOLSettings } from "../../config/IConfiguration";
 
+/**
+ * Source handler backed by on-disk files, including comment extraction and tab expansion.
+ */
 export class fileSourceHandler implements sourceHandlerInterfaces, sourceHandlerInterfacesLite {
     document: string;
     dumpNumbersInAreaA: boolean;

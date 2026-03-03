@@ -6,7 +6,9 @@ import { COBOLFileUtils } from "../../utils/fileUtils";
 import { VSCOBOLConfiguration } from "../../config/workspaceConfiguration";
 import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
 
-
+/**
+ * Handles drag-and-drop of files into COBOL editors and inserts COPY statements.
+ */
 export class CopyBookDragDropProvider implements vscode.DocumentDropEditProvider {
     async provideDocumentDropEdits(document: vscode.TextDocument,
         _position: vscode.Position,
@@ -21,6 +23,9 @@ export class CopyBookDragDropProvider implements vscode.DocumentDropEditProvider
         return snippet ? new vscode.DocumentDropEdit(snippet) : undefined
     }
 
+    /**
+     * Converts a dropped URI list into COPY snippets when the file looks like a copybook.
+     */
     private async tryGetUriListSnippet(document: vscode.TextDocument,
         dataTransfer: vscode.DataTransfer,
         token: vscode.CancellationToken,

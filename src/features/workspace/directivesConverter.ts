@@ -1,5 +1,8 @@
 
 
+/**
+ * Represents a single source-porting suggestion for a directive line.
+ */
 export class PortResult {
     public readonly filename: string;
     public readonly linenum: number;
@@ -76,6 +79,9 @@ export const ibm2mf = [
     [ "NOMAP", "NOXREF"],
 ];
 
+/**
+ * Detects directive patterns and returns portable replacement recommendations.
+ */
 export class SourcePorter {
     private isActive = true;
     private _portsDirectives: PortSwap[] =

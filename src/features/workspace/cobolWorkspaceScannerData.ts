@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
 
+/**
+ * Serializable payload used to pass scanner configuration and workspace state.
+ */
 export class ScanData {
     public sendOnCount = 0;
     public sendOnFileCount = 0;
@@ -25,6 +28,9 @@ export class ScanData {
     public md_makefile_dependancy_fullpath = false;
 }
 
+/**
+ * Runtime counters and timing data produced by scanner execution.
+ */
 export class ScanStats {
     directoriesScanned = 0;
     directoryDepth = 0;
@@ -69,6 +75,9 @@ function reviver(key: any, value: any): any {
     return value;
 }
 
+/**
+ * Utility methods for serializing/deserializing scanner transfer payloads.
+ */
 export class ScanDataHelper {
 
     public static load(fn: string) : ScanData {

@@ -19,6 +19,9 @@ import { MakeDep } from "../../extension/commands/makeDependencies";
 import { IExternalFeatures } from "../runtime/IExternalFeatures";
 import { COBOLCopyBookProvider } from "./openCopybookProvider";
 
+/**
+ * Tracks aggregate scan progress and folder traversal statistics.
+ */
 class FileScanStats {
     directoriesScanned = 0;
     maxDirectoryDepth = 0;
@@ -27,6 +30,9 @@ class FileScanStats {
     directoriesScannedMap: Map<string, Uri> = new Map<string, Uri>();
 }
 
+/**
+ * Coordinates background metadata scans and merges scanner output into caches.
+ */
 export class VScobolWorkspaceScanner {
     public static readonly scannerBinDir = VScobolWorkspaceScanner.getcobolWorkspaceScannerDirectory();
 

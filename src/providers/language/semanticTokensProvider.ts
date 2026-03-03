@@ -12,11 +12,20 @@ const tokenModifiers = ["declaration", "readonly", "deprecated"];
 
 const legend = new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
 
+/**
+ * Builds semantic token streams from scanner reference data.
+ */
 export class VSSemanticProvider {
+    /**
+     * Returns the semantic-token legend used by this provider.
+     */
     public static getLegend(): vscode.SemanticTokensLegend {
         return legend;
     }
 
+    /**
+     * Returns VS Code semantic-token provider wrapper.
+     */
     public static provider(): vscode.DocumentSemanticTokensProvider {
         const provider: vscode.DocumentSemanticTokensProvider = {
             provideDocumentSemanticTokens(
@@ -29,6 +38,9 @@ export class VSSemanticProvider {
         return provider;
     }
 
+    /**
+     * Computes semantic tokens for one document from cached scanner state.
+     */
     private static providerImpl(document: vscode.TextDocument): vscode.ProviderResult<vscode.SemanticTokens> {
         const settings: ICOBOLSettings = VSCOBOLConfiguration.get_resource_settings(document,VSExternalFeatures);
         const tokensBuilder = new vscode.SemanticTokensBuilder(legend);
@@ -42,6 +54,7 @@ export class VSSemanticProvider {
         }
 
         const fid = qcp.sourceFileId;
+        // Highlight section/paragraph call targets as function-like semantic tokens.
         for (const [, sourceRefs] of qcp.sourceReferences.targetReferences) {
             try {
                 for (const sourceRef of sourceRefs) {
@@ -58,6 +71,7 @@ export class VSSemanticProvider {
             }
         }
 
+        // Highlight constants with readonly modifier.
         for (const [, sourceRefs] of qcp.sourceReferences.constantsOrVariablesReferences) {
             //
             for (const sourceRef of sourceRefs) {

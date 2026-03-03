@@ -53,6 +53,9 @@ export enum COBOLTokenStyle {
     Null = "Null"
 }
 
+/**
+ * Scanner text utilities shared by completion and formatting flows.
+ */
 export class SourceScannerUtils {
     public static camelize(text: string): string {
         let ret = "";
@@ -75,6 +78,9 @@ export class SourceScannerUtils {
     }
 }
 
+/**
+ * Canonical token model produced by the COBOL source scanner.
+ */
 export class COBOLToken {
     public ignoreInOutlineView: boolean;
     public readonly filenameAsURI: string;
@@ -153,6 +159,9 @@ export class COBOLToken {
     }
 }
 
+/**
+ * Wraps one variable-like symbol token with linter/outline metadata.
+ */
 export class COBOLVariable {
     public readonly ignoreInOutlineView: boolean;
     public readonly token: COBOLToken;
@@ -165,6 +174,9 @@ export class COBOLVariable {
     }
 }
 
+/**
+ * Represents an EXEC SQL DECLARE cursor token and its references.
+ */
 export class SQLDeclare {
     public readonly ignoreInOutlineView: boolean;
     public readonly token: COBOLToken;
@@ -179,6 +191,9 @@ export class SQLDeclare {
     }
 }
 
+/**
+ * Lightweight in-file reference coordinate used for quick reference operations.
+ */
 export class SourceReference_Via_Length {
     public readonly fileIdentifer: number;
     public readonly line: number;
@@ -203,6 +218,9 @@ export class SourceReference_Via_Length {
     }
 }
 
+/**
+ * Full source span reference used by multi-line constructs (for example EXEC SQL).
+ */
 export class SourceReference {
     public readonly fileIdentifer: number;
     public readonly line: number;
@@ -264,6 +282,7 @@ class StreamTokens {
             this.prevToken = previousToken.currentToken;
             this.prevTokenLineNumber = previousToken.currentLineNumber;
         }
+        // Tokenize once, then compute stable source columns for each token.
         SplitTokenizer.splitArgument(line, lineTokens);
         let rollingColumn = 0;
         for (let c = 0; c < lineTokens.length; c++) {
@@ -392,6 +411,9 @@ class StreamTokens {
     }
 }
 
+/**
+ * Compiled replacement token matcher used by COPY REPLACING support.
+ */
 export class ReplaceToken {
     private readonly replaceToken: string;
     public readonly rex4wordreplace: RegExp;
@@ -414,10 +436,16 @@ export interface IReplaceState {
     isPseudoTextDelimiter: boolean;
 }
 
+/**
+ * Mutable parser state for REPLACE directives.
+ */
 export class ReplaceState implements IReplaceState {
     public isPseudoTextDelimiter = false;
 }
 
+/**
+ * Mutable parser state for COPY/COPY ... IN/OF ... REPLACING processing.
+ */
 export class CopybookState implements IReplaceState {
     public sourceHandler: sourceHandlerInterfaces | undefined = undefined;
     public copyBook = "";
@@ -448,6 +476,9 @@ export class CopybookState implements IReplaceState {
     }
 }
 
+/**
+ * Tracks one COPY token and optional expanded parsing state for that copybook.
+ */
 export class COBOLCopybookToken {
     public readonly token: COBOLToken | undefined;
     public scanComplete: boolean;
@@ -484,6 +515,9 @@ export class COBOLCopybookToken {
     }
 }
 
+/**
+ * Aggregated cross-reference store shared across nested scans and copybook expansion.
+ */
 export class SharedSourceReferences {
     public filenames: string[];
     public filenameURIs: string[];
@@ -599,6 +633,9 @@ export enum UsingState {
     UNKNOWN
 }
 
+/**
+ * Represents one USING/RETURNING style parameter in call-target metadata.
+ */
 export class COBOLParameter {
     readonly using: UsingState;
     readonly name: string;
@@ -609,6 +646,9 @@ export class COBOLParameter {
     }
 }
 
+/**
+ * Mutable scanner parse state while processing one source stream.
+ */
 export class ParseState {
 
     currentToken: COBOLToken | undefined;
@@ -737,6 +777,9 @@ class PreParseState {
     }
 }
 
+/**
+ * Captures callable target metadata for `CALL`/entry-point navigation and completion.
+ */
 export class CallTargetInformation {
 
     public Token: COBOLToken | undefined;
@@ -753,6 +796,9 @@ export class CallTargetInformation {
 }
 
 
+/**
+ * No-op scanner event sink used when callers do not need token callbacks.
+ */
 export class EmptyCOBOLSourceScannerEventHandler implements cobolSourceScannerInterfacesEvents {
 
     static readonly Default = new EmptyCOBOLSourceScannerEventHandler();
@@ -775,6 +821,9 @@ export class EmptyCOBOLSourceScannerEventHandler implements cobolSourceScannerIn
     }
 }
 
+/**
+ * Main COBOL parser/scanner that tokenizes source and builds symbol/reference indexes.
+ */
 export class COBOLSourceScanner implements ICommentCallback, cobolSourceScannerInterfaces, cobolSourceScannerInterfaces {
     public id: string;
     public readonly sourceHandler: sourceHandlerInterfaces;

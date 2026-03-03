@@ -9,6 +9,9 @@ interface BldScriptDefinition extends vscode.TaskDefinition {
 	arguments: string;
 }
 
+/**
+ * Task provider that discovers and runs workspace build scripts (`bld.bat`/`bld.sh`).
+ */
 export class BldScriptTaskProvider implements vscode.TaskProvider {
 	static scriptPlatform = COBOLFileUtils.isWin32 ? "Windows Batch" : "Unix Script";
 
@@ -106,6 +109,9 @@ export class BldScriptTaskProvider implements vscode.TaskProvider {
 	}
 }
 
+/**
+ * Creates the default build task list for a discovered build script.
+ */
 async function getBldScriptTasks(scriptName: string): Promise<vscode.Task[]> {
 	const result: vscode.Task[] = [];
 

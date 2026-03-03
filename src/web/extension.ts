@@ -4,26 +4,34 @@ import * as vscode from "vscode";
 import { IVSCOBOLSettings, VSCOBOLConfiguration } from "../config/workspaceConfiguration";
 import { ICOBOLSettings } from "../config/IConfiguration";
 import { VSExtensionUtils } from "../utils/extensionUtils";
-import { COBOLSymbolInformationProvider, KeywordAutocompleteCompletionItemProvider, COBOLSourceCompletionItemProvider } from "../providers/intellisense";
+import { COBOLSymbolInformationProvider } from "../providers/intellisense/documentSymbolProvider";
+import { KeywordAutocompleteCompletionItemProvider } from "../providers/intellisense/keywordCompletionProvider";
+import { COBOLSourceCompletionItemProvider } from "../providers/intellisense/cobolCompletionProvider";
 import { VSExternalFeatures } from "../features/runtime/externalFeatures";
 import { VSCOBOLSourceScanner } from "../features/workspace/workspaceSymbolScanner";
 import { vsMarginHandler } from "../features/editor/marginDecorations";
 import { CommentUtils } from "../features/editor/commentCommands";
 import { VSLogger } from "../utils/logger";
-import { COBOLSourceDefinition, VSCOBOLRenameProvider, COBOLReferenceProvider } from "../providers/navigation";
+import { COBOLSourceDefinition } from "../providers/navigation/sourceDefinitionProvider";
+import { VSCOBOLRenameProvider } from "../providers/navigation/renameProvider";
+import { COBOLReferenceProvider } from "../providers/navigation/referenceProvider";
 import { VSCOBOLUtils } from "../utils/cobolUtils";
-import { VSPPCodeLens, VSSemanticProvider } from "../providers/language";
+import { VSPPCodeLens } from "../providers/language/preprocessorCodeLensProvider";
+import { VSSemanticProvider } from "../providers/language/semanticTokensProvider";
 import { ExtensionDefaults } from "../config/extensionDefaults";
 import { commands, languages, ProviderResult } from "vscode";
 import { activateCommonCommands, checkForExtensionConflicts } from "../extension/commands/commonCommands";
 import { VSWorkspaceFolders } from "../features/workspace/workspaceFolders";
 import { VSSourceTreeViewHandler } from "../features/tree/sourceViewTree";
 import { VSHelpAndFeedViewHandler } from "../features/tree/feedbackTree";
-import { VSHoverProvider } from "../providers/language";
+import { VSHoverProvider } from "../providers/language/hoverProvider";
 
 const URLSearchDirectory: string[] = [];
 let invalidSearchDirectory: string[] = [];
 
+/**
+ * Logs extension/environment version details to the COBOL output channel.
+ */
 function showExtensionInformation(): void {
     const thisExtension = vscode.extensions.getExtension(ExtensionDefaults.thisExtensionName);
 
@@ -40,6 +48,9 @@ function showExtensionInformation(): void {
     }
 }
 
+/**
+ * Rebuilds copybook search paths and updates startup diagnostics for web mode.
+ */
 async function setupLogChannelAndPaths(hide: boolean, settings: ICOBOLSettings) {
 
     URLSearchDirectory.length = 0;
@@ -135,6 +146,9 @@ async function setupLogChannelAndPaths(hide: boolean, settings: ICOBOLSettings) 
     }
 }
 
+/**
+ * Web extension activation entry point.
+ */
 export async function activate(context: vscode.ExtensionContext) {
     const _settings: IVSCOBOLSettings = VSCOBOLConfiguration.reinitWorkspaceSettings(VSExternalFeatures);
     VSExternalFeatures.setURLCopyBookSearchPath(URLSearchDirectory);
@@ -298,6 +312,9 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
+/**
+ * Web extension deactivation entry point.
+ */
 export function deactivate() {
     //
 }

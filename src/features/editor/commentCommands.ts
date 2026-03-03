@@ -5,6 +5,9 @@ import { ESourceFormat } from "../runtime/IExternalFeatures";
 import { VSCOBOLSourceScanner } from "../../features/workspace/workspaceSymbolScanner";
 import { ICOBOLSettings } from "../../config/IConfiguration";
 
+/**
+ * Provides COBOL-specific line and block comment command helpers.
+ */
 export class CommentUtils {
     private static commentLine(editor: TextEditor, doc: TextDocument, sel: readonly Selection[], format: ESourceFormat) {
         editor.edit(edit => {

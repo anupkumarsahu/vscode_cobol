@@ -10,6 +10,9 @@ import { VScobolWorkspaceScanner } from "../features/workspace/cobolScannerContr
 import { SourceOrFolderTreeItem } from "../features/tree/sourceItem";
 import { VSSourceTreeViewHandler } from "../features/tree/sourceViewTree";
 
+/**
+ * Registers desktop-only commands that require native/workspace capabilities.
+ */
 export function registerDesktopCommands(context: ExtensionContext, settings: ICOBOLSettings): void {
     context.subscriptions.push(commands.registerCommand("cobolplugin.clearGlobalCache", function () {
         VSLogger.logDebug(settings, "Clear global cache command invoked");

@@ -6,9 +6,15 @@ import { outlineFlag } from "../../config/IConfiguration";
 import { VSCOBOLSourceScanner } from "../../features/workspace/workspaceSymbolScanner";
 import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
 
+/**
+ * Maps scanner tokens to VS Code document symbols for the Outline view.
+ */
 export class COBOLSymbolInformationProvider implements vscode.DocumentSymbolProvider {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    /**
+     * Produces flattened symbol information according to configured outline detail level.
+     */
     public async provideDocumentSymbols(document: vscode.TextDocument, canceltoken: vscode.CancellationToken): Promise<vscode.SymbolInformation[]> {
         const symbols: vscode.SymbolInformation[] = [];
         const config = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
@@ -36,6 +42,7 @@ export class COBOLSymbolInformationProvider implements vscode.DocumentSymbolProv
         }
 
         if (outlineLevel === outlineFlag.Skeleton) {
+            // Skeleton mode keeps only top-level program/class/function structure.
             includeVars = false;
             includeSections = false;
             includePara = false;

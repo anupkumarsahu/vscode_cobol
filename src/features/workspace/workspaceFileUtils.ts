@@ -7,6 +7,9 @@ import { Range, TextEditor, Uri, window, workspace, WorkspaceFolder } from "vsco
 import { ICOBOLSettings } from "../../config/IConfiguration";
 import { IExternalFeatures } from "../runtime/IExternalFeatures";
 
+/**
+ * Workspace-oriented file lookup and path conversion helpers.
+ */
 export class VSCOBOLFileUtils {
 
     public static isPathInWorkspace(ddir: string, config: ICOBOLSettings): boolean {

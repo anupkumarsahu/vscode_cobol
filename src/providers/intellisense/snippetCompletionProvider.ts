@@ -1402,6 +1402,9 @@ const isoSnippets: ISimpleSnippet[] = [
 ];
 
 class SnippetHelper {
+    /**
+     * Applies configured keyword-casing rules to each snippet body line.
+     */
     protected foldKeywordLine(texts: string[], languageid: string, settings: ICOBOLSettings): string {
         const sb = [];
         for (const text of texts) {
@@ -1411,6 +1414,9 @@ class SnippetHelper {
         return sb.join(jsonCRLF);
     }
 
+    /**
+     * Creates and stores a completion item for the supplied snippet definition.
+     */
     protected addSnippet(settings: ICOBOLSettings, kind: CompletionItemKind, snippet: ISimpleSnippet, langId: string, targets: Map<string, CompletionItem[]>): void {
         let items = targets.get(snippet.prefix);
         if (items === undefined) {
@@ -1465,6 +1471,9 @@ export class KeywordSnippetProvider extends SnippetHelper {
 
     private keywordTargets = new Map<string, CompletionItem[]>();
 
+    /**
+     * Rebuilds keyword-triggered snippet map from static snippet definitions.
+     */
     public reInitKeyMap(settings: ICOBOLSettings): KeywordSnippetProvider {
         this.keywordTargets.clear();
 
@@ -1474,6 +1483,9 @@ export class KeywordSnippetProvider extends SnippetHelper {
         return this;
     }
 
+    /**
+     * Returns keyword snippets for a specific completion word.
+     */
     public getKeywordSnippet(word: string): CompletionItem[] {
         const snippets: CompletionItem[] = [];
         const targets = this.keywordTargets.get(word.toLowerCase());
@@ -1499,12 +1511,16 @@ export class SnippetCompletionItemProvider extends SnippetHelper implements Comp
     private isoTargets = new Map<string, CompletionItem[]>();
     private wordRegEx = new RegExp("[>$#0-9a-zA-Z][>a-zA-Z0-9-_]*");
 
+    /**
+     * Rebuilds all snippet target maps (CALL APIs, functions, directives, ISO snippets).
+     */
     public reInitCallMap(settings: ICOBOLSettings): SnippetCompletionItemProvider {
         this.allCallTargets.clear();
         this.functionTargets.clear();
         this.dollarTargets.clear();
         this.isoTargets.clear();
 
+        // Seed CALL-target snippets from known API metadata.
         const callMap = KnownAPIs.getCallTargetMap(ExtensionDefaults.defaultCOBOLLanguage);
         for (const [api,] of callMap) {
             const ci = this.getCompletionItemForAPI(settings, ExtensionDefaults.defaultCOBOLLanguage, api);
@@ -1538,6 +1554,9 @@ export class SnippetCompletionItemProvider extends SnippetHelper implements Comp
     }
 
 
+    /**
+     * Returns all configured intrinsic/function snippets as completion items.
+     */
     public getAllFunctions(): CompletionItem[] {
         const snippets: CompletionItem[] = [];
 
@@ -1554,6 +1573,9 @@ export class SnippetCompletionItemProvider extends SnippetHelper implements Comp
 
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    /**
+     * Builds a CALL-snippet completion item for a known external API target.
+     */
     private getCompletionItemForAPI(settings: ICOBOLSettings, langId: string, api: string): CompletionItem | undefined {
         const keyword = "call";
         const ki = KnownAPIs.getCallTarget(langId, api);

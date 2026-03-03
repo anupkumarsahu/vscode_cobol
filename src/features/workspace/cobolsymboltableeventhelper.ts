@@ -6,7 +6,9 @@ import { COBOLWorkspaceSymbolCacheHelper } from "./cobolworkspacecache";
 import { cobolWorkspaceScanner_ADDFILE, cobolWorkspaceScanner_KNOWNCOPYBOOK, cobolWorkspaceScanner_SENDCLASS, cobolWorkspaceScanner_SENDENUM, cobolWorkspaceScanner_SENDEP, cobolWorkspaceScanner_SENDINTERFACE, cobolWorkspaceScanner_SENDPRGID } from "./cobolWorkspaceScannerData";
 import { cobolSourceScannerInterfaces, cobolSourceScannerInterfacesEventer, cobolSourceScannerInterfacesEvents } from "./ICobolSourceScannerInterfaces";
 
-
+/**
+ * Collects scanner token events and updates symbol/cache metadata for a source file.
+ */
 export class COBOLSymbolTableEventHelper implements cobolSourceScannerInterfacesEvents {
     private st: COBOLSymbolTable | undefined;
     private parse_copybooks_for_references: boolean;

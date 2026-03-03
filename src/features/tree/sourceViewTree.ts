@@ -11,6 +11,9 @@ import { VSCOBOLUtils } from "../../utils/cobolUtils";
 let sourceTreeView: SourceViewTree | undefined = undefined;
 let sourceTreeWatcher: vscode.FileSystemWatcher | undefined = undefined;
 
+/**
+ * Manages lifecycle and command actions for the flat source tree view.
+ */
 export class VSSourceTreeViewHandler {
     static async setupSourceViewTree(config: ICOBOLSettings, reinit: boolean): Promise<void> {
 
@@ -52,6 +55,9 @@ export class VSSourceTreeViewHandler {
     }
 }
 
+/**
+ * Builds and refreshes categorized workspace source items for tree rendering.
+ */
 export class SourceViewTree implements vscode.TreeDataProvider<SourceOrFolderTreeItem> {
     private topLevelItems = new Map<string, SourceOrFolderTreeItem>();
 

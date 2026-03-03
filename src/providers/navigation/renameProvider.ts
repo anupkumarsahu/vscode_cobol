@@ -9,11 +9,17 @@ import { cobolSourceScannerInterfaces } from "../../features/workspace/ICobolSou
 
 const wordRegEx = new RegExp("[#0-9a-zA-Z][a-zA-Z0-9-_]*");
 
+/**
+ * Performs symbol-aware rename operations for COBOL data names, targets, and SQL cursors.
+ */
 export class VSCOBOLRenameProvider implements vscode.RenameProvider {
     private current?: cobolSourceScannerInterfaces;
     private currentVersion?: number;
     private sourceRefs?: SharedSourceReferences;
 
+    /**
+     * Builds workspace edits required to rename the symbol at cursor.
+     */
     provideRenameEdits(document: TextDocument, position: Position, newName: string, token: CancellationToken): vscode.ProviderResult<vscode.WorkspaceEdit> {
         const wordRange = document.getWordRangeAtPosition(position, wordRegEx);
         const word = wordRange ? document.getText(wordRange) : "";
@@ -23,7 +29,7 @@ export class VSCOBOLRenameProvider implements vscode.RenameProvider {
 
         const workLower = word.toLowerCase();
         const settings = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
-        // cache current document, so interactive searches can be faster
+        // Cache scanner snapshot for responsive repeated rename requests.
         if (this.current === undefined || this.currentVersion !== document.version) {
             const newCurrent = VSCOBOLSourceScanner.getCachedObject(document, settings);
             if (newCurrent !== undefined) {
@@ -42,6 +48,7 @@ export class VSCOBOLRenameProvider implements vscode.RenameProvider {
         const sourceRefs: SharedSourceReferences = this.sourceRefs;
 
         if (qp.constantsOrVariables.has(workLower)) {
+            // Use a dedupe map so definitions/references at same coordinates are edited once.
             const consMaps = new Map<string, vscode.Range>();
             let safeToRename = true;
             const paraVariables: COBOLVariable[] | undefined = qp.constantsOrVariables.get(workLower);

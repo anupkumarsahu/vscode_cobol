@@ -7,6 +7,9 @@ import { InMemoryGlobalSymbolCache } from "../features/workspace/globalcachehelp
 import { VScobolWorkspaceScanner } from "../features/workspace/cobolScannerController";
 import { VSExternalFeatures } from "../features/runtime/externalFeatures";
 
+/**
+ * Registers commands that trigger workspace-wide metadata scanning.
+ */
 export function registerWorkspaceMetadataCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(commands.registerCommand("cobolplugin.processAllFilesInWorkspace", async () => {
         let settings: ICOBOLSettings;

@@ -9,6 +9,9 @@ const themedIconPath = (name: string): any => {
 	};
 };
 
+/**
+ * Represents either a source file or virtual folder node in source tree views.
+ */
 export class SourceOrFolderTreeItem extends vscode.TreeItem {
     constructor(
         isFile: boolean,

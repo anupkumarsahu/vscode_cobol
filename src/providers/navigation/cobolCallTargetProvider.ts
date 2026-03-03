@@ -7,6 +7,9 @@ import { InMemoryGlobalSymbolCache } from "../../features/workspace/globalcacheh
 import { IExternalFeatures } from "../../features/runtime/IExternalFeatures";
 import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
 
+/**
+ * Resolves CALL/CANCEL/CHAIN targets using global metadata caches.
+ */
 export class COBOLCallTargetProvider implements vscode.DefinitionProvider {
 
     private features: IExternalFeatures;
@@ -15,6 +18,9 @@ export class COBOLCallTargetProvider implements vscode.DefinitionProvider {
         this.features = features;
     }
 
+    /**
+     * Provider entry point for resolving definition targets at cursor.
+     */
     public provideDefinition(document: vscode.TextDocument,
         position: vscode.Position,
         token: vscode.CancellationToken): vscode.ProviderResult<vscode.Definition> {
@@ -25,6 +31,9 @@ export class COBOLCallTargetProvider implements vscode.DefinitionProvider {
     // readonly enableUrlOpenBodge = false;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    /**
+     * Resolves callable definitions from default callables, program ids, and entry points.
+     */
     private resolveDefinitions(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Definition> {
         const locations: vscode.Location[] = [];
         const config = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
@@ -38,6 +47,7 @@ export class COBOLCallTargetProvider implements vscode.DefinitionProvider {
                 const img: COBOLGlobalSymbolTable = InMemoryGlobalSymbolCache;
                 const wordLower = word.toLowerCase();
 
+                // Prefer default-callable mapping first, then explicit symbol lists.
                 if (img.defaultCallableSymbols.has(wordLower)) {
                     const fullfileName = img.defaultCallableSymbols.get(wordLower);
                     if (fullfileName !== undefined) {

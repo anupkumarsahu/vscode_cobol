@@ -1,6 +1,9 @@
 import { workspace } from "vscode";
 import { ICOBOLSettings } from "./IConfiguration";
 
+/**
+ * Groups feature toggles derived from user settings and workspace trust.
+ */
 export class FeatureFlags {
     public static useCobolLineComment(settings: ICOBOLSettings): boolean {
         return settings.line_comment;

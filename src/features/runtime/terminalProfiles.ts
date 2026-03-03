@@ -74,6 +74,9 @@ export function runSync(cmd: string, suppressError = false, processEncoding: "ut
     return result;
 }
 
+/**
+ * Resolves the optional shell rc file used by the COBOL terminal profile.
+ */
 function getDOTFILE_RC(currentContext: vscode.ExtensionContext): string {
     const thisExtension = vscode.extensions.getExtension(ExtensionDefaults.thisExtensionName);
     if (thisExtension !== undefined) {
@@ -87,6 +90,9 @@ function getDOTFILE_RC(currentContext: vscode.ExtensionContext): string {
     return "";
 }
 
+/**
+ * Terminal profile provider that launches a COBOL-focused bash environment.
+ */
 export class VSTerminal implements vscode.TerminalProfileProvider {
     
     private context:vscode.ExtensionContext;

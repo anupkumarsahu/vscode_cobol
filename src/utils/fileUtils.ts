@@ -3,6 +3,9 @@ import { ICOBOLSettings } from "../config/IConfiguration";
 import path from "path";
 import { IExternalFeatures } from "../features/runtime/IExternalFeatures";
 
+/**
+ * File/path helpers used by scanners, copybook resolution, and command workflows.
+ */
 export class COBOLFileUtils {
     static readonly isWin32 = process.platform === "win32";
 

@@ -4,6 +4,9 @@
 
 import { COBOLFileUtils } from "../../utils/fileUtils";
 
+/**
+ * Stores workspace-level source file timestamp and short-name metadata.
+ */
 export class COBOLWorkspaceFile {
     lastModifiedTime:BigInt;
     workspaceFilename: string;
@@ -14,6 +17,9 @@ export class COBOLWorkspaceFile {
     }
 }
 
+/**
+ * Global in-memory symbol cache shared across navigation and scanning features.
+ */
 export class COBOLGlobalSymbolTable {
     public defaultCallableSymbols = new Map<string,string>();
     public defaultCopybooks = new Map<string,string>();
@@ -36,6 +42,9 @@ export class COBOLGlobalSymbolTable {
     }
 }
 
+/**
+ * Per-file symbol container produced while scanning a COBOL source file.
+ */
 export class COBOLSymbolTable {
     public lastModifiedTime:BigInt = BigInt("0");
     public fileName = "";
@@ -54,6 +63,9 @@ export class COBOLSymbolTable {
     }
 }
 
+/**
+ * Symbol reference containing filename and source line metadata.
+ */
 export class COBOLFileSymbol {
     public readonly filename: string;
     public linenum: number;
@@ -73,6 +85,9 @@ export class COBOLFileSymbol {
     }
 }
 
+/**
+ * Simple symbol name and line pair used by lightweight caches.
+ */
 export class COBOLSymbol {
     public symbol: string | undefined;
     public lnum: number | undefined;
@@ -87,6 +102,9 @@ export class COBOLSymbol {
     }
 }
 
+/**
+ * Symbol reference including line and starting column coordinates.
+ */
 export class COBOLFileAndColumnSymbol {
     public filename: string;
     public lnum: number;

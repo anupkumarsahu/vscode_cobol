@@ -2,10 +2,16 @@
 import { ESourceFormat } from "../runtime/IExternalFeatures";
 import { ICOBOLSettings } from "../../config/IConfiguration";
 
+/**
+ * Callback contract for scanners consuming detected source comments.
+ */
 export interface ICommentCallback {
     processComment(config: ICOBOLSettings, sourceHandler: sourceHandlerInterfacesLite, commentLine: string, sourceFilename: string, sourceLineNumber:number, startPos: number, format: ESourceFormat) : void;
 }
 
+/**
+ * Describes a comment span in source coordinates.
+ */
 export class CommentRange {
     public startLine: number;
     public startColumn: number;
@@ -20,6 +26,9 @@ export class CommentRange {
     }
 }
 
+/**
+ * Lightweight read-only source access used by format and pre-scan logic.
+ */
 export interface sourceHandlerInterfacesLite {
     getLineCount(): number;
     getLanguageId():string;
@@ -29,6 +38,9 @@ export interface sourceHandlerInterfacesLite {
     getCommentAtLine(lineNumber: number):string;
 }
 
+/**
+ * Full source access contract used by the COBOL scanner.
+ */
 export interface sourceHandlerInterfaces {
     getUriAsString(): string;
     getLineCount(): number;

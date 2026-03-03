@@ -12,6 +12,9 @@ import { VSExternalFeatures } from "../runtime/externalFeatures";
 import { VSCOBOLFileUtils } from "./workspaceFileUtils";
 import { ICOBOLSettings } from "../../config/IConfiguration";
 
+/**
+ * Lightweight source adapter over a VS Code text document.
+ */
 export class VSCodeSourceHandlerLite implements sourceHandlerInterfacesLite {
     document: vscode.TextDocument | undefined;
     lineCount: number;
@@ -88,6 +91,9 @@ export class VSCodeSourceHandlerLite implements sourceHandlerInterfacesLite {
     }
 }
 
+/**
+ * Full VS Code document source handler used by the interactive scanner pipeline.
+ */
 export class VSCodeSourceHandler implements sourceHandlerInterfaces, sourceHandlerInterfacesLite {
     commentCount: number;
     document: vscode.TextDocument | undefined;

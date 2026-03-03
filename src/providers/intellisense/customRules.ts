@@ -1,5 +1,8 @@
 import { ICOBOLSettings, intellisenseStyle } from "../../config/IConfiguration";
 
+/**
+ * Resolves per-key IntelliSense casing overrides from user configuration.
+ */
 export class VSCustomIntellisenseRules {
     public static Default: VSCustomIntellisenseRules = new VSCustomIntellisenseRules();
 
@@ -10,6 +13,9 @@ export class VSCustomIntellisenseRules {
         VSCustomIntellisenseRules.Default = this;
     }
 
+    /**
+     * Rebuilds exact-match and prefix-match casing rules from settings.
+     */
     public reFreshConfiguration(settings: ICOBOLSettings) {
         this.customRule.clear();
         for (const ruleString of settings.custom_intellisense_rules) {
@@ -18,6 +24,7 @@ export class VSCustomIntellisenseRules {
                 const key = ruleString.substring(0, colonPos);
                 const kRule = ruleString.charAt(1 + colonPos);
                 let rule = intellisenseStyle.Unchanged;
+                // Compact rule syntax: u/l/c/= maps to casing behavior.
                 switch (kRule) {
                     case "u": rule = intellisenseStyle.UpperCase; break;
                     case "l": rule = intellisenseStyle.LowerCase; break;
@@ -34,6 +41,9 @@ export class VSCustomIntellisenseRules {
         }
     }
 
+    /**
+     * Returns the configured style for a completion key, falling back to default style.
+     */
     public findCustomIStyle(settings: ICOBOLSettings, key: string, defaultStyle: intellisenseStyle): intellisenseStyle {
         this.reFreshConfiguration(settings);
         const keyLower = key.toLowerCase();

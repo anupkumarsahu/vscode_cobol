@@ -1,3 +1,6 @@
+/**
+ * Minimal mutable string accumulator used in scanner and formatting paths.
+ */
 export class SimpleStringBuilder {
     public Values: string[] = [];
 

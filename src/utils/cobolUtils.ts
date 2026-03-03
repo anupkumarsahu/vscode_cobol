@@ -35,6 +35,9 @@ export enum AlignStyle {
     Right = 4
 }
 
+/**
+ * High-level COBOL workflow helpers for commands, cache management, and edits.
+ */
 export class VSCOBOLUtils {
     private static getProgramGlobPattern(config: ICOBOLSettings): string {
         let globString = config.maintain_metadata_recursive_search ? "**/*.{" : "*.{";

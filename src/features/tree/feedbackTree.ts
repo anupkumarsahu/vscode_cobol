@@ -2,6 +2,9 @@
 import * as vscode from "vscode";
 import { ICOBOLSettings } from "../../config/IConfiguration";
 
+/**
+ * Wires tree view actions for help, docs, issues, and community links.
+ */
 export class VSHelpAndFeedViewHandler {
     public static openUrl(url: string) {
         vscode.commands.executeCommand("vscode.open", url);
@@ -68,6 +71,9 @@ enum FeedBackItem {
     introToOO = "Introduction to OO Programming"
 }
 
+/**
+ * Tree data provider for static help and feedback actions.
+ */
 export class HelpAndFeedbackTree implements vscode.TreeDataProvider<FeedBackItem> {
     ALL_FEEDBACK_ITEMS = [
         FeedBackItem.getStarted,

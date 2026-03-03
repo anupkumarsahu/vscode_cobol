@@ -9,8 +9,14 @@ import { VSCOBOLConfiguration } from "../../config/workspaceConfiguration";
 import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
 import { cobolSourceScannerInterfaces } from "../../features/workspace/ICobolSourceScannerInterfaces";
 
+/**
+ * Applies on-type keyword/identifier case normalization for COBOL lines.
+ */
 export class COBOLcaseFormatter {
 
+    /**
+     * Converts one line using configured casing rules for keywords, identifiers, and targets.
+     */
     private convertLine(settings: ICOBOLSettings, line: string, current: cobolSourceScannerInterfaces, foldConstantToUpper: boolean, langid: string) {
         const oldText = line;
         const defaultStyle = settings.intellisense_style;
@@ -20,6 +26,9 @@ export class COBOLcaseFormatter {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    /**
+     * Handles newline-triggered formatting edits.
+     */
     public provideOnTypeFormattingEdits(document: TextDocument, position: Position, ch: string, options: FormattingOptions, token: CancellationToken): TextEdit[]|undefined {
 
         // only do something if we are just pressed RETURN
@@ -35,6 +44,7 @@ export class COBOLcaseFormatter {
 
         const langid = document.languageId;
         const config = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
+        // Reuse scanner cache so formatting can classify tokens quickly.
         const current: cobolSourceScannerInterfaces | undefined = VSCOBOLSourceScanner.getCachedObject(document,config);
         if (current === undefined) {
             return;

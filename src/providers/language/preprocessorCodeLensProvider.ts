@@ -8,6 +8,9 @@ import { ExtensionDefaults } from "../../config/extensionDefaults";
 import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
 import { cobolSourceScannerInterfaces } from "../../features/workspace/ICobolSourceScannerInterfaces";
 
+/**
+ * Provides CodeLens entries for references and COPY-replacing previews.
+ */
 export class VSPPCodeLens implements vscode.CodeLensProvider {
     private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
@@ -20,6 +23,9 @@ export class VSPPCodeLens implements vscode.CodeLensProvider {
         });
     }
 
+    /**
+     * Adds section/paragraph reference lenses for a specific target token.
+     */
     private scanTargetUse(settings: ICOBOLSettings, document: vscode.TextDocument, lens: vscode.CodeLens[], current: cobolSourceScannerInterfaces, target: string, targetToken: COBOLToken) {
         // not interested
         if (targetToken.isFromScanCommentsForReferences || targetToken.ignoreInOutlineView) {
@@ -53,6 +59,9 @@ export class VSPPCodeLens implements vscode.CodeLensProvider {
         }
     }
 
+    /**
+     * Builds CodeLens items based on enabled feature flags and scanner metadata.
+     */
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens[]> {
         const lens: vscode.CodeLens[] = [];
 
@@ -152,6 +161,7 @@ export class VSPPCodeLens implements vscode.CodeLensProvider {
                         }
 
                         if (src.length !== 0) {
+                            // Present expanded source in a temp document for quick visual verification.
                             const arg = `*> Caution: This is an approximation\n*> Original file: ${cbInfo.statementInformation.fileName}\n${src}`;
 
                             cl.command = {

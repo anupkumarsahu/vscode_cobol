@@ -7,6 +7,9 @@ import { KeywordSnippetProvider, SnippetCompletionItemProvider } from "./snippet
 import { VSCustomIntellisenseRules } from "./customRules";
 import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
 
+/**
+ * Provides COBOL keyword completions with configurable casing and snippet chaining.
+ */
 export class KeywordAutocompleteCompletionItemProvider implements CompletionItemProvider {
 	private isCOBOL: boolean;
 
@@ -26,6 +29,9 @@ export class KeywordAutocompleteCompletionItemProvider implements CompletionItem
 		}
 	}
 
+	/**
+	 * Refreshes keyword-space insertion preferences from workspace settings.
+	 */
 	public reFreshConfiguration(settings: ICOBOLSettings) {
 		this.includeExtraSpaceKeywords.clear();
 		for (const kwNoSpace of settings.intellisense_add_space_keywords) {
@@ -33,6 +39,9 @@ export class KeywordAutocompleteCompletionItemProvider implements CompletionItem
 		}
 	}
 
+	/**
+	 * Returns keyword/snippet completion candidates for the current prefix.
+	 */
 	private getKeywordsGivenPartialWord(iconfig: ICOBOLSettings, wordToComplete: string, limit: number, langid: string): CompletionItem[] {
 		if (wordToComplete.length === 0) {
 			return [];
@@ -96,6 +105,7 @@ export class KeywordAutocompleteCompletionItemProvider implements CompletionItem
 				ci.detail = `COBOL keyword ${uniqueRetKey}`;
 				items.push(ci);
 				if (keywordSnippets.length > 1 || keyLower === "call" || keyLower === "function") {
+					// Re-trigger suggestions so keyword snippets appear immediately after keyword selection.
 					ci.command = { command: "editor.action.triggerSuggest", title: "Re-trigger completions..." };
 				}
 			}
@@ -118,6 +128,9 @@ export class KeywordAutocompleteCompletionItemProvider implements CompletionItem
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	/**
+	 * Entry point for VS Code completion requests in COBOL documents.
+	 */
 	public provideCompletionItems(document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
 		let wordToComplete = "";
 		let lineBefore = "";

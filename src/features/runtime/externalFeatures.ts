@@ -13,6 +13,9 @@ import { FileType, Uri, workspace } from "vscode";
 import { IVSCOBOLSettings } from "../../config/workspaceConfiguration";
 import { sourceHandlerInterfaces } from "../workspace/ISourceHandlerInterfaces";
 
+/**
+ * VS Code host implementation of external feature hooks used by scanners/providers.
+ */
 class VSExternalFeaturesImpl implements IExternalFeatures {
 
     public logMessage(message: string): void {

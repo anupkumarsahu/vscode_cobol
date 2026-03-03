@@ -5,9 +5,15 @@ import { VSExternalFeatures } from '../../features/runtime/externalFeatures';
 import { VSCOBOLSourceScanner } from '../../features/workspace/workspaceSymbolScanner';
 import { cobolSourceScannerInterfaces } from '../../features/workspace/ICobolSourceScannerInterfaces';
 
+/**
+ * Implements incoming/outgoing call hierarchy for COBOL sections and paragraphs.
+ */
 export class COBOLHierarchyProvider implements vscode.CallHierarchyProvider {
     private current: cobolSourceScannerInterfaces | undefined
 
+    /**
+     * Resolves the hierarchy root item at the current cursor position.
+     */
     prepareCallHierarchy(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CallHierarchyItem | vscode.CallHierarchyItem[]> {
         let range = document.getWordRangeAtPosition(position);
         if (range) {
@@ -23,6 +29,7 @@ export class COBOLHierarchyProvider implements vscode.CallHierarchyProvider {
             if (this.current !== undefined) {
                 const sourceRefs: SharedSourceReferences = this.current.sourceReferences;
                 if (sourceRefs.targetReferences.has(word.toLowerCase()) === false) {
+                    // Fallback to nearest section/paragraph so hierarchy still works off target tokens.
                     const foundToken = this.current.findNearestSectionOrParagraph(position.line);
                     if (foundToken !== undefined) {
                         word = foundToken.tokenNameLower;
@@ -44,6 +51,9 @@ export class COBOLHierarchyProvider implements vscode.CallHierarchyProvider {
         return undefined;
     }
 
+    /**
+     * Returns incoming call edges for the selected hierarchy item.
+     */
     provideCallHierarchyIncomingCalls(item: vscode.CallHierarchyItem, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CallHierarchyIncomingCall[]> {
         let results: vscode.CallHierarchyIncomingCall[] = []
 
@@ -91,6 +101,9 @@ export class COBOLHierarchyProvider implements vscode.CallHierarchyProvider {
         return undefined;
     }
 
+    /**
+     * Returns outgoing call edges for the selected hierarchy item.
+     */
     provideCallHierarchyOutgoingCalls(item: vscode.CallHierarchyItem, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CallHierarchyOutgoingCall[]> {
 
         let results: vscode.CallHierarchyOutgoingCall[] =   []

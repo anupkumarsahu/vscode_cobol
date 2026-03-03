@@ -3,8 +3,14 @@ import * as path from "path";
 
 import { COBOLGlobalSymbolTable, COBOLWorkspaceFile } from "./cobolglobalcache";
 
+/**
+ * Global singleton containing workspace-wide symbol metadata.
+ */
 export const InMemoryGlobalSymbolCache = new COBOLGlobalSymbolTable();
 
+/**
+ * Helper methods for updating shared in-memory cache collections.
+ */
 export class InMemoryGlobalCacheHelper {
 
     public static getFilenameWithoutPath(fullPath: string): string {

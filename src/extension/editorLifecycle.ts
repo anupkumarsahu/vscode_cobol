@@ -10,6 +10,9 @@ import { colourCommentHandler } from "../features/editor/colorComments";
 import { VSWorkspaceFolders } from "../features/workspace/workspaceFolders";
 import { VSCOBOLUtils } from "../utils/cobolUtils";
 
+/**
+ * Coordinates editor events, scanner cache updates, decorations, and lint refresh.
+ */
 export class EditorLifecycleManager {
     private activeEditor: vscode.TextEditor | undefined;
     private updateDecorationsOnTextEditorEnabled = false;

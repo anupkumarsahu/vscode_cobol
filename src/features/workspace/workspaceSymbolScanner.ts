@@ -17,6 +17,9 @@ const InMemoryCache_SourceScanner: Map<string, cobolSourceScannerInterfaces> = n
 
 const InProgress: Map<string, number> = new Map<string, number>();
 
+/**
+ * Event bridge that updates global symbol caches during interactive scans.
+ */
 export class COBOLSymbolTableGlobalEventHelper implements cobolSourceScannerInterfacesEvents {
     private st: COBOLSymbolTable | undefined;
     private config: ICOBOLSettings;
@@ -89,6 +92,9 @@ export class COBOLSymbolTableGlobalEventHelper implements cobolSourceScannerInte
     }
 }
 
+/**
+ * Central in-memory scanner cache for VS Code documents.
+ */
 export class VSCOBOLSourceScanner {
     public static removeCachedObject(document: TextDocument, config: ICOBOLSettings): void {
         if (config.enable_source_scanner === false) {

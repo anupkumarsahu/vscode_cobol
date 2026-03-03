@@ -69,6 +69,9 @@ class Utils {
     }
 }
 
+/**
+ * Sends scanner progress and symbol events back to the parent process.
+ */
 class ProcessSender implements cobolSourceScannerInterfacesEventer {
     public static Default = new ProcessSender();
 
@@ -79,6 +82,9 @@ class ProcessSender implements cobolSourceScannerInterfacesEventer {
     }
 }
 
+/**
+ * Standalone scanner runtime used by child processes and worker threads.
+ */
 export class Scanner {
     public static transferScanDataToGlobals(scanData: ScanData, features: IExternalFeatures): void {
         features.setWorkspaceFolders(scanData.workspaceFolders);

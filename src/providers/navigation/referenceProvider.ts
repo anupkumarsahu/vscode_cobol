@@ -8,7 +8,13 @@ import { cobolSourceScannerInterfaces } from "../../features/workspace/ICobolSou
 
 const wordRegEx = new RegExp("[#0-9a-zA-Z][a-zA-Z0-9-_]*");
 
+/**
+ * Provides cross-reference locations for COBOL symbols using scanner metadata.
+ */
 export class COBOLReferenceProvider implements vscode.ReferenceProvider {
+    /**
+     * Starts a reference search for the symbol at the current position.
+     */
     public provideReferences(
         document: vscode.TextDocument, position: vscode.Position,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -23,6 +29,9 @@ export class COBOLReferenceProvider implements vscode.ReferenceProvider {
     private currentVersion?: number;
     private sourceRefs?: SharedSourceReferences;
 
+    /**
+     * Resolves references from sections/paragraphs, variables, and EXEC SQL cursors.
+     */
     private processSearch(
         document: vscode.TextDocument,
         position: vscode.Position): Thenable<vscode.Location[] | null> {
@@ -35,7 +44,7 @@ export class COBOLReferenceProvider implements vscode.ReferenceProvider {
 
         const wordLower = word.toLowerCase();
         const settings = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
-        // cache current document, so interactive searches can be faster
+        // Cache scanner snapshot for responsive repeated lookups during interactive navigation.
         if (this.current === undefined || this.currentVersion !== document.version) {
             const newCurrent = VSCOBOLSourceScanner.getCachedObject(document, settings);
             if (newCurrent !== undefined) {

@@ -13,9 +13,15 @@ import { VSCOBOLConfiguration, VSCOBOLEditorConfiguration } from "../../config/w
 import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
 import { cobolSourceScannerInterfaces } from "../../features/workspace/ICobolSourceScannerInterfaces";
 
+/**
+ * Supplies COBOL linter quick-fix actions (ignore directives, porting fixes, copybook discovery).
+ */
 export class cobolLinterActionFixer implements CodeActionProvider {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    /**
+     * Builds quick-fix commands for diagnostics emitted by COBOL linter rules.
+     */
     provideCodeActions(document: vscode.TextDocument, range: vscode.Range | vscode.Selection, context: vscode.CodeActionContext, token: vscode.CancellationToken): vscode.ProviderResult<(vscode.Command | vscode.CodeAction)[]> {
         const codeActions: CodeAction[] = [];
         for (const diagnostic of context.diagnostics) {
@@ -85,6 +91,9 @@ export class cobolLinterActionFixer implements CodeActionProvider {
         return codeActions;
     }
 
+    /**
+     * Inserts an inline linter-ignore comment at the requested document offset.
+     */
     public async insertIgnoreCommentLine(docUri: vscode.Uri, offset: number, code: string): Promise<void> {
         await vscode.window.showTextDocument(docUri);
         const w = vscode.window.activeTextEditor;
@@ -97,6 +106,9 @@ export class cobolLinterActionFixer implements CodeActionProvider {
         }
     }
 
+    /**
+     * Replaces one line with a generated source-porting suggestion.
+     */
     public async portCodeCommandLine(docUri: vscode.Uri, lineNumber: number, code: string): Promise<void> {
         await vscode.window.showTextDocument(docUri);
         const w = vscode.window.activeTextEditor;
@@ -119,6 +131,9 @@ export class cobolLinterActionFixer implements CodeActionProvider {
     );
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    /**
+     * Searches workspace and configured locations for a missing copybook and updates settings.
+     */
     public async findCopyBookDirectory(settings: ICOBOLSettings, docUri: vscode.Uri, linenum: number, copybook: string) {
         let files: vscode.Uri[] = [];
         const fileSearchDirectory = settings.config_copybookdirs;
@@ -141,6 +156,7 @@ export class cobolLinterActionFixer implements CodeActionProvider {
             }
         }
 
+        // First try direct filename search; fallback to extension-aware glob next.
         files = await vscode.workspace.findFiles(`**/${copybook}`);
         if (files.length === 0) {
             const globPattern = VSCOBOLUtils.getCopyBookGlobPatternForPartialName(settings, copybook);
@@ -193,6 +209,9 @@ export class cobolLinterProvider {
         this.collection = collection;
     }
 
+    /**
+     * Recomputes diagnostics for a COBOL document and pushes them into the diagnostic collection.
+     */
     public async updateLinter(document: vscode.TextDocument): Promise<void> {
         const settings = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
         const linterSev: vscode.DiagnosticSeverity = settings.linter_mark_as_information ? vscode.DiagnosticSeverity.Information : vscode.DiagnosticSeverity.Hint;
@@ -212,6 +231,7 @@ export class cobolLinterProvider {
             return;
         }
 
+        // Diagnostics are accumulated per file then committed as a batch.
         const diagRefs = new Map<string, vscode.Diagnostic[]>();
         this.collection.clear();
 
@@ -301,6 +321,9 @@ export class cobolLinterProvider {
         }
     }
 
+    /**
+     * Applies configured house-standard naming rules to parsed data items.
+     */
     private processParsedDocumentForStandards(qp: cobolSourceScannerInterfaces, diagRefs: Map<string, vscode.Diagnostic[]>, linterSev: vscode.DiagnosticSeverity) {
 
         if (this.sourceRefs === undefined) {

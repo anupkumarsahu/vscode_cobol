@@ -887,6 +887,9 @@ for (const key of cobolRegisters) {
 	}
 }
 
+/**
+ * Returns the keyword dictionary for the requested COBOL dialect identifier.
+ */
 export function getCOBOLKeywordDictionary(dialect: string): Map<string, string> {
 	switch(dialect) {
 		case "" : return KeywordDictionaryMap;
@@ -894,6 +897,9 @@ export function getCOBOLKeywordDictionary(dialect: string): Map<string, string> 
 	}
 }
 
+/**
+ * Returns the keyword completion list for the requested COBOL dialect identifier.
+ */
 export function getCOBOLKeywordList(dialect: string): string[] {
 	switch(dialect) {
 		case "" : return List;

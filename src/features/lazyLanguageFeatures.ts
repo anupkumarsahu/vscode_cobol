@@ -1,8 +1,12 @@
 import * as vscode from "vscode";
 import { ICOBOLSettings } from "../config/IConfiguration";
 import { VSExtensionUtils } from "../utils/extensionUtils";
-import { VSPPCodeLens, VSSemanticProvider } from "../providers/language";
+import { VSPPCodeLens } from "../providers/language/preprocessorCodeLensProvider";
+import { VSSemanticProvider } from "../providers/language/semanticTokensProvider";
 
+/**
+ * Lazily registers semantic tokens and code lens providers after COBOL activation.
+ */
 export class LazyLanguageFeatures {
     private semanticRegistered = false;
     private codeLensRegistered = false;
@@ -10,6 +14,9 @@ export class LazyLanguageFeatures {
     constructor(private readonly context: vscode.ExtensionContext) {
     }
 
+    /**
+     * Registers language providers once for the current extension session.
+     */
     public registerIfNeeded(settings: ICOBOLSettings): void {
         if (!this.semanticRegistered) {
             const provider = VSSemanticProvider.provider();
@@ -35,6 +42,9 @@ export class LazyLanguageFeatures {
         }
     }
 
+    /**
+     * Hooks editor/document events and registers providers when a COBOL file is opened.
+     */
     public bindDocumentActivation(settings: ICOBOLSettings): void {
         const maybeRegister = (document: vscode.TextDocument | undefined) => {
             if (!document) {

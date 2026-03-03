@@ -5,6 +5,12 @@ import { COBOLToken, COBOLTokenStyle, ParseState, SourceReference_Via_Length } f
 import { cobolSourceScannerInterfaces } from "../../features/workspace/ICobolSourceScannerInterfaces";
 var fs = require('fs');
 
+/**
+ * Tracks per-source-file call-graph view preferences and scanner state.
+ *
+ * Each source URI gets one cached instance so orientation/style choices can
+ * persist as users refresh or reopen the graph panel.
+ */
 class ProgramWindowState {
     current_style: string;
     current_program: cobolSourceScannerInterfaces;
@@ -16,6 +22,9 @@ class ProgramWindowState {
 
     static current_style_map = new Map<string, ProgramWindowState>();
 
+    /**
+     * Returns an existing state object for the URI or creates a new default one.
+     */
     static getProgramWindowState(url: string, current_program: cobolSourceScannerInterfaces): ProgramWindowState {
         let value = ProgramWindowState.current_style_map.get(url)
         if (value !== undefined) {
@@ -28,6 +37,9 @@ class ProgramWindowState {
     }
 }
 
+/**
+ * Appends graph nodes/edges for sections or paragraphs and optional click actions.
+ */
 function generate_partial_graph(linesArray: string[], clickLines: string[], state: ParseState, para_or_section: Map<string, COBOLToken>) {
     for (const [paragraph, targetToken] of para_or_section) {
         const wordLower = paragraph.toLowerCase();
@@ -40,6 +52,7 @@ function generate_partial_graph(linesArray: string[], clickLines: string[], stat
                 linesArray.push(`${targetToken.tokenNameLower}[${targetToken.description}]`);
             }
 
+            // Build edges first, then deduplicate to avoid duplicate Mermaid lines.
             let tempLines:string[] = [];
             for (const sr of targetRefs) {
                 // skip definition
@@ -64,6 +77,14 @@ function generate_partial_graph(linesArray: string[], clickLines: string[], stat
     }
 }
 
+/**
+ * Webview controller for interactive Mermaid call graph rendering.
+ *
+ * Responsibilities:
+ * - Create/reuse panel instance
+ * - Build secure HTML with local resources
+ * - Handle panel disposal and resource cleanup
+ */
 export class DotGraphPanelView {
     public static currentPanel: DotGraphPanelView | undefined;
     private readonly _panel: vscode.WebviewPanel;
@@ -77,8 +98,12 @@ export class DotGraphPanelView {
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
     }
 
+    /**
+     * Renders or refreshes the call graph panel.
+     */
     public static render(context: vscode.ExtensionContext, url: string, wstate: ProgramWindowState, linesArray: string[], programName: string) {
         if (DotGraphPanelView.currentPanel) {
+            // Reuse existing panel to avoid opening duplicate tabs for the same tool.
             DotGraphPanelView.currentPanel._panel.reveal(vscode.ViewColumn.Beside, true);
             DotGraphPanelView.currentPanel._panel.webview.html = DotGraphPanelView.currentPanel._getWebviewContent(context, url, wstate, DotGraphPanelView.currentPanel._panel, linesArray);
 
@@ -103,6 +128,9 @@ export class DotGraphPanelView {
         }
     }
 
+    /**
+     * Produces the full webview HTML with Mermaid + Panzoom integration.
+     */
     private _getWebviewContent(context: vscode.ExtensionContext, url:string, wstyle: ProgramWindowState, panel: vscode.WebviewPanel, linesArray: string[]) {
         const style = wstyle.current_style;
         let htmlContent = `<!DOCTYPE html>
@@ -219,6 +247,7 @@ export class DotGraphPanelView {
   </body>
 </html>`;
 
+        // Resolve bundled runtime assets through webview-safe URIs.
         const jsMermaidPath = vscode.Uri.joinPath(context.extensionUri, 'resources', 'mermaid', 'mermaid.esm.min.mjs');
         const jsMerVis = panel.webview.asWebviewUri(jsMermaidPath);
         htmlContent = htmlContent.replace('mermaid.esm.min.mjs', jsMerVis.toString());
@@ -232,6 +261,7 @@ export class DotGraphPanelView {
         const elementsCode: string = fs.readFileSync(cssElements.path).toString();
         htmlContent = htmlContent.replace('vscode-elements.', elementsCode);
 
+        // Inject nonce-based CSP to limit script execution scope.
         const nonce = getNonce();
         htmlContent = htmlContent.replace('nonce-nonce', `nonce-${nonce}`);
         htmlContent = htmlContent.replace(/<script /g, `<script nonce="${nonce}" `);
@@ -245,6 +275,9 @@ export class DotGraphPanelView {
         return htmlContent;
     }
 
+    /**
+     * Disposes panel and all registered disposables.
+     */
     public dispose() {
         DotGraphPanelView.currentPanel = undefined;
 
@@ -259,6 +292,9 @@ export class DotGraphPanelView {
     }
 }
 
+/**
+ * Opens an interactive webview that visualizes the current program call graph.
+ */
 export async function view_dot_callgraph(context: vscode.ExtensionContext, settings: ICOBOLSettings) {
     if (settings.enable_program_information === false) {
         vscode.window.showErrorMessage("Unable to generate call graph (coboleditor.enable_program_information)");
@@ -278,6 +314,7 @@ export async function view_dot_callgraph(context: vscode.ExtensionContext, setti
     const linesArray: string[] = getCurrentProgramCallGraph(current_state, false, true);
     const curp = getProgramName(current);
     const webviewPanel = DotGraphPanelView.render(context, url, current_state, linesArray, curp);
+    // Listen for graph click/navigation and style updates from the webview.
     webviewPanel.webview.onDidReceiveMessage(
         async message => {
             switch (message.command) {
@@ -299,6 +336,7 @@ export async function view_dot_callgraph(context: vscode.ExtensionContext, setti
         context.subscriptions
     );
 
+    // Auto-refresh graph when the active document changes.
     vscode.workspace.onDidChangeTextDocument(changeEvent => {
         if (settings.enable_program_information === false) {
             return;
@@ -320,6 +358,9 @@ export async function view_dot_callgraph(context: vscode.ExtensionContext, setti
     });
 }
 
+/**
+ * Opens the referenced location from a graph click callback payload.
+ */
 async function goto_link(messageText: string) {
     const messages = messageText.split(',');
     // const place = messages[0];
@@ -338,6 +379,9 @@ async function goto_link(messageText: string) {
 
 }
 
+/**
+ * Generates a cryptographic-style nonce value for CSP script tags.
+ */
 function getNonce() {
     let text = '';
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -347,6 +391,9 @@ function getNonce() {
     return text;
 }
 
+/**
+ * Returns the best available program identifier for graph titles.
+ */
 function getProgramName(current: cobolSourceScannerInterfaces) {
     if (current.ImplicitProgramId.length !== 0) {
         return current.ImplicitProgramId;
@@ -359,6 +406,12 @@ function getProgramName(current: cobolSourceScannerInterfaces) {
     }
 }
 
+/**
+ * Builds Mermaid call graph lines for the current program state.
+ *
+ * @param asMarkdown Wraps output in markdown + mermaid fences when true.
+ * @param includeEvents Appends click callback lines for interactive webview mode.
+ */
 function getCurrentProgramCallGraph(current_state: ProgramWindowState, asMarkdown: boolean, includeEvents: boolean) {
     const current = current_state.current_program;
     const current_style = current_state.current_style;
@@ -388,6 +441,9 @@ function getCurrentProgramCallGraph(current_state: ProgramWindowState, asMarkdow
     return linesArray;
 }
 
+/**
+ * Creates a markdown document containing the current call graph definition.
+ */
 export async function newFile_dot_callgraph(settings: ICOBOLSettings) {
     if (!vscode.window.activeTextEditor) {
         return;

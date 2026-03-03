@@ -11,6 +11,9 @@ import { VSCOBOLSourceScannerTools } from "../../features/workspace/sourceScanne
 import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
 import { cobolSourceScannerInterfaces } from "../../features/workspace/ICobolSourceScannerInterfaces";
 
+/**
+ * Resolves go-to-definition for COBOL targets, variables, classes/methods, cursors, and libraries.
+ */
 export class COBOLSourceDefinition implements vscode.DefinitionProvider {
 
     readonly sectionRegEx = new RegExp("[$0-9a-zA-Z][a-zA-Z0-9-_]*");
@@ -18,6 +21,9 @@ export class COBOLSourceDefinition implements vscode.DefinitionProvider {
     readonly classRegEx = new RegExp("[$0-9a-zA-Z][a-zA-Z0-9-_]*");
     readonly methodRegEx = new RegExp("[$0-9a-zA-Z][a-zA-Z0-9-_]*");
 
+    /**
+     * Main definition resolver entry point.
+     */
     public provideDefinition(document: vscode.TextDocument,
         position: vscode.Position,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -29,7 +35,7 @@ export class COBOLSourceDefinition implements vscode.DefinitionProvider {
 
         const theline = document.lineAt(position.line).text;
         
-        // Check for copybook library names first (in COPY statements with IN/OF)
+        // Check for copybook library names first (in COPY statements with IN/OF).
         if (theline.match(/.*copy\s+.*\s+(in|of)\s+.*/i)) {
             const qcp: cobolSourceScannerInterfaces | undefined = VSCOBOLSourceScanner.getCachedObject(document,config);
             if (qcp !== undefined) {
@@ -99,6 +105,9 @@ export class COBOLSourceDefinition implements vscode.DefinitionProvider {
         return locations;
     }
 
+    /**
+     * Attempts to resolve COPY library identifiers to files near the active source.
+     */
     private getCopyBookLibrary(document: vscode.TextDocument, sf: cobolSourceScannerInterfaces, position: vscode.Position): vscode.Location | undefined {
         const wordRange = document.getWordRangeAtPosition(position, this.sectionRegEx);
         const word = wordRange ? document.getText(wordRange) : "";
@@ -109,7 +118,7 @@ export class COBOLSourceDefinition implements vscode.DefinitionProvider {
         const config = VSCOBOLConfiguration.get_resource_settings(document, VSExternalFeatures);
         
         try {
-            // Get the source file's directory
+            // Resolve against source directory first to match common COPY ... IN/OF workflows.
             const sourceUri = vscode.Uri.parse(sf.sourceHandler.getUriAsString());
             const sourcePath = sourceUri.fsPath;
             const sourceDir = path.dirname(sourcePath);
@@ -178,6 +187,9 @@ export class COBOLSourceDefinition implements vscode.DefinitionProvider {
         return undefined;
     }
 
+    /**
+     * Resolves section or paragraph definition at cursor.
+     */
     private getSectionOrParaLocation(document: vscode.TextDocument, sf: cobolSourceScannerInterfaces, position: vscode.Position): vscode.Location | undefined {
         const wordRange = document.getWordRangeAtPosition(position, this.sectionRegEx);
         const word = wordRange ? document.getText(wordRange) : "";
@@ -225,6 +237,9 @@ export class COBOLSourceDefinition implements vscode.DefinitionProvider {
 
 
 
+    /**
+     * Resolves EXEC SQL cursor declaration location at cursor.
+     */
     private getSQLCursor(document: vscode.TextDocument, sf: cobolSourceScannerInterfaces, position: vscode.Position): vscode.Location | undefined {
         const wordRange = document.getWordRangeAtPosition(position, this.sectionRegEx);
         const word = wordRange ? document.getText(wordRange) : "";
@@ -254,6 +269,9 @@ export class COBOLSourceDefinition implements vscode.DefinitionProvider {
         return undefined;
     }
 
+    /**
+     * Adds in-document variable definitions to `locations` when symbol matches.
+     */
     private getVariableInCurrentDocument(locations: vscode.Location[], document: vscode.TextDocument, position: vscode.Position, settings: ICOBOLSettings): boolean {
         const wordRange = document.getWordRangeAtPosition(position, this.variableRegEx);
         const word = wordRange ? document.getText(wordRange) : "";
@@ -316,6 +334,9 @@ export class COBOLSourceDefinition implements vscode.DefinitionProvider {
         return true;
     }
 
+    /**
+     * Generic token-map target resolver used by class/method lookup.
+     */
     private getGenericTarget(queryRegEx: RegExp, tokenMap: Map<string, COBOLToken>, document: vscode.TextDocument, position: vscode.Position): vscode.Location | undefined {
         const wordRange = document.getWordRangeAtPosition(position, queryRegEx);
         const word = wordRange ? document.getText(wordRange) : "";

@@ -12,6 +12,9 @@ import { COBOLFileUtils } from "../../utils/fileUtils";
 import { cobolSourceScannerInterfacesEventer } from "./ICobolSourceScannerInterfaces";
 import { sourceHandlerInterfaces } from "./ISourceHandlerInterfaces";
 
+/**
+ * Worker-thread implementation of external feature services for scanner execution.
+ */
 export class ThreadconsoleExternalFeatures implements IExternalFeatures {
     public static readonly Default = new ThreadconsoleExternalFeatures();
 
@@ -159,6 +162,9 @@ export class ThreadconsoleExternalFeatures implements IExternalFeatures {
 
 }
 
+/**
+ * Posts scanner progress/events from worker thread back to the parent port.
+ */
 class ThreadSender implements cobolSourceScannerInterfacesEventer {
     public static readonly Default = new ThreadSender();
 

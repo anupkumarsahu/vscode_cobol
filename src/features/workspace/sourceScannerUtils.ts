@@ -5,6 +5,9 @@ import { ICOBOLSettings } from "../../config/IConfiguration";
 import { COBOLToken } from "./cobolsourcescanner";
 import { cobolSourceScannerInterfaces } from "./ICobolSourceScannerInterfaces";
 
+/**
+ * Shared utility helpers used by scanner-aware providers.
+ */
 export class VSCOBOLSourceScannerTools {
 
       public static async howManyCopyBooksInDirectory(directory: string, settings: ICOBOLSettings): Promise<number> {

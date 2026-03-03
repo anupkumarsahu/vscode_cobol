@@ -11,6 +11,9 @@ import { VSCustomIntellisenseRules } from "./customRules";
 import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
 import { cobolSourceScannerInterfaces } from "../../features/workspace/ICobolSourceScannerInterfaces";
 
+/**
+ * Provides context-aware completions from scanned COBOL symbols and metadata.
+ */
 export class COBOLSourceCompletionItemProvider implements CompletionItemProvider {
     private features: IExternalFeatures;
 

@@ -60,6 +60,7 @@ import { registerWorkspaceMetadataCommands } from "./extension/workspaceMetadata
 // }
 
 // Global extension state and UI elements
+/** Shared status item used to display scanner/progress updates in the status bar. */
 export const progressStatusBarItem: StatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
 
 // Extension lifecycle and state management variables
@@ -330,7 +331,7 @@ export async function activate(context: ExtensionContext) {
     COBOLWorkspaceSymbolCacheHelper.loadFileCacheFromArray(settings, VSExternalFeatures, settings.metadata_files, false);
     COBOLWorkspaceSymbolCacheHelper.loadGlobalKnownCopybooksFromArray(settings, settings.metadata_knowncopybooks, false);
 
-    // Register code action commands used by the linter for quick fixes
+    // Register code action commands used by the linter for quick fixes.
     // These commands are invoked from code action suggestions in the editor
     context.subscriptions.push(commands.registerCommand("cobolplugin.insertIgnoreCommentLine", function (docUri: vscode.Uri, offset: number, code: string) {
         cobolfixer.insertIgnoreCommentLine(docUri, offset, code);
@@ -446,7 +447,7 @@ export async function activate(context: ExtensionContext) {
         vscode.window.registerTerminalProfileProvider('bitlang.terminals', new VSTerminal(context));
     }
 
-    // Optional startup metadata processing
+    // Optional startup metadata processing.
     // Processes workspace files for metadata cache if enabled in settings
     if (FeatureFlags.startMetadataCacheProcessing(settings)) {
         try {

@@ -11,7 +11,8 @@ import { VSCustomIntellisenseRules } from "../providers/intellisense/customRules
 import { colourCommentHandler } from "../features/editor/colorComments";
 import { vsMarginHandler } from "../features/editor/marginDecorations";
 import { VSExtensionUtils, TextLanguage } from "../utils/extensionUtils";
-import { SnippetCompletionItemProvider, KeywordAutocompleteCompletionItemProvider } from "../providers/intellisense";
+import { SnippetCompletionItemProvider } from "../providers/intellisense/snippetCompletionProvider";
+import { KeywordAutocompleteCompletionItemProvider } from "../providers/intellisense/keywordCompletionProvider";
 import { TabUtils } from "../features/editor/tabStopUtils";
 import { checkForExtensionConflicts, install_call_hierarchy } from "../extension/commands/commonCommands";
 
@@ -19,6 +20,9 @@ let shownEnableSemanticTokenProvider = false;
 
 export type SetupLogChannelFn = (hide: boolean, settings: ICOBOLSettings, quiet: boolean) => Promise<void> | void;
 
+/**
+ * Applies settings-change side effects for a given configuration scope.
+ */
 export async function handleScopedConfigurationChange(
     event: ConfigurationChangeEvent,
     scope: vscode.ConfigurationScope | undefined,

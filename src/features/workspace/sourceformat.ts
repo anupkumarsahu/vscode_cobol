@@ -7,6 +7,9 @@ import { getCOBOLKeywordDictionary } from "../../keywords/cobolKeywords";
 
 const inline_sourceformat: string[] = ["sourceformat", ">>source format"];
 
+/**
+ * Determines COBOL source format (fixed/variable/free/tandem) from settings and content.
+ */
 export class SourceFormat {
 
     private static isValidFixedLine(line: string): boolean {
@@ -53,6 +56,9 @@ export class SourceFormat {
         return undefined;
     }
 
+    /**
+     * Returns best-effort source format for the provided document.
+     */
     public static get(doc: sourceHandlerInterfacesLite, config: ICOBOLSettings): ESourceFormat {
         // check overrides..
         switch (config.fileformat_strategy) {

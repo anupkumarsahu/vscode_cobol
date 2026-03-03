@@ -9,6 +9,9 @@ import { VSLogger } from "../../utils/logger";
 import { VSExternalFeatures } from "../../features/runtime/externalFeatures";
 import { ICOBOLSettings } from "../../config/IConfiguration";
 
+/**
+ * Manages comment tag decoration definitions and rendering updates.
+ */
 export class ColourTagHandler {
 
     public setupTags(configElement: string,tags: Map<string, TextEditorDecorationType>): void {

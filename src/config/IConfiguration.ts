@@ -178,6 +178,9 @@ export interface ICOBOLSettings {
     makefile_dependancy_fullpath: boolean;
 }
 
+/**
+ * Mutable concrete settings model populated from VS Code configuration.
+ */
 export class COBOLSettings implements ICOBOLSettings {
     enable_tabstop: boolean;
     pre_scan_line_limit: number;

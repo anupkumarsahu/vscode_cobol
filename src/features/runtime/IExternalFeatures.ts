@@ -35,6 +35,9 @@ export enum ESourceFormat {
     tandem = "tandem"
 }
 
+/**
+ * Stable diagnostic code constants used by the COBOL linter providers.
+ */
 export class cobolLinterProviderSymbols {
     public static NotReferencedMarker_internal = "CL001";
     public static NotReferencedMarker_external = "CL002";

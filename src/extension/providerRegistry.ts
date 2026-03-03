@@ -3,12 +3,22 @@ import { ExtensionContext, languages, Position, TextDocument, CancellationToken,
 import * as openCopybookProvider from "../features/workspace/openCopybookProvider";
 import { ICOBOLSettings } from "../config/IConfiguration";
 import { VSExternalFeatures } from "../features/runtime/externalFeatures";
-import { COBOLTypeFormatter, VSHoverProvider } from "../providers/language";
+import { COBOLTypeFormatter } from "../providers/language/documentFormatter";
+import { VSHoverProvider } from "../providers/language/hoverProvider";
 import { VSExtensionUtils } from "../utils/extensionUtils";
-import { COBOLSourceDefinition, COBOLCallTargetProvider, COBOLReferenceProvider, VSCOBOLRenameProvider } from "../providers/navigation";
+import { COBOLSourceDefinition } from "../providers/navigation/sourceDefinitionProvider";
+import { COBOLCallTargetProvider } from "../providers/navigation/cobolCallTargetProvider";
+import { COBOLReferenceProvider } from "../providers/navigation/referenceProvider";
+import { VSCOBOLRenameProvider } from "../providers/navigation/renameProvider";
 import { cobolLinterActionFixer } from "../providers/language/cobolLinter";
-import { KeywordAutocompleteCompletionItemProvider, SnippetCompletionItemProvider, COBOLSymbolInformationProvider, COBOLSourceCompletionItemProvider } from "../providers/intellisense";
+import { KeywordAutocompleteCompletionItemProvider } from "../providers/intellisense/keywordCompletionProvider";
+import { SnippetCompletionItemProvider } from "../providers/intellisense/snippetCompletionProvider";
+import { COBOLSymbolInformationProvider } from "../providers/intellisense/documentSymbolProvider";
+import { COBOLSourceCompletionItemProvider } from "../providers/intellisense/cobolCompletionProvider";
 
+/**
+ * Registers language feature providers used by the desktop extension host.
+ */
 export function registerLanguageProviders(
     context: ExtensionContext,
     settings: ICOBOLSettings,
