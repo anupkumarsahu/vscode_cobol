@@ -45,8 +45,6 @@
     "onFileSystem:streamfile",
     "onFileSystem:zip",
     "onLanguage:plaintext",
-    "onLanguage:COBOL",
-    "onLanguage:COBOL_TANDEM",
     "view:flat-source-view",
     "workspaceContains:bld.bat",
     "workspaceContains:bld.sh",
@@ -1157,11 +1155,13 @@
         {
           "id": "flat-source-view",
           "name": "Source View",
+          "icon": "images/cobol.svg",
           "when": "config.coboleditor.sourceview"
         },
         {
           "id": "help-and-feedback-view",
           "name": "Help on COBOL and Feedback",
+          "icon": "images/cobol.svg",
           "when": "config.coboleditor.feedbackview"
         }
       ]
@@ -1187,8 +1187,6 @@
         "*.COB": "Test$(basename).cpy"
       },
       "explorer.fileNesting.enabled": true,
-      "github.copilot.inlineSuggest.enable": true,
-      "github.copilot.editor.enableAutoCompletions": true,
       "github.copilot.enable": {
         "COBOL": true,
         "COBOL_TANDEM": true,
